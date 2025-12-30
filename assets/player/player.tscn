@@ -1,0 +1,149 @@
+[gd_scene load_steps=13 format=3 uid="uid://4tslx1g24xy1"]
+
+[ext_resource type="Material" uid="uid://kad4xugxuhe5" path="res://assets/player/player.material" id="1_d6veg"]
+[ext_resource type="Script" uid="uid://detmajyuyv6ru" path="res://assets/player/player_controller.gd" id="1_h6syq"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_h6syq"]
+size = Vector3(10.604, 3.5, 7.5)
+
+[sub_resource type="PrismMesh" id="PrismMesh_hgb4b"]
+size = Vector3(3.16, 5, 3.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_h6syq"]
+size = Vector3(2.195, 14.805, 2.02)
+
+[sub_resource type="BoxMesh" id="BoxMesh_d6veg"]
+size = Vector3(2.87, 8.66, 2.02)
+
+[sub_resource type="SphereMesh" id="SphereMesh_h6syq"]
+radial_segments = 8
+rings = 8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_v2miy"]
+albedo_color = Color(0, 0, 0, 1)
+metallic_specular = 0.0
+emission_enabled = true
+emission = Color(1, 0.5678192, 0.31320786, 1)
+emission_energy_multiplier = 10.0
+
+[sub_resource type="TorusMesh" id="TorusMesh_h6syq"]
+inner_radius = 0.987
+outer_radius = 1.38
+rings = 16
+ring_segments = 12
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_d5dr7"]
+albedo_color = Color(0.056699984, 0.30513003, 0.63, 1)
+emission_enabled = true
+emission = Color(0.004839932, 0.31814653, 0.70818675, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_v2miy"]
+height = 0.5
+radial_segments = 16
+rings = 16
+is_hemisphere = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ouxva"]
+albedo_color = Color(0.86065817, 0, 0.35547403, 1)
+
+[node name="Player" type="CharacterBody3D"]
+script = ExtResource("1_h6syq")
+
+[node name="hitbox" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.196, 0, -1.107)
+shape = SubResource("BoxShape3D_h6syq")
+
+[node name="visuals" type="Node3D" parent="."]
+
+[node name="cockpit" type="MeshInstance3D" parent="visuals"]
+transform = Transform3D(1, 0, 0, 0, 0.33631036, 0.4394419, 0, -0.61961305, 0.238518, 0, 0.2126567, 1.9226098)
+material_override = ExtResource("1_d6veg")
+mesh = SubResource("PrismMesh_hgb4b")
+
+[node name="right_wing" type="MeshInstance3D" parent="visuals"]
+transform = Transform3D(0.855986, 0.29880762, 0.21095137, -0.44210082, -4.4703484e-08, 0.4484827, 0.2680201, -0.9543133, 0.066051535, 3.9811845, 9.536743e-07, -2.9982414)
+mesh = SubResource("BoxMesh_h6syq")
+surface_material_override/0 = ExtResource("1_d6veg")
+
+[node name="MeshInstance3D5" type="MeshInstance3D" parent="visuals/right_wing"]
+transform = Transform3D(0.2303696, 0, 1.1175871e-08, 0, 0.1048411, 0, 1.1175871e-08, -1.8626451e-09, 1, 2.3841858e-07, -6.300172, 1.9435747)
+mesh = SubResource("BoxMesh_h6syq")
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource("1_d6veg")
+
+[node name="MeshInstance3D6" type="MeshInstance3D" parent="visuals/right_wing"]
+transform = Transform3D(0.2303696, 0, 1.1175871e-08, 0, 0.1048411, 0, 1.1175871e-08, -1.8626451e-09, 1, -2.3841858e-07, 6.169205, 1.9435747)
+mesh = SubResource("BoxMesh_h6syq")
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource("1_d6veg")
+
+[node name="right_wing2" type="MeshInstance3D" parent="visuals"]
+transform = Transform3D(-0.95214236, 0.29904085, -0.031620648, -0.06627393, -1.4901161e-08, 0.49890077, 0.2983834, 0.95424026, 0.009909306, -3.981, 0, -2.998)
+mesh = SubResource("BoxMesh_h6syq")
+surface_material_override/0 = ExtResource("1_d6veg")
+
+[node name="MeshInstance3D5" type="MeshInstance3D" parent="visuals/right_wing2"]
+transform = Transform3D(0.2303696, 0, 1.1175871e-08, 0, 0.1048411, 0, 1.1175871e-08, -1.8626451e-09, 1, 2.3841858e-07, -6.300172, 1.9435747)
+mesh = SubResource("BoxMesh_h6syq")
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource("1_d6veg")
+
+[node name="MeshInstance3D6" type="MeshInstance3D" parent="visuals/right_wing2"]
+transform = Transform3D(0.2303696, 0, 1.1175871e-08, 0, 0.1048411, 0, 1.1175871e-08, -1.8626451e-09, 1, -2.3841858e-07, 6.169205, 1.9435747)
+mesh = SubResource("BoxMesh_h6syq")
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource("1_d6veg")
+
+[node name="body" type="MeshInstance3D" parent="visuals"]
+transform = Transform3D(0.99999994, 0, 0, 0, -4.3711385e-08, 0.49999997, 0, -0.9999999, -2.1855692e-08, 0, -0.32780918, 0.30103323)
+material_override = ExtResource("1_d6veg")
+mesh = SubResource("BoxMesh_d6veg")
+
+[node name="weapons" type="Node3D" parent="."]
+
+[node name="primary" type="Node3D" parent="weapons"]
+
+[node name="machine_gun" type="Node3D" parent="weapons/primary"]
+
+[node name="muzzle" type="Node3D" parent="weapons/primary/machine_gun"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.182593, 0, -3.787012)
+
+[node name="muzzle_flash" type="MeshInstance3D" parent="weapons/primary/machine_gun/muzzle"]
+transform = Transform3D(2, 0, 0, 0, 1, 0, 0, 0, 4, 0, 0, -0.9568577)
+cast_shadow = 0
+mesh = SubResource("SphereMesh_h6syq")
+surface_material_override/0 = SubResource("StandardMaterial3D_v2miy")
+
+[node name="muzzle2" type="Node3D" parent="weapons/primary/machine_gun"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.183, 0, -3.787)
+
+[node name="muzzle_flash2" type="MeshInstance3D" parent="weapons/primary/machine_gun/muzzle2"]
+transform = Transform3D(2, 0, 0, 0, 1, 0, 0, 0, 4, 0, 0, -0.957)
+cast_shadow = 0
+mesh = SubResource("SphereMesh_h6syq")
+skeleton = NodePath("../../muzzle")
+surface_material_override/0 = SubResource("StandardMaterial3D_v2miy")
+
+[node name="right_barrel_timer" type="Timer" parent="weapons/primary/machine_gun"]
+wait_time = 0.1
+
+[node name="left_barrel_timer" type="Timer" parent="weapons/primary/machine_gun"]
+wait_time = 0.1
+
+[node name="Label3D" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 12.251472, 2.573666, -9.816734)
+pixel_size = 0.075
+text = "label 3d"
+
+[node name="screen_pos_indicator" type="MeshInstance3D" parent="."]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0)
+mesh = SubResource("TorusMesh_h6syq")
+surface_material_override/0 = SubResource("StandardMaterial3D_d5dr7")
+
+[node name="desired_position_indicator" type="MeshInstance3D" parent="."]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0)
+mesh = SubResource("SphereMesh_v2miy")
+surface_material_override/0 = SubResource("StandardMaterial3D_ouxva")
+
+[connection signal="timeout" from="weapons/primary/machine_gun/right_barrel_timer" to="." method="_on_right_left_barrel_timer_timeout" binds= [0]]
+[connection signal="timeout" from="weapons/primary/machine_gun/left_barrel_timer" to="." method="_on_right_left_barrel_timer_timeout" binds= [1]]

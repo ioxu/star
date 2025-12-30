@@ -1,0 +1,41 @@
+[gd_scene load_steps=5 format=3 uid="uid://g0pobfinjhby"]
+
+[ext_resource type="Script" uid="uid://bldm7ap4nwwv7" path="res://assets/player/bullet.gd" id="1_sotrb"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_h6syq"]
+radial_segments = 8
+rings = 8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_v2miy"]
+albedo_color = Color(0, 0, 0, 1)
+metallic_specular = 0.0
+emission_enabled = true
+emission = Color(1, 0.5678192, 0.31320786, 1)
+emission_energy_multiplier = 10.0
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_u46jb"]
+size = Vector3(1.2, 1.2, 8.94)
+
+[node name="bullet" type="RigidBody3D"]
+collision_layer = 4
+collision_mask = 2
+axis_lock_linear_y = true
+mass = 5.0
+gravity_scale = 0.0
+script = ExtResource("1_sotrb")
+
+[node name="bullet_mesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 6.172, 0, 0, 0)
+mesh = SubResource("SphereMesh_h6syq")
+skeleton = NodePath("../../weapons/primary/machine_gun/muzzle")
+surface_material_override/0 = SubResource("StandardMaterial3D_v2miy")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_u46jb")
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 3.5
+one_shot = true
+autostart = true
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
