@@ -2,22 +2,25 @@ extends CharacterBody3D
 
 @export var camera : Camera3D
 
-var MAX_SPEED = 120.0
+#-- object
+var object_time := 0.0
+
 
 #-- move
+var MAX_SPEED = 120.0
+
 var pos_spring = HarmonicMotion.Spring3.new( 60.0, 20.0 )   #Spring2( 80.0, 10.0 )
-var desired_position := Vector3.ZERO
 var action_plane = Plane(Vector3.UP, Vector3.ZERO) # used for returning objects to the main plane of action
 
 var target_velocity := Vector3.ZERO
-var friction := 0.02
-var acceleration := 600
+var friction := 0.0002
+var acceleration := 200
 var ms_collided := false
 
 #-- screen bounds
 var screen_pos : Vector2
 @export var limit_to_frustum := true
-@export var frustum_limit_margin := Vector2(0.05,0.1) * 2.0
+@export var frustum_limit_margin := Vector2(0.05,0.1) * 1.0
 
 #-- weapons
 var is_primary_firing := false
@@ -26,6 +29,7 @@ const bullet = preload("res://assets/player/bullet.tscn")
 
 
 var immediate_mesh = ImmediateMesh.new()
+
 
 func _ready() -> void:
 	if self.camera == null:
@@ -52,73 +56,71 @@ func _physics_process(delta: float) -> void:
 		0.0,
 		Input.get_action_strength("ui_down") - Input.get_action_strength("ui_up")
 	)
-	desired_position += direction * delta * MAX_SPEED
-	
-	
-	#-- limit against camera frustum
-	var vp_size = Vector2(get_viewport().size)
 
-	screen_pos = camera.unproject_position( self.global_position )
 
 	target_velocity = direction * MAX_SPEED
 	velocity = velocity.move_toward( target_velocity, acceleration * delta )
-	velocity = velocity.move_toward( Vector3.ZERO, friction * 1000 * delta )
+	velocity = velocity.move_toward( Vector3.ZERO, friction *  delta )
 	$target_velocity_indicator.position = (target_velocity / MAX_SPEED) * 4.5
 
 
-	# TODO - move to class scope object that only gets updated on signal from screen resolution change
-	var screen_points := [
-		#Vector2(0.0, 0.0),
-		#Vector2(vp_size.x, 0.0),
-		#Vector2(vp_size.x, vp_size.y),
-		#Vector2(0.0, vp_size.y)
-		
-		# 4 points, in screen resolution coordinates, minus the frustum_limit_margin
-		Vector2(vp_size.x * frustum_limit_margin.x, vp_size.y * frustum_limit_margin.y),
-		Vector2(vp_size.x * (1.0 - frustum_limit_margin.x), vp_size.y * frustum_limit_margin.y),
-		Vector2(vp_size.x * (1.0 - frustum_limit_margin.x), vp_size.y * (1.0 - frustum_limit_margin.y)),
-		Vector2(vp_size.x * frustum_limit_margin.x, vp_size.y * (1.0 - frustum_limit_margin.y))
-	]
-
-	#print(screen_points)
-
-	# screen points to world points
-	var world_points : Array[Vector3]
-	for sp in screen_points:
-		var origin: Vector3 = camera.project_ray_origin(sp)
-		var dir: Vector3 = camera.project_ray_normal(sp)
-		
-		var intersection = action_plane.intersects_ray(origin, dir )
-		world_points.append( intersection )
-
-	# 2d polygon
-	var poly : PackedVector2Array
-	for wp in world_points:
-		poly.append( Vector2(wp.x, wp.z) )
-
-	#print(poly)
-
-	# in world polygon? ----------------------------------------------------------------------------
-	var pos2d = Vector2( self.global_position.x, self.global_position.z )
-	if Geometry2D.is_point_in_polygon( pos2d, poly):
-		pass
-	else:
-		# outside?
-		# move to closest point on polygon
-		print("OUT OF BOUNDS")
-		
-		var nearest := _closest_point_on_polygon( pos2d, poly )
-		
-		var nearest3 = Vector3( nearest.x, 0.0, nearest.y )
-		$nearest3.global_position = nearest3
-		velocity += position.direction_to( nearest3 ) * 1000.0 * delta
 	# ----------------------------------------------------------------------------------------------
+	# keep player inside of camera frustum
+	if limit_to_frustum:
+		#-- limit against camera frustum
+		var vp_size = Vector2(get_viewport().size)
+		var screen_points := [
+			#Vector2(0.0, 0.0),
+			#Vector2(vp_size.x, 0.0),
+			#Vector2(vp_size.x, vp_size.y),
+			#Vector2(0.0, vp_size.y)
+			
+			# 4 points, in screen resolution coordinates, minus the frustum_limit_margin
+			Vector2(vp_size.x * frustum_limit_margin.x, vp_size.y * frustum_limit_margin.y),
+			Vector2(vp_size.x * (1.0 - frustum_limit_margin.x), vp_size.y * frustum_limit_margin.y),
+			Vector2(vp_size.x * (1.0 - frustum_limit_margin.x), vp_size.y * (1.0 - frustum_limit_margin.y)),
+			Vector2(vp_size.x * frustum_limit_margin.x, vp_size.y * (1.0 - frustum_limit_margin.y))
+		]
 
+		#print(screen_points)
 
-	#pos_spring.target = desired_position
-	#$desired_position_indicator.global_position = desired_position
-	#self.global_position = pos_spring.tick( delta, self.position )
+		# screen points to world points
+		var world_points : Array[Vector3]
+		for sp in screen_points:
+			var origin: Vector3 = camera.project_ray_origin(sp)
+			var dir: Vector3 = camera.project_ray_normal(sp)
+			
+			var intersection = action_plane.intersects_ray(origin, dir )
+			world_points.append( intersection )
 
+		# 2d polygon
+		var poly : PackedVector2Array
+		for wp in world_points:
+			poly.append( Vector2(wp.x, wp.z) )
+
+		# in world polygon?
+		var pos2d = Vector2( self.global_position.x, self.global_position.z )
+		if Geometry2D.is_point_in_polygon( pos2d, poly):
+			pass
+		else:
+			# outside?
+			# move to closest point on polygon
+			#print("OUT OF BOUNDS")
+
+			var nearest := _closest_point_on_polygon( pos2d, poly )
+			var nearest3 = Vector3( nearest.x, 0.0, nearest.y )
+			$nearest3.global_position = nearest3
+			velocity += position.direction_to( nearest3 ) * 1000.0 * delta
+	# ----------------------------------------------------------------------------------------------
+		immediate_mesh.clear_surfaces()
+		immediate_mesh.surface_begin(Mesh.PRIMITIVE_LINE_STRIP)
+		immediate_mesh.surface_add_vertex(world_points[0])
+		immediate_mesh.surface_add_vertex(world_points[1])
+		immediate_mesh.surface_add_vertex(world_points[2])
+		immediate_mesh.surface_add_vertex(world_points[3])
+		immediate_mesh.surface_add_vertex(world_points[0])
+		immediate_mesh.surface_end()
+	# ----------------------------------------------------------------------------------------------
 
 	#-- move
 	set_velocity( velocity )
@@ -127,22 +129,12 @@ func _physics_process(delta: float) -> void:
 	
 	self.global_position.y = 0
 
-
+	screen_pos = camera.unproject_position( self.global_position )
 	$Label3D.text = "screen_pos <%d, %d>\nworld_pos <%0.1f, %0.1f>\nheight %0.1f"%[screen_pos.x, screen_pos.y, global_position.x, global_position.z, self.global_position.y]
-
-	immediate_mesh.clear_surfaces()
-	immediate_mesh.surface_begin(Mesh.PRIMITIVE_LINE_STRIP)
-	immediate_mesh.surface_add_vertex(world_points[0])
-	immediate_mesh.surface_add_vertex(world_points[1])
-	immediate_mesh.surface_add_vertex(world_points[2])
-	immediate_mesh.surface_add_vertex(world_points[3])
-	immediate_mesh.surface_add_vertex(world_points[0])
-	immediate_mesh.surface_end()
-
 
 
 func _process(delta: float) -> void:
-	
+	object_time += delta
 	#-- weapons
 	if self.is_primary_firing:
 		# right
@@ -157,9 +149,10 @@ func _process(delta: float) -> void:
 			$weapons/primary/machine_gun/muzzle2/muzzle_flash2.visible = false
 
 
-func _input(event: InputEvent) -> void:
+func _input(_event: InputEvent) -> void:
 	if Input.is_action_just_pressed("player_fire_primary"):
 		self.is_primary_firing = true
+		_on_right_left_barrel_timer_timeout(0)
 		$weapons/primary/machine_gun/right_barrel_timer.start()
 		await get_tree().create_timer(0.05).timeout
 		$weapons/primary/machine_gun/left_barrel_timer.start()
@@ -181,13 +174,17 @@ func _on_right_left_barrel_timer_timeout(side) -> void:
 		0:
 			var b : RigidBody3D = bullet.instantiate()
 			get_parent().add_child(b)
-			b.global_position = $weapons/primary/machine_gun/muzzle.global_position + Vector3(0.0, 0.0, -5.0)
-			b.apply_impulse(Vector3(0.0, 0.0, -2000.0))
+			b.global_position = $weapons/primary/machine_gun/muzzle.global_position
+			b.global_transform.basis = $weapons/primary/machine_gun/muzzle.global_transform.basis
+			#b.apply_impulse(Vector3(0.0, 0.0, -2000.0))
+			b.apply_impulse( b.global_transform.basis.z * -2000 )
 		1:
 			var b : RigidBody3D = bullet.instantiate()
 			get_parent().add_child(b)
-			b.global_position = $weapons/primary/machine_gun/muzzle2.global_position + Vector3(0.0, 0.0, -5.0)
-			b.apply_impulse(Vector3(0.0, 0.0, -2000.0))
+			b.global_position = $weapons/primary/machine_gun/muzzle2.global_position
+			b.global_transform.basis = $weapons/primary/machine_gun/muzzle2.global_transform.basis
+			#b.apply_impulse(Vector3(0.0, 0.0, -2000.0))
+			b.apply_impulse( b.global_transform.basis.z * -2000 )
 
 
 func _closest_point_on_polygon( point: Vector2, poly: PackedVector2Array ) -> Vector2:
