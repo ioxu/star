@@ -2,12 +2,17 @@ extends CharacterBody3D
 
 @export var camera : Camera3D
 
-var MAX_SPEED = 100.0
+var MAX_SPEED = 120.0
 
+#-- move
 var pos_spring = HarmonicMotion.Spring3.new( 60.0, 20.0 )   #Spring2( 80.0, 10.0 )
 var desired_position := Vector3.ZERO
-
 var action_plane = Plane(Vector3.UP, Vector3.ZERO) # used for returning objects to the main plane of action
+
+var target_velocity := Vector3.ZERO
+var friction := 0.02
+var acceleration := 600
+var ms_collided := false
 
 #-- screen bounds
 var screen_pos : Vector2
@@ -52,66 +57,14 @@ func _physics_process(delta: float) -> void:
 	
 	#-- limit against camera frustum
 	var vp_size = Vector2(get_viewport().size)
-	# position on screen
+
 	screen_pos = camera.unproject_position( self.global_position )
-	#var depth = (camera.global_position - self.global_position).length()
-	var depth = camera.global_position.distance_to( self.global_position )
-	# limits projected to world
-	#var s_min = camera.project_position( vp_size * frustum_limit_margin, depth)
-	#var s_max = camera.project_position( vp_size * (Vector2.ONE - frustum_limit_margin), depth)
-	# test and bound
-	#if self.global_position.x < s_min.x:
-		#desired_position.x = s_min.x + 5.0 # should be by the error
-	#if self.global_position.z < s_min.z:
-		#desired_position.z = s_min.z + 5.0 # should be by the error
-	#if self.global_position.x > s_max.x:
-		#desired_position.x = s_max.x - 5.0 # should be by the error
-	#if self.global_position.z > s_max.z:
-		#desired_position.z = s_max.z - 5.0 # should be by the error
 
-	#var s_tl = camera.project_position( vp_size * frustum_limit_margin, depth*1)
-	#var s_tr = camera.project_position( vp_size * Vector2(1.0 - frustum_limit_margin.x , frustum_limit_margin.y), depth*1)
-	#var s_br = camera.project_position(  vp_size * (Vector2.ONE - frustum_limit_margin), depth*1)
-	#var s_bl = camera.project_position( vp_size * Vector2(frustum_limit_margin.x, 1.0-frustum_limit_margin.y), depth*1)
-#
-	#var frustum_planes : Array[Plane] = camera.get_frustum() # near, far, left, top, right, bottom
+	target_velocity = direction * MAX_SPEED
+	velocity = velocity.move_toward( target_velocity, acceleration * delta )
+	velocity = velocity.move_toward( Vector3.ZERO, friction * 1000 * delta )
+	$target_velocity_indicator.position = (target_velocity / MAX_SPEED) * 4.5
 
-	## clamp to frustum_limit_margin (is screen pixels)
-	#
-	#var smin = vp_size * frustum_limit_margin
-	#var smax = vp_size * (Vector2.ONE - frustum_limit_margin)
-	#if screen_pos.x < smin.x or screen_pos.x > smax.x or screen_pos.y < smin.y or screen_pos.y > smax.y:
-		#print("out of bounds: %0.0v -- %0.0v -- %0.0v"%[screen_pos, smin, smax] )
-		#
-		#var error := Vector2.ZERO
-		#if screen_pos.x < smin.x:
-			#error.x = smin.x - screen_pos.x
-		#elif screen_pos.x > smax.x:
-			#error.x = smax.x - screen_pos.x
-		#if screen_pos.y < smin.y:
-			#error.y = smin.y - screen_pos.y
-		#elif screen_pos.y > smax.y:
-			#error.y = smax.y - screen_pos.y
-		#
-		##screen_pos = clamp(screen_pos, vp_size * frustum_limit_margin, vp_size * (Vector2.ONE - frustum_limit_margin) )
-		##screen_pos.clamp(vp_size * frustum_limit_margin, vp_size * (Vector2.ONE - frustum_limit_margin) ) 
-		#screen_pos = screen_pos.clamp(vp_size * frustum_limit_margin, vp_size * (Vector2.ONE - frustum_limit_margin) ) + error
-		#print("clamped: %0.0v"%screen_pos)
-		#
-		#### calc error
-		##print("error %0.1v"%error)
-		##screen_pos += (error*5)
-		#
-		##calc screen_pos_depth
-		#var action_plane = Plane(Vector3.UP, Vector3.ZERO)
-		##var screen_pos_depth = camera.global_position.distance_to( action_plane.intersects_ray(camera.global_position, camera.project_ray_normal( screen_pos ) ) )
-		#depth = camera.global_position.distance_to( action_plane.intersects_ray(camera.global_position, camera.project_ray_normal( screen_pos ).normalized() ) )
-		#
-		##desired_position = camera.project_position( screen_pos, depth)
-		#desired_position = camera.project_position( screen_pos, depth)
-		##desired_position.y = 0.0
-		#print("desired_position.y %0.1f"%desired_position.y)
-	##print("%0.2v -- %0.2v -- %0.2v"%[screen_pos, vp_size * frustum_limit_margin, vp_size * (Vector2.ONE - frustum_limit_margin)] )
 
 	# TODO - move to class scope object that only gets updated on signal from screen resolution change
 	var screen_points := [
@@ -144,50 +97,38 @@ func _physics_process(delta: float) -> void:
 		poly.append( Vector2(wp.x, wp.z) )
 
 	#print(poly)
-	
-	# in world polygon?
+
+	# in world polygon? ----------------------------------------------------------------------------
 	var pos2d = Vector2( self.global_position.x, self.global_position.z )
 	if Geometry2D.is_point_in_polygon( pos2d, poly):
-		$screen_pos_indicator.global_position = self.global_position
-
+		pass
 	else:
 		# outside?
 		# move to closest point on polygon
 		print("OUT OF BOUNDS")
 		
 		var nearest := _closest_point_on_polygon( pos2d, poly )
-		$screen_pos_indicator.global_position = Vector3( nearest.x, 0.0, nearest.y )
 		
 		var nearest3 = Vector3( nearest.x, 0.0, nearest.y )
-		desired_position = nearest3
-		self.global_position = nearest3
-		$desired_position_indicator.global_position = desired_position
+		$nearest3.global_position = nearest3
+		velocity += position.direction_to( nearest3 ) * 1000.0 * delta
+	# ----------------------------------------------------------------------------------------------
 
-
-	#desired_position = camera.project_position( screen_pos, depth*1)
-
-	pos_spring.target = desired_position
-	$desired_position_indicator.global_position = desired_position
-	self.global_position = pos_spring.tick( delta, self.position )
-
-
-	$Label3D.text = "screen_pos <%d, %d>\nworld_pos <%0.1f, %0.1f>\ndepth %0.1f\nheight %0.1f"%[screen_pos.x, screen_pos.y, global_position.x, global_position.z, depth, self.global_position.y]
 
 	#pos_spring.target = desired_position
 	#$desired_position_indicator.global_position = desired_position
 	#self.global_position = pos_spring.tick( delta, self.position )
 
 
+	#-- move
+	set_velocity( velocity )
+	set_up_direction(Vector3.UP)
+	ms_collided = move_and_slide()
+	
+	self.global_position.y = 0
 
-	# draw frustum limit margin
-	#immediate_mesh.clear_surfaces()
-	#immediate_mesh.surface_begin(Mesh.PRIMITIVE_LINE_STRIP)
-	#immediate_mesh.surface_add_vertex(camera.project_position( vp_size * frustum_limit_margin, depth*1))
-	#immediate_mesh.surface_add_vertex(camera.project_position( vp_size * Vector2(1.0 - frustum_limit_margin.x , frustum_limit_margin.y), depth*1))
-	#immediate_mesh.surface_add_vertex(camera.project_position( vp_size * (Vector2.ONE - frustum_limit_margin), depth*1))
-	#immediate_mesh.surface_add_vertex(camera.project_position( vp_size * Vector2(frustum_limit_margin.x, 1.0-frustum_limit_margin.y), depth*1))
-	#immediate_mesh.surface_add_vertex(camera.project_position( vp_size * frustum_limit_margin, depth*1))
-	#immediate_mesh.surface_end()
+
+	$Label3D.text = "screen_pos <%d, %d>\nworld_pos <%0.1f, %0.1f>\nheight %0.1f"%[screen_pos.x, screen_pos.y, global_position.x, global_position.z, self.global_position.y]
 
 	immediate_mesh.clear_surfaces()
 	immediate_mesh.surface_begin(Mesh.PRIMITIVE_LINE_STRIP)
