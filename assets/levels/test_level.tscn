@@ -1,0 +1,108 @@
+[gd_scene load_steps=12 format=3 uid="uid://cgrqgutviav26"]
+
+[ext_resource type="Material" uid="uid://cnxtog6iv1d0j" path="res://assets/materials/triplanar_grid_grey.material" id="1_a3arp"]
+[ext_resource type="Texture2D" uid="uid://c70pl7gyqsx2k" path="res://assets/textures/grids/kenney_texture_08_light.png" id="2_6d8m2"]
+[ext_resource type="PackedScene" uid="uid://clfq4f0sjstdy" path="res://assets/props/test_cube.tscn" id="3_ds126"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_qdmn5"]
+sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+
+[sub_resource type="Sky" id="Sky_j4t3q"]
+sky_material = SubResource("ProceduralSkyMaterial_qdmn5")
+
+[sub_resource type="Environment" id="Environment_3q0u3"]
+background_mode = 2
+background_energy_multiplier = 2.0
+sky = SubResource("Sky_j4t3q")
+tonemap_mode = 2
+ssao_enabled = true
+ssao_radius = 14.09
+ssao_intensity = 11.73
+ssao_power = 0.41608855
+ssao_light_affect = 0.55
+ssao_ao_channel_affect = 0.34
+ssil_enabled = true
+glow_enabled = true
+glow_levels/2 = 1.0
+glow_intensity = 1.93
+glow_strength = 0.53
+glow_blend_mode = 0
+
+[sub_resource type="QuadMesh" id="QuadMesh_kap54"]
+
+[sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_j4t3q"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_ehmke"]
+height = 0.5
+radial_segments = 16
+rings = 16
+is_hemisphere = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nqac0"]
+albedo_color = Color(0.3378572, 0.5694376, 0.29008532, 1)
+albedo_texture = ExtResource("2_6d8m2")
+uv1_scale = Vector3(2, 2, 2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ehmke"]
+size = Vector3(5, 50, 5)
+
+[node name="test_level" type="Node3D"]
+
+[node name="lvl_grp" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -30, 0)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="lvl_grp"]
+environment = SubResource("Environment_3q0u3")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="lvl_grp"]
+transform = Transform3D(-0.8422046, -0.43301278, -0.32123423, -0.52094567, 0.49999997, 0.69182056, -0.13895002, 0.75, -0.6466784, 0, 0, 0)
+shadow_enabled = true
+shadow_bias = 0.05
+shadow_blur = 0.945
+directional_shadow_split_1 = 0.061
+directional_shadow_split_2 = 0.216
+directional_shadow_split_3 = 0.405
+directional_shadow_blend_splits = true
+directional_shadow_fade_start = 0.839
+directional_shadow_max_distance = 1000.0
+
+[node name="ground" type="StaticBody3D" parent="lvl_grp"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="lvl_grp/ground"]
+transform = Transform3D(1000, 0, 0, 0, -0.0004371139, 10000, 0, -10000, -0.0004371139, 0.5508423, 0, -0.19393921)
+material_override = ExtResource("1_a3arp")
+mesh = SubResource("QuadMesh_kap54")
+skeleton = NodePath("../../../..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="lvl_grp/ground"]
+shape = SubResource("WorldBoundaryShape3D_j4t3q")
+
+[node name="origin" type="MeshInstance3D" parent="lvl_grp"]
+transform = Transform3D(12, 0, 0, 0, 12, 0, 0, 0, 12, 0, 0, 0)
+mesh = SubResource("SphereMesh_ehmke")
+surface_material_override/0 = SubResource("StandardMaterial3D_nqac0")
+
+[node name="test_cube" parent="lvl_grp" instance=ExtResource("3_ds126")]
+transform = Transform3D(0.79767865, 0, 0.6030827, 0, 1, 0, -0.6030827, 0, 0.79767865, 0, 30, -30.131287)
+
+[node name="test_cube2" parent="lvl_grp" instance=ExtResource("3_ds126")]
+transform = Transform3D(0.79767865, 0, 0.6030827, 0, 1, 0, -0.6030827, 0, 0.79767865, 26.92294, 30, -40.49152)
+
+[node name="test_cube3" parent="lvl_grp" instance=ExtResource("3_ds126")]
+transform = Transform3D(0.79767865, 0, 0.6030827, 0, 1, 0, -0.6030827, 0, 0.79767865, -27.493313, 30, -40.03221)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="lvl_grp"]
+transform = Transform3D(0.63692856, -0.76048726, -0.12641597, 0.7409803, 0.5586468, 0.37264153, -0.21276729, -0.3310178, 0.91932434, -27.95803, -3.8146973e-06, -24.09562)
+mesh = SubResource("BoxMesh_ehmke")
+surface_material_override/0 = ExtResource("1_a3arp")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="lvl_grp"]
+transform = Transform3D(0.57901096, -0.25042737, -0.77590746, 0.7409803, 0.5586468, 0.37264153, 0.34013852, -0.7906958, 0.50902444, 51.022316, -3.8146973e-06, -26.762749)
+mesh = SubResource("BoxMesh_ehmke")
+surface_material_override/0 = ExtResource("1_a3arp")
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="lvl_grp"]
+transform = Transform3D(0.6597612, -0.5022061, -0.55902064, 0.7409803, 0.5586468, 0.37264153, 0.12515222, -0.6600778, 0.74069846, 48.92562, -5.141407, -19.250942)
+mesh = SubResource("BoxMesh_ehmke")
+surface_material_override/0 = ExtResource("1_a3arp")

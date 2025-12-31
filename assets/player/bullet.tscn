@@ -22,6 +22,8 @@ collision_mask = 2
 axis_lock_linear_y = true
 mass = 5.0
 gravity_scale = 0.0
+contact_monitor = true
+max_contacts_reported = 1
 script = ExtResource("1_sotrb")
 
 [node name="bullet_mesh" type="MeshInstance3D" parent="."]
@@ -38,4 +40,5 @@ wait_time = 3.5
 one_shot = true
 autostart = true
 
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

@@ -33,7 +33,8 @@ var immediate_mesh = ImmediateMesh.new()
 
 func _ready() -> void:
 	if self.camera == null:
-		push_error("%s has no camera assigned!"%[self])
+		push_warning("%s has no camera assigned!"%[self])
+		self.camera = get_viewport().get_camera_3d()
 	
 	pprint("start")
 
@@ -57,70 +58,16 @@ func _physics_process(delta: float) -> void:
 		Input.get_action_strength("ui_down") - Input.get_action_strength("ui_up")
 	)
 
-
+	#-- input velocities
 	target_velocity = direction * MAX_SPEED
 	velocity = velocity.move_toward( target_velocity, acceleration * delta )
 	velocity = velocity.move_toward( Vector3.ZERO, friction *  delta )
 	$target_velocity_indicator.position = (target_velocity / MAX_SPEED) * 4.5
 
-
-	# ----------------------------------------------------------------------------------------------
-	# keep player inside of camera frustum
-	if limit_to_frustum:
-		#-- limit against camera frustum
-		var vp_size = Vector2(get_viewport().size)
-		var screen_points := [
-			#Vector2(0.0, 0.0),
-			#Vector2(vp_size.x, 0.0),
-			#Vector2(vp_size.x, vp_size.y),
-			#Vector2(0.0, vp_size.y)
-			
-			# 4 points, in screen resolution coordinates, minus the frustum_limit_margin
-			Vector2(vp_size.x * frustum_limit_margin.x, vp_size.y * frustum_limit_margin.y),
-			Vector2(vp_size.x * (1.0 - frustum_limit_margin.x), vp_size.y * frustum_limit_margin.y),
-			Vector2(vp_size.x * (1.0 - frustum_limit_margin.x), vp_size.y * (1.0 - frustum_limit_margin.y)),
-			Vector2(vp_size.x * frustum_limit_margin.x, vp_size.y * (1.0 - frustum_limit_margin.y))
-		]
-
-		#print(screen_points)
-
-		# screen points to world points
-		var world_points : Array[Vector3]
-		for sp in screen_points:
-			var origin: Vector3 = camera.project_ray_origin(sp)
-			var dir: Vector3 = camera.project_ray_normal(sp)
-			
-			var intersection = action_plane.intersects_ray(origin, dir )
-			world_points.append( intersection )
-
-		# 2d polygon
-		var poly : PackedVector2Array
-		for wp in world_points:
-			poly.append( Vector2(wp.x, wp.z) )
-
-		# in world polygon?
-		var pos2d = Vector2( self.global_position.x, self.global_position.z )
-		if Geometry2D.is_point_in_polygon( pos2d, poly):
-			pass
-		else:
-			# outside?
-			# move to closest point on polygon
-			#print("OUT OF BOUNDS")
-
-			var nearest := _closest_point_on_polygon( pos2d, poly )
-			var nearest3 = Vector3( nearest.x, 0.0, nearest.y )
-			$nearest3.global_position = nearest3
-			velocity += position.direction_to( nearest3 ) * 1000.0 * delta
-	# ----------------------------------------------------------------------------------------------
-		immediate_mesh.clear_surfaces()
-		immediate_mesh.surface_begin(Mesh.PRIMITIVE_LINE_STRIP)
-		immediate_mesh.surface_add_vertex(world_points[0])
-		immediate_mesh.surface_add_vertex(world_points[1])
-		immediate_mesh.surface_add_vertex(world_points[2])
-		immediate_mesh.surface_add_vertex(world_points[3])
-		immediate_mesh.surface_add_vertex(world_points[0])
-		immediate_mesh.surface_end()
-	# ----------------------------------------------------------------------------------------------
+	#-- bounds
+	var bounds = camera.is_out_of_bounds(Vector2( self.global_position.x, self.global_position.z ))
+	if bounds.oob:
+		velocity += position.direction_to( Vector3(bounds.closest.x, 0.0, bounds.closest.y) ) * 1000.0 * delta
 
 	#-- move
 	set_velocity( velocity )

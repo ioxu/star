@@ -46,6 +46,8 @@ emission_energy_multiplier = 2.0
 
 [node name="Player" type="CharacterBody3D"]
 script = ExtResource("1_h6syq")
+limit_to_frustum = null
+frustum_limit_margin = null
 
 [node name="hitbox" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.196, 0, -1.107)

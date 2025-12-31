@@ -1,116 +1,12 @@
-[gd_scene load_steps=18 format=3 uid="uid://y47rh7dsyw3j"]
+[gd_scene load_steps=6 format=3 uid="uid://y47rh7dsyw3j"]
 
-[ext_resource type="Material" uid="uid://cnxtog6iv1d0j" path="res://assets/materials/triplanar_grid_grey.material" id="1_qdmn5"]
-[ext_resource type="Texture2D" uid="uid://c70pl7gyqsx2k" path="res://assets/textures/grids/kenney_texture_08_light.png" id="2_3q0u3"]
+[ext_resource type="PackedScene" uid="uid://cgrqgutviav26" path="res://assets/levels/test_level.tscn" id="1_j4t3q"]
 [ext_resource type="PackedScene" uid="uid://4tslx1g24xy1" path="res://assets/player/player.tscn" id="2_j4t3q"]
-
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_qdmn5"]
-sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
-ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
-
-[sub_resource type="Sky" id="Sky_j4t3q"]
-sky_material = SubResource("ProceduralSkyMaterial_qdmn5")
-
-[sub_resource type="Environment" id="Environment_3q0u3"]
-background_mode = 2
-background_energy_multiplier = 2.0
-sky = SubResource("Sky_j4t3q")
-tonemap_mode = 2
-ssao_enabled = true
-ssao_radius = 8.32
-ssao_intensity = 12.74
-ssao_light_affect = 0.55
-ssao_ao_channel_affect = 0.34
-ssil_enabled = true
-glow_enabled = true
-glow_levels/2 = 1.0
-glow_intensity = 1.93
-glow_strength = 0.53
-glow_blend_mode = 0
-
-[sub_resource type="QuadMesh" id="QuadMesh_kap54"]
-
-[sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_j4t3q"]
-
-[sub_resource type="SphereMesh" id="SphereMesh_ehmke"]
-height = 0.5
-radial_segments = 16
-rings = 16
-is_hemisphere = true
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nqac0"]
-albedo_color = Color(0.3378572, 0.5694376, 0.29008532, 1)
-albedo_texture = ExtResource("2_3q0u3")
-uv1_scale = Vector3(2, 2, 2)
-
-[sub_resource type="GDScript" id="GDScript_j4t3q"]
-script/source = "extends RigidBody3D
-
-@export var camera : Camera3D
-
-var screen_pos := Vector2.ZERO
-
-func _physics_process(_delta: float) -> void:
-	
-	#-- limit against camera frustum
-	var vp_size = Vector2(get_viewport().size)
-	# position on screen
-	screen_pos = camera.unproject_position( self.global_position )
-	var depth = (camera.global_position - self.global_position).length()
-	# limits projected to world
-	var s_min = camera.project_position( vp_size * Vector2(0.1,0.1), depth)
-	var s_max = camera.project_position( vp_size * Vector2(0.9,0.9), depth)
-	# test and bound
-	var correcion = 0.0
-	if self.global_position.x < s_min.x:
-		global_position.x = s_min.x + correcion
-		linear_velocity = Vector3.ZERO
-	if self.global_position.z < s_min.z:
-		global_position.z = s_min.z + correcion
-		linear_velocity = Vector3.ZERO
-	if self.global_position.x > s_max.x:
-		global_position.x = s_max.x - correcion
-		linear_velocity = Vector3.ZERO
-	if self.global_position.z > s_max.z:
-		global_position.z = s_max.z - correcion
-		linear_velocity = Vector3.ZERO
-"
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_j4t3q"]
-size = Vector3(10, 10, 10)
-
-[sub_resource type="BoxMesh" id="BoxMesh_3q0u3"]
-size = Vector3(10, 10, 10)
-
-[sub_resource type="BoxMesh" id="BoxMesh_ehmke"]
-size = Vector3(5, 50, 5)
+[ext_resource type="Script" uid="uid://bwdps67mvtg02" path="res://globals/camera.gd" id="3_3q0u3"]
 
 [sub_resource type="CameraAttributesPhysical" id="CameraAttributesPhysical_j4t3q"]
 exposure_sensitivity = 164.0
 exposure_shutter_speed = 125.0
-
-[sub_resource type="GDScript" id="GDScript_3q0u3"]
-script/source = "extends Camera3D
-
-var time := 0.0
-
-var initial_position : Vector3
-var initial_rotation : Vector3
-
-
-func _ready() -> void:
-	initial_position = self.global_position
-	initial_rotation = self.rotation
-	
-func _process(delta: float) -> void:
-	time += delta
-	
-	self.position.x = initial_position.x + sin(time*0.3)* 30
-	self.position.y = initial_position.y + sin(time*0.5)* 30
-	self.position.z = initial_position.z + cos(time*0.4)* 30
-
-	self.rotation.y = initial_rotation.y + sin((time+0.375)*1.5) *0.15
-"
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_qdmn5"]
 viewport_path = NodePath("SubViewportContainer/SubViewport")
@@ -130,78 +26,17 @@ render_target_update_mode = 4
 
 [node name="level_container" type="Node3D" parent="SubViewportContainer/SubViewport"]
 
-[node name="level" type="Node3D" parent="SubViewportContainer/SubViewport/level_container"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -30, 0)
+[node name="test_level" parent="SubViewportContainer/SubViewport/level_container" instance=ExtResource("1_j4t3q")]
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="SubViewportContainer/SubViewport/level_container/level"]
-environment = SubResource("Environment_3q0u3")
-
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="SubViewportContainer/SubViewport/level_container/level"]
-transform = Transform3D(-0.8422046, -0.43301278, -0.32123423, -0.52094567, 0.49999997, 0.69182056, -0.13895002, 0.75, -0.6466784, 0, 0, 0)
-shadow_enabled = true
-shadow_bias = 0.05
-shadow_blur = 0.945
-directional_shadow_split_1 = 0.061
-directional_shadow_split_2 = 0.216
-directional_shadow_split_3 = 0.405
-directional_shadow_blend_splits = true
-directional_shadow_fade_start = 0.839
-directional_shadow_max_distance = 1000.0
-
-[node name="ground" type="StaticBody3D" parent="SubViewportContainer/SubViewport/level_container/level"]
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="SubViewportContainer/SubViewport/level_container/level/ground"]
-transform = Transform3D(1000, 0, 0, 0, -0.0004371139, 10000, 0, -10000, -0.0004371139, 0.5508423, 0, -0.19393921)
-material_override = ExtResource("1_qdmn5")
-mesh = SubResource("QuadMesh_kap54")
-skeleton = NodePath("../../..")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="SubViewportContainer/SubViewport/level_container/level/ground"]
-shape = SubResource("WorldBoundaryShape3D_j4t3q")
-
-[node name="origin" type="MeshInstance3D" parent="SubViewportContainer/SubViewport/level_container/level"]
-transform = Transform3D(12, 0, 0, 0, 12, 0, 0, 0, 12, 0, 0, 0)
-mesh = SubResource("SphereMesh_ehmke")
-surface_material_override/0 = SubResource("StandardMaterial3D_nqac0")
-
-[node name="test_cube" type="RigidBody3D" parent="SubViewportContainer/SubViewport/level_container/level" node_paths=PackedStringArray("camera")]
-transform = Transform3D(0.79767865, 0, 0.6030827, 0, 1, 0, -0.6030827, 0, 0.79767865, 0, 30, -30.131287)
-collision_layer = 2
-collision_mask = 4
-axis_lock_linear_y = true
-mass = 1000.0
-gravity_scale = 0.0
-script = SubResource("GDScript_j4t3q")
-camera = NodePath("../../../Camera3D")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="SubViewportContainer/SubViewport/level_container/level/test_cube"]
-shape = SubResource("BoxShape3D_j4t3q")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="SubViewportContainer/SubViewport/level_container/level/test_cube"]
-mesh = SubResource("BoxMesh_3q0u3")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="SubViewportContainer/SubViewport/level_container/level"]
-transform = Transform3D(0.63692856, -0.76048726, -0.12641597, 0.7409803, 0.5586468, 0.37264153, -0.21276729, -0.3310178, 0.91932434, -27.95803, -3.8146973e-06, -24.09562)
-mesh = SubResource("BoxMesh_ehmke")
-surface_material_override/0 = ExtResource("1_qdmn5")
-
-[node name="MeshInstance3D2" type="MeshInstance3D" parent="SubViewportContainer/SubViewport/level_container/level"]
-transform = Transform3D(0.57901096, -0.25042737, -0.77590746, 0.7409803, 0.5586468, 0.37264153, 0.34013852, -0.7906958, 0.50902444, 51.022316, -3.8146973e-06, -26.762749)
-mesh = SubResource("BoxMesh_ehmke")
-surface_material_override/0 = ExtResource("1_qdmn5")
-
-[node name="MeshInstance3D3" type="MeshInstance3D" parent="SubViewportContainer/SubViewport/level_container/level"]
-transform = Transform3D(0.6597612, -0.5022061, -0.55902064, 0.7409803, 0.5586468, 0.37264153, 0.12515222, -0.6600778, 0.74069846, 48.92562, -5.141407, -19.250942)
-mesh = SubResource("BoxMesh_ehmke")
-surface_material_override/0 = ExtResource("1_qdmn5")
-
-[node name="Player" parent="SubViewportContainer/SubViewport" node_paths=PackedStringArray("camera") instance=ExtResource("2_j4t3q")]
-camera = NodePath("../Camera3D")
+[node name="Player" parent="SubViewportContainer/SubViewport" instance=ExtResource("2_j4t3q")]
+limit_to_frustum = true
+frustum_limit_margin = Vector2(0.05, 0.1)
 
 [node name="Camera3D" type="Camera3D" parent="SubViewportContainer/SubViewport"]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 180, 0)
 attributes = SubResource("CameraAttributesPhysical_j4t3q")
-script = SubResource("GDScript_3q0u3")
+script = ExtResource("3_3q0u3")
+draw_bounds = true
 
 [node name="ViewportDisplay" type="Node" parent="."]
 

@@ -1,0 +1,95 @@
+[gd_scene load_steps=6 format=3 uid="uid://clfq4f0sjstdy"]
+
+[ext_resource type="Texture2D" uid="uid://c70pl7gyqsx2k" path="res://assets/textures/grids/kenney_texture_08_light.png" id="1_fnpk0"]
+
+[sub_resource type="GDScript" id="GDScript_j4t3q"]
+script/source = "extends RigidBody3D
+
+@export var camera : Camera3D
+
+var since_last_hit = 100.0
+var flash = 0.0
+
+var screen_pos := Vector2.ZERO
+
+func _ready() -> void:
+	#make material unique
+	#var mat : StandardMaterial3D = $MeshInstance3D.get_surface_override_material(0)
+	#var dupe : StandardMaterial3D = mat.duplicate()
+	#$MeshInstance3D.set_surface_override_material(0,  dupe )
+	if camera == null:
+		camera = get_viewport().get_camera_3d()
+
+
+func _physics_process( delta: float ) -> void:
+	
+	#-- limit against camera frustum
+	var vp_size = Vector2(get_viewport().size)
+	# position on screen
+	screen_pos = camera.unproject_position( self.global_position )
+	var depth = (camera.global_position - self.global_position).length()
+	# limits projected to world
+	var s_min = camera.project_position( vp_size * Vector2(0.1,0.1), depth)
+	var s_max = camera.project_position( vp_size * Vector2(0.9,0.9), depth)
+	# test and bound
+	var correcion = 0.0
+	if self.global_position.x < s_min.x:
+		global_position.x = s_min.x + correcion
+		linear_velocity = Vector3.ZERO
+	if self.global_position.z < s_min.z:
+		global_position.z = s_min.z + correcion
+		linear_velocity = Vector3.ZERO
+	if self.global_position.x > s_max.x:
+		global_position.x = s_max.x - correcion
+		linear_velocity = Vector3.ZERO
+	if self.global_position.z > s_max.z:
+		global_position.z = s_max.z - correcion
+		linear_velocity = Vector3.ZERO
+
+
+func _process(delta: float) -> void:
+	since_last_hit  += delta
+	flash -= (delta * 7.0)
+	$MeshInstance3D.get_surface_override_material(0).set_emission_energy_multiplier( clamp(flash, 0.0, 1.0) * 20.0 )
+	
+
+func _on_body_entered(body: Node) -> void:
+	since_last_hit = 0.0
+	flash = 1.0
+
+	
+"
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_j4t3q"]
+size = Vector3(10, 10, 10)
+
+[sub_resource type="BoxMesh" id="BoxMesh_3q0u3"]
+size = Vector3(10, 10, 10)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fnpk0"]
+resource_local_to_scene = true
+albedo_color = Color(3.3691526e-07, 0.5000583, 0.5510747, 1)
+albedo_texture = ExtResource("1_fnpk0")
+emission_enabled = true
+emission = Color(1, 0.47500002, 0.25, 1)
+emission_energy_multiplier = 0.0
+uv1_scale = Vector3(2, 2, 2)
+
+[node name="test_cube" type="RigidBody3D"]
+collision_layer = 2
+collision_mask = 5
+axis_lock_linear_y = true
+mass = 1000.0
+gravity_scale = 0.0
+contact_monitor = true
+max_contacts_reported = 1
+script = SubResource("GDScript_j4t3q")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_j4t3q")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_3q0u3")
+surface_material_override/0 = SubResource("StandardMaterial3D_fnpk0")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
