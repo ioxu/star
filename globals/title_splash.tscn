@@ -1,0 +1,49 @@
+[gd_scene load_steps=3 format=3 uid="uid://bmtsjne7h2c56"]
+
+[ext_resource type="Texture2D" uid="uid://dunjujvkkbn64" path="res://assets/textures/splash/title-splash.png" id="1_of1nc"]
+
+[sub_resource type="GDScript" id="GDScript_psgoq"]
+script/source = "extends Node2D
+
+var total_time := 4.0
+var fade_time := 0.5
+
+func _ready() -> void:
+	RenderingServer.set_default_clear_color(Color.BLACK)
+	$TextureRect.modulate = Color.BLACK
+	$Timer.wait_time = total_time
+	await get_tree().create_timer(1.0).timeout
+	$Timer.start()
+	
+func _process(_delta: float) -> void:
+	var v : float = clamp( remap($Timer.time_left, total_time, total_time-fade_time, 0.0, 1.0), 0.0, 1.0 )
+	v = v * clamp( remap($Timer.time_left, fade_time, 0.0, 1.0, 0.0), 0.0, 1.0 )
+	$TextureRect.modulate = Color(v,v,v,1.0)
+
+
+func _on_timer_timeout() -> void:
+	$Timer.stop()
+	await get_tree().create_timer(1.0).timeout
+	get_tree().change_scene_to_file( \"res://globals/game.tscn\" )
+"
+
+[node name="TitleSplash" type="Node2D"]
+script = SubResource("GDScript_psgoq")
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 2.0
+
+[node name="TextureRect" type="TextureRect" parent="."]
+texture_filter = 4
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 1152.0
+offset_bottom = 648.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_of1nc")
+expand_mode = 1
+stretch_mode = 6
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

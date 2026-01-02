@@ -1,0 +1,101 @@
+[gd_scene load_steps=6 format=3 uid="uid://qdrung6dxe3f"]
+
+[ext_resource type="VideoStream" uid="uid://dqlhmj1ync80c" path="res://assets/textures/splash/splash-two.ogv" id="1_gmaan"]
+[ext_resource type="Texture2D" uid="uid://ds2g8jemgxl3y" path="res://assets/textures/splash/holy_arms.png" id="2_08vje"]
+
+[sub_resource type="GDScript" id="GDScript_gmaan"]
+script/source = "@tool
+extends Node2D
+
+var total_time := 4.0
+var fade_time := 0.5
+
+var video : VideoStreamPlayer
+
+func _ready() -> void:
+	RenderingServer.set_default_clear_color(Color.BLACK)
+	video = find_child(\"VideoStreamPlayer\")
+	video.play()
+	video.loop = true
+	video.modulate = Color.BLACK
+	$text.modulate = Color.BLACK
+	$Timer.wait_time = total_time
+	await get_tree().create_timer(1.0).timeout
+	$Timer.start()
+	
+func _process(_delta: float) -> void:
+	var v : float = clamp( remap($Timer.time_left, total_time, total_time-fade_time, 0.0, 1.0), 0.0, 1.0 )
+	v = v * clamp( remap($Timer.time_left, fade_time, 0.0, 1.0, 0.0), 0.0, 1.0 )
+	var c = Color(v,v,v,1.0)
+	video.modulate = c
+	$text.modulate = c
+
+func _on_timer_timeout() -> void:
+	$Timer.stop()
+	await get_tree().create_timer(1.0).timeout
+	if not Engine.is_editor_hint():
+		get_tree().change_scene_to_file( \"res://globals/title_splash.tscn\" )
+	else:
+		$Timer.start()
+"
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_08vje"]
+bg_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gmaan"]
+bg_color = Color(0, 0, 0, 1)
+
+[node name="TitleSplash-Two" type="Node2D"]
+script = SubResource("GDScript_gmaan")
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 4.0
+
+[node name="Panel" type="Panel" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 1152.0
+offset_bottom = 648.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_08vje")
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 283.0
+offset_top = 126.0
+offset_right = 1435.0
+offset_bottom = 774.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.5, 0.5)
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_gmaan")
+
+[node name="CenterContainer" type="CenterContainer" parent="PanelContainer"]
+texture_filter = 2
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="VideoStreamPlayer" type="VideoStreamPlayer" parent="PanelContainer/CenterContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+stream = ExtResource("1_gmaan")
+speed_scale = 0.75
+autoplay = true
+loop = true
+
+[node name="text" type="Sprite2D" parent="."]
+texture_filter = 4
+position = Vector2(573, 477)
+texture = ExtResource("2_08vje")
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

@@ -11,13 +11,21 @@ config_version=5
 [application]
 
 config/name="Star"
-run/main_scene="uid://y47rh7dsyw3j"
+run/main_scene="uid://qdrung6dxe3f"
 config/features=PackedStringArray("4.5", "Forward Plus")
+boot_splash/bg_color=Color(0, 0, 0, 1)
+boot_splash/show_image=false
+boot_splash/fullsize=false
+boot_splash/use_filter=false
 config/icon="res://icon.svg"
 
 [autoload]
 
 WindowManager="*res://globals/window_manager.gd"
+
+[display]
+
+window/stretch/mode="viewport"
 
 [input]
 
