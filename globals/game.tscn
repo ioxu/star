@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://y47rh7dsyw3j"]
+[gd_scene load_steps=18 format=3 uid="uid://y47rh7dsyw3j"]
 
 [ext_resource type="Script" uid="uid://5vfmtq7832s2" path="res://globals/GameStates/state_machine.gd" id="1_ehmke"]
 [ext_resource type="PackedScene" uid="uid://cgrqgutviav26" path="res://assets/levels/test_level.tscn" id="1_j4t3q"]
@@ -10,6 +10,8 @@
 [ext_resource type="Texture2D" uid="uid://fptmjpn3fva0" path="res://assets/textures/main_menu/star_title_logo.png" id="4_f1pwi"]
 [ext_resource type="Texture2D" uid="uid://pl4i11m672up" path="res://assets/textures/main_menu/metaball_logo.png" id="5_ylvxq"]
 [ext_resource type="Texture2D" uid="uid://3dwfqt745uf3" path="res://assets/textures/main_menu/crosses_whole.png" id="6_ylvxq"]
+[ext_resource type="Script" uid="uid://1oq1i4y2174b" path="res://globals/GameStates/mainmenu_playing_transition.gd" id="10_u0hhh"]
+[ext_resource type="Script" uid="uid://xgb6rgrlri12" path="res://globals/GameStates/pause.gd" id="12_ie6ya"]
 
 [sub_resource type="CameraAttributesPhysical" id="CameraAttributesPhysical_j4t3q"]
 exposure_sensitivity = 164.0
@@ -151,20 +153,52 @@ wait_time = 3.0
 one_shot = true
 autostart = true
 
+[node name="ui_pause_menu" type="Node" parent="."]
+
+[node name="ui_pause_menu_control" type="Control" parent="ui_pause_menu"]
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="pause_text" type="Label" parent="ui_pause_menu/ui_pause_menu_control"]
+layout_mode = 0
+offset_left = 562.99994
+offset_top = 508.99994
+offset_right = 1501.0
+offset_bottom = 917.99994
+rotation = -0.923381
+theme_override_font_sizes/font_size = 200
+text = "PAUSE"
+
 [node name="Game State" type="Node" parent="." node_paths=PackedStringArray("initial_state")]
 script = ExtResource("1_ehmke")
 initial_state = NodePath("MainMenu")
 
-[node name="MainMenu" type="Node" parent="Game State"]
+[node name="MainMenu" type="Node" parent="Game State" node_paths=PackedStringArray("main_menu")]
 script = ExtResource("2_nqac0")
+main_menu = NodePath("../../ui_main_menu")
 metadata/_custom_type_script = "uid://d161rlqyhcrhm"
 
-[node name="Playing" type="Node" parent="Game State" node_paths=PackedStringArray("main_menu")]
-script = ExtResource("3_y5hx0")
+[node name="MainMenu_Playing_transition" type="Node" parent="Game State" node_paths=PackedStringArray("main_menu")]
+script = ExtResource("10_u0hhh")
 main_menu = NodePath("../../ui_main_menu")
+metadata/_custom_type_script = "uid://1oq1i4y2174b"
+
+[node name="transition_timer" type="Timer" parent="Game State/MainMenu_Playing_transition"]
+one_shot = true
+
+[node name="Playing" type="Node" parent="Game State"]
+script = ExtResource("3_y5hx0")
 metadata/_custom_type_script = "uid://cllvy0wse4bie"
 
-[node name="transition_timer" type="Timer" parent="Game State/Playing"]
+[node name="Pause" type="Node" parent="Game State" node_paths=PackedStringArray("ui_pause")]
+script = ExtResource("12_ie6ya")
+ui_pause = NodePath("../../ui_pause_menu/ui_pause_menu_control")
+metadata/_custom_type_script = "uid://xgb6rgrlri12"
+
+[node name="transition_timer" type="Timer" parent="Game State/Pause"]
 one_shot = true
 
 [connection signal="pressed" from="ui_main_menu/buttons/HBoxContainer/VBoxContainer/new_game_button" to="ui_main_menu" method="_on_new_game_button_pressed"]

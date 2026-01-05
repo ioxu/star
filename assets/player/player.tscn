@@ -132,6 +132,7 @@ wait_time = 0.1
 
 [node name="Label3D" type="Label3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 12.251472, 2.573666, -9.816734)
+visible = false
 pixel_size = 0.075
 text = "label 3d"
 

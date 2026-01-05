@@ -33,6 +33,11 @@ func _physics_process(delta: float) -> void:
 		current_state.physics_update(delta)
 
 
+func _input(event: InputEvent) -> void:
+	if current_state != null:
+		current_state.handle_input(event)
+
+
 func on_state_transitioned( GameState, new_state_name) -> void :
 	if GameState != current_state:
 		return

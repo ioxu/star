@@ -12,6 +12,11 @@ var finished_fadeups := false
 
 var total_time := 4.0
 
+signal new_game_button_pressed
+signal settings_button_pressed
+
+
+
 func _ready() -> void:
 	new_game_button = find_child("new_game_button")
 	pprint("new_game_button: %s"%new_game_button)
@@ -49,7 +54,7 @@ func _on_fade_up_timer_timeout() -> void:
 
 func _on_new_game_button_pressed() -> void:
 	pprint("_on_new_game_button_pressed()")
-	state.transitioned.emit( state, "Playing" )
+	new_game_button_pressed.emit()
 
 
 func pprint(thing) -> void:

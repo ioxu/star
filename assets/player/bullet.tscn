@@ -28,6 +28,7 @@ script = ExtResource("1_sotrb")
 
 [node name="bullet_mesh" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 6.172, 0, 0, 0)
+cast_shadow = 0
 mesh = SubResource("SphereMesh_h6syq")
 skeleton = NodePath("../../weapons/primary/machine_gun/muzzle")
 surface_material_override/0 = SubResource("StandardMaterial3D_v2miy")

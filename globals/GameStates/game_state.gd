@@ -21,4 +21,7 @@ func update( delta ) -> void:
 
 func physics_update( delta ) -> void:
 	pass
-	
+
+
+func handle_input(event: InputEvent) -> void:
+	pass

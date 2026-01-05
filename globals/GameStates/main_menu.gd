@@ -6,6 +6,13 @@ var camera : Camera3D
 
 var object_time := 0.0
 
+@export var main_menu : Node # reference to main menu ui tree
+
+
+func _ready() -> void:
+	main_menu.new_game_button_pressed.connect(_on_new_game)
+
+
 func enter() -> void:
 	pprint("enter()")
 	player = get_tree().get_first_node_in_group("player")
@@ -37,5 +44,14 @@ func physics_update( delta ) -> void:
 	pass
 
 
+func handle_input(event: InputEvent) -> void:
+	pass
+
+
+func _on_new_game() -> void:
+	pprint("_on_new_game received")
+	transitioned.emit( self, "MainMenu_Playing_transition" )
+
+
 func pprint(thing) -> void:
-	print('[game state] "MainMenu" %s'%thing)
+	print('[game state] ["MainMenu"] %s'%thing)
