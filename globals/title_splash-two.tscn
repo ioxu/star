@@ -7,10 +7,11 @@
 script/source = "@tool
 extends Node2D
 
-var total_time := 4.0
-var fade_time := 0.5
+var total_time := 3.0
+var fade_time := 0.3
 
 var video : VideoStreamPlayer
+
 
 func _ready() -> void:
 	RenderingServer.set_default_clear_color(Color.BLACK)
@@ -20,9 +21,10 @@ func _ready() -> void:
 	video.modulate = Color.BLACK
 	$text.modulate = Color.BLACK
 	$Timer.wait_time = total_time
-	await get_tree().create_timer(1.0).timeout
+	await get_tree().create_timer(0.5).timeout
 	$Timer.start()
-	
+
+
 func _process(_delta: float) -> void:
 	var v : float = clamp( remap($Timer.time_left, total_time, total_time-fade_time, 0.0, 1.0), 0.0, 1.0 )
 	v = v * clamp( remap($Timer.time_left, fade_time, 0.0, 1.0, 0.0), 0.0, 1.0 )
@@ -30,9 +32,10 @@ func _process(_delta: float) -> void:
 	video.modulate = c
 	$text.modulate = c
 
+
 func _on_timer_timeout() -> void:
 	$Timer.stop()
-	await get_tree().create_timer(1.0).timeout
+	await get_tree().create_timer(0.5).timeout
 	if not Engine.is_editor_hint():
 		get_tree().change_scene_to_file( \"res://globals/title_splash.tscn\" )
 	else:
@@ -85,6 +88,7 @@ size_flags_horizontal = 4
 size_flags_vertical = 4
 
 [node name="VideoStreamPlayer" type="VideoStreamPlayer" parent="PanelContainer/CenterContainer"]
+modulate = Color(0, 0, 0, 1)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -94,6 +98,7 @@ autoplay = true
 loop = true
 
 [node name="text" type="Sprite2D" parent="."]
+modulate = Color(0, 0, 0, 1)
 texture_filter = 4
 position = Vector2(573, 477)
 texture = ExtResource("2_08vje")

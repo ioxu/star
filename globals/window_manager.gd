@@ -5,15 +5,18 @@ var minimum_size : Vector2i = Vector2i(1024,600)#(960, 540)
 var BORDERLESS_FULLSCREEN = false
 
 var window_position := Vector2.ZERO
+var window_size : Vector2
 var fullscreen : = false
 
 signal change_fullscreen(value)
-
 var previous_mode 
 
 
 func _ready():
 	pprint("window_manager.gd autoload ready")
+	
+	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
+	
 	var root = get_node("/root")
 	#root.connect("size_changed",resize, )
 	root.size_changed.connect( resize )
@@ -23,6 +26,8 @@ func _ready():
 
 	window_position = DisplayServer.window_get_position() #OS.get_window_position()
 
+	previous_mode = DisplayServer.window_get_mode()
+	
 	if fullscreen:
 		if not BORDERLESS_FULLSCREEN:
 			#OS.window_fullscreen = true # 3.5
