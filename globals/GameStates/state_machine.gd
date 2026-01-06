@@ -44,6 +44,7 @@ func on_state_transitioned( GameState, new_state_name) -> void :
 
 	var new_state = states.get( new_state_name )
 	if !new_state:
+		push_warning('requested state "%s" was not found.'%str(new_state_name))
 		return
 		
 	if current_state:

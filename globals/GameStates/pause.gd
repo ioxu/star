@@ -13,8 +13,14 @@ var transitioning_out = false
 
 var last_camera_transform : Transform3D
 
-# target transform to lerp the camera to, relative to the player transform
+# target transform to lerp the camera to, relative to the player transform:
 var relative_target_transform : Transform3D 
+
+#-- buttons
+var resume_button : Button
+var quit_to_main_menu_button : Button
+var quit_to_desktop_button : Button
+
 
 func _ready() -> void:
 	player = get_tree().get_first_node_in_group("player")
@@ -23,6 +29,11 @@ func _ready() -> void:
 
 	ui_pause.visible = false
 	ui_pause.modulate = Color(1.0, 1.0, 1.0, .0)
+
+	resume_button = ui_pause.find_child("resume_button")
+	quit_to_main_menu_button = ui_pause.find_child("quit_to_main_menu_button")
+	quit_to_desktop_button = ui_pause.find_child("quit_to_desktop_button")
+
 
 func enter() -> void:
 	#var rel_origin : Vector3 = Vector3(2.0, 1.0, -2.0)
@@ -44,7 +55,10 @@ func enter() -> void:
 
 	last_camera_transform = camera.global_transform
 	
-	ui_pause.visible = true
+	ui_pause.visible = false
+	
+	resume_button.grab_focus.call_deferred()
+
 
 func exit() -> void:
 	pprint("exit()")
@@ -68,6 +82,7 @@ func update( delta ) -> void:
 	relative_target_transform = Transform3D( rel_basis, rel_origin )
 
 	if transitioning_in:
+		ui_pause.visible = true
 		norm_transition_time = clamp((transition_time - $transition_timer.time_left) / transition_time , 0.0, 1.0)
 		norm_transition_time = ease(norm_transition_time, -3.0)
 
@@ -90,7 +105,9 @@ func update( delta ) -> void:
 
 		if norm_transition_time == 0.0:
 			transitioning_out = false
+			ui_pause.visible = false
 			transitioned.emit(self, "Playing")
+			
 
 
 func physics_update( delta ) -> void:
@@ -99,10 +116,26 @@ func physics_update( delta ) -> void:
 
 func handle_input(event: InputEvent) -> void:
 	if Input.is_action_just_pressed_by_event("ui_pause", event):
-		pprint("UN-PAUSE")
-		#transitioned.emit(self, "Playing")
-		transitioning_out = true
-		$transition_timer.start()
+		unpause()
+
+
+func unpause() -> void:
+	pprint("UN-PAUSE")
+	#transitioned.emit(self, "Playing")
+	transitioning_out = true
+	$transition_timer.start()
+
+
+func _on_resume_button() -> void:
+	unpause()
+
+
+func _on_quit_to_main_menu_button() -> void:
+	transitioned.emit(self, "Playing_MainMenu_transition")
+
+
+func _on_quit_to_desktop_button() -> void:
+	get_tree().quit()
 
 
 func pprint(thing) -> void:

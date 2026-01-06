@@ -48,6 +48,10 @@ func handle_input(event: InputEvent) -> void:
 	pass
 
 
+func _on_quit_button_pressed() -> void:
+	get_tree().quit()
+	
+
 func _on_new_game() -> void:
 	pprint("_on_new_game received")
 	transitioned.emit( self, "MainMenu_Playing_transition" )
