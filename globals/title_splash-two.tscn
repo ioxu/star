@@ -9,6 +9,8 @@ extends Node2D
 
 var total_time := 3.0
 var fade_time := 0.3
+var timer_has_started := false
+
 
 var video : VideoStreamPlayer
 
@@ -44,7 +46,9 @@ func _on_timer_timeout() -> void:
 
 func _input(event: InputEvent) -> void:
 	if Input.is_action_just_pressed(\"ui_accept\"):
-		$Timer.start()
+		if not timer_has_started:
+			$Timer.start()
+			timer_has_started = true
 "
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_08vje"]
