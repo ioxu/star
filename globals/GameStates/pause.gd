@@ -12,6 +12,7 @@ var transitioning_in = true
 var transitioning_out = false
 
 var last_camera_transform : Transform3D
+var pre_pause_camera_transform : Transform3D
 
 # target transform to lerp the camera to, relative to the player transform:
 var relative_target_transform : Transform3D 
@@ -35,7 +36,7 @@ func _ready() -> void:
 	quit_to_desktop_button = ui_pause.find_child("quit_to_desktop_button")
 
 
-func enter() -> void:
+func enter( from_state_name : String, parameters : Dictionary ) -> void:
 	#var rel_origin : Vector3 = Vector3(2.0, 1.0, -2.0)
 	#var rel_basis : Basis = Basis().rotated( Vector3.RIGHT, -PI*0.2 ).rotated(Vector3.UP, -PI *0.1)
 	#relative_target_transform = Transform3D( rel_basis, rel_origin )
@@ -54,7 +55,8 @@ func enter() -> void:
 	camera.set_process_unhandled_input(false)
 
 	last_camera_transform = camera.global_transform
-	
+	pre_pause_camera_transform = camera.global_transform
+
 	ui_pause.visible = false
 	
 	resume_button.grab_focus.call_deferred()
@@ -68,12 +70,11 @@ func exit() -> void:
 	player.set_process_input(true)
 	player.set_process_unhandled_input(true)
 
-	camera.set_process(true)
-	camera.set_physics_process(true)
-	camera.set_process_input(true)
-	camera.set_process_unhandled_input(true)
-
-	camera.transform = last_camera_transform
+	#camera.set_process(true)
+	#camera.set_physics_process(true)
+	#camera.set_process_input(true)
+	#camera.set_process_unhandled_input(true)
+	#camera.transform = last_camera_transform
 
 
 func update( delta ) -> void:
@@ -106,7 +107,7 @@ func update( delta ) -> void:
 		if norm_transition_time == 0.0:
 			transitioning_out = false
 			ui_pause.visible = false
-			transitioned.emit(self, "Playing")
+			transitioned.emit(self, "Playing", {})
 			
 
 
@@ -121,7 +122,6 @@ func handle_input(event: InputEvent) -> void:
 
 func unpause() -> void:
 	pprint("UN-PAUSE")
-	#transitioned.emit(self, "Playing")
 	transitioning_out = true
 	$transition_timer.start()
 
@@ -131,7 +131,12 @@ func _on_resume_button() -> void:
 
 
 func _on_quit_to_main_menu_button() -> void:
-	transitioned.emit(self, "Playing_MainMenu_transition")
+	ui_pause.visible = false
+	#camera.set_process(false)
+	#camera.set_physics_process(false)
+	#camera.set_process_input(false)
+	#camera.set_process_unhandled_input(false)
+	transitioned.emit(self, "MainMenu_Playing_transition", {"pre_pause_camera_transform" = pre_pause_camera_transform})
 
 
 func _on_quit_to_desktop_button() -> void:

@@ -9,7 +9,7 @@ class_name StateMachine
 @export var initial_state : GameState
 
 var current_state : GameState
-var states: Dictionary = {}
+var states: Dictionary[String, GameState] = {}
 
 
 func _ready() -> void:
@@ -19,7 +19,7 @@ func _ready() -> void:
 			child.transitioned.connect( on_state_transitioned )
 
 	if initial_state:
-		initial_state.enter()
+		initial_state.enter( "", {} )
 		current_state = initial_state
 
 
@@ -38,20 +38,23 @@ func _input(event: InputEvent) -> void:
 		current_state.handle_input(event)
 
 
-func on_state_transitioned( GameState, new_state_name) -> void :
-	if GameState != current_state:
+func on_state_transitioned( game_state: GameState, new_state_name : String, parameters : Dictionary ) -> void :
+	if game_state != current_state:
 		return
 
-	var new_state = states.get( new_state_name )
+	var new_state : GameState = states.get( new_state_name )
+
 	if !new_state:
 		push_warning('requested state "%s" was not found.'%str(new_state_name))
 		return
-		
+
 	if current_state:
 		current_state.exit()
 		
-	new_state.enter()
+	new_state.enter( game_state.name, parameters )
 	
 	current_state = new_state
 	
-	
+
+func pprint(thing) -> void:
+	print('[game state machine] %s'%thing)

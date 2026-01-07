@@ -7,7 +7,8 @@ class_name GameState extends Node
 
 signal transitioned
 
-func enter() -> void:
+
+func enter( from_state_name : String, parameters : Dictionary ) -> void:
 	pass
 
 
