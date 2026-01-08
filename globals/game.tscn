@@ -34,14 +34,17 @@ bg_color = Color(0, 0, 0, 1)
 [node name="Game" type="Node2D"]
 
 [node name="SubViewportContainer" type="SubViewportContainer" parent="."]
+texture_filter = 2
 offset_right = 1152.0
 offset_bottom = 648.0
+stretch = true
 
 [node name="SubViewport" type="SubViewport" parent="SubViewportContainer"]
 handle_input_locally = false
+msaa_2d = 3
 msaa_3d = 3
 screen_space_aa = 2
-fsr_sharpness = 2.0
+canvas_item_default_texture_filter = 2
 physics_object_picking = true
 size = Vector2i(1152, 648)
 render_target_update_mode = 4
@@ -63,7 +66,7 @@ draw_bounds = true
 [node name="ViewportDisplay" type="Node" parent="."]
 
 [node name="ViewportDisplayTextureRect" type="TextureRect" parent="ViewportDisplay"]
-texture_filter = 1
+texture_filter = 4
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
