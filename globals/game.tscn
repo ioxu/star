@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://y47rh7dsyw3j"]
+[gd_scene load_steps=22 format=3 uid="uid://y47rh7dsyw3j"]
 
 [ext_resource type="Script" uid="uid://5vfmtq7832s2" path="res://globals/GameStates/state_machine.gd" id="1_ehmke"]
 [ext_resource type="PackedScene" uid="uid://cgrqgutviav26" path="res://assets/levels/test_level.tscn" id="1_j4t3q"]
@@ -23,11 +23,15 @@ viewport_path = NodePath("SubViewportContainer/SubViewport")
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_06wfu"]
 bg_color = Color(0, 0, 0, 1)
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ylvxq"]
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_sw6f3"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_nnybr"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_06wfu"]
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ie6ya"]
+[sub_resource type="SystemFont" id="SystemFont_ie6ya"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ylvxq"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_6dsdn"]
 
@@ -75,9 +79,10 @@ grow_vertical = 2
 texture = SubResource("ViewportTexture_qdmn5")
 expand_mode = 1
 
-[node name="ui_main_menu" type="Node" parent="." node_paths=PackedStringArray("state")]
+[node name="ui_main_menu" type="Node" parent="." node_paths=PackedStringArray("state", "subviewport_container")]
 script = ExtResource("4_06wfu")
 state = NodePath("../Game State Machine/MainMenu")
+subviewport_container = NodePath("../SubViewportContainer")
 
 [node name="blackout_panel" type="Panel" parent="ui_main_menu"]
 modulate = Color(1, 1, 1, 0.39215687)
@@ -90,32 +95,75 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_06wfu")
 
 [node name="logos" type="Control" parent="ui_main_menu"]
 layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
 
-[node name="star_title_logo" type="TextureRect" parent="ui_main_menu/logos"]
-layout_mode = 0
-offset_left = 513.0
-offset_top = 20.0
-offset_right = 1135.0
-offset_bottom = 150.0
-texture = ExtResource("4_f1pwi")
-
-[node name="metaball_logo" type="TextureRect" parent="ui_main_menu/logos"]
-layout_mode = 0
-offset_left = 652.0
-offset_top = 299.0
-offset_right = 1125.0
-offset_bottom = 626.0
-texture = ExtResource("5_ylvxq")
-
 [node name="crosses_whole" type="TextureRect" parent="ui_main_menu/logos"]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 texture = ExtResource("6_ylvxq")
+
+[node name="MarginContainer" type="MarginContainer" parent="ui_main_menu/logos"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ui_main_menu/logos/MarginContainer"]
+layout_mode = 2
+
+[node name="VSeparator" type="VSeparator" parent="ui_main_menu/logos/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ui_main_menu/logos/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="star_title_logo" type="TextureRect" parent="ui_main_menu/logos/MarginContainer/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 2
+texture = ExtResource("4_f1pwi")
+expand_mode = 5
+stretch_mode = 4
+
+[node name="HSeparator" type="HSeparator" parent="ui_main_menu/logos/MarginContainer/HBoxContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.2
+theme_override_styles/separator = SubResource("StyleBoxEmpty_sw6f3")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ui_main_menu/logos/MarginContainer/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="VSeparator" type="VSeparator" parent="ui_main_menu/logos/MarginContainer/HBoxContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/separator = SubResource("StyleBoxEmpty_nnybr")
+
+[node name="metaball_logo" type="TextureRect" parent="ui_main_menu/logos/MarginContainer/HBoxContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 10
+size_flags_stretch_ratio = 3.0
+texture = ExtResource("5_ylvxq")
+expand_mode = 3
+stretch_mode = 4
 
 [node name="buttons" type="MarginContainer" parent="ui_main_menu"]
 anchors_preset = 15
@@ -123,6 +171,8 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 theme_override_constants/margin_left = 15
 theme_override_constants/margin_top = 15
 theme_override_constants/margin_right = 15
@@ -131,35 +181,47 @@ theme_override_constants/margin_bottom = 15
 [node name="HBoxContainer" type="HBoxContainer" parent="ui_main_menu/buttons"]
 layout_mode = 2
 
-[node name="VSeparator" type="VSeparator" parent="ui_main_menu/buttons/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_constants/separation = 500
-theme_override_styles/separator = SubResource("StyleBoxEmpty_ylvxq")
-
 [node name="VBoxContainer" type="VBoxContainer" parent="ui_main_menu/buttons/HBoxContainer"]
 layout_mode = 2
 
 [node name="HSeparator" type="HSeparator" parent="ui_main_menu/buttons/HBoxContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_constants/separation = 149
+size_flags_vertical = 3
 theme_override_styles/separator = SubResource("StyleBoxEmpty_06wfu")
 
 [node name="new_game_button" type="Button" parent="ui_main_menu/buttons/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 0
+theme_override_fonts/font = SubResource("SystemFont_ie6ya")
+theme_override_font_sizes/font_size = 32
 text = "new game"
 
 [node name="settings_button" type="Button" parent="ui_main_menu/buttons/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 0
+theme_override_font_sizes/font_size = 32
 text = "settings"
 
 [node name="quit_button" type="Button" parent="ui_main_menu/buttons/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 0
+theme_override_font_sizes/font_size = 32
 text = "quit
 "
+
+[node name="HSeparator2" type="HSeparator" parent="ui_main_menu/buttons/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/separator = SubResource("StyleBoxEmpty_06wfu")
+
+[node name="VSeparator" type="VSeparator" parent="ui_main_menu"]
+offset_left = 15.0
+offset_top = 15.0
+offset_right = 966.0
+offset_bottom = 633.0
+size_flags_horizontal = 3
+theme_override_constants/separation = 500
+theme_override_styles/separator = SubResource("StyleBoxEmpty_ylvxq")
 
 [node name="fade_up_timer" type="Timer" parent="ui_main_menu"]
 wait_time = 3.0
@@ -175,57 +237,73 @@ Written to from 'player_relative_pose' in the GameState \"MainMenu\"."
 
 [node name="ui_pause_menu_control" type="Control" parent="ui_pause_menu"]
 layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="pause_text" type="Label" parent="ui_pause_menu/ui_pause_menu_control"]
-layout_mode = 0
-offset_left = 562.99994
-offset_top = 508.99994
-offset_right = 1501.0
-offset_bottom = 917.99994
-rotation = -0.923381
-theme_override_font_sizes/font_size = 200
-text = "PAUSE"
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="MarginContainer" type="MarginContainer" parent="ui_pause_menu/ui_pause_menu_control"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_right = 1112.0
-offset_bottom = 608.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 15
 
 [node name="HBoxContainer" type="HBoxContainer" parent="ui_pause_menu/ui_pause_menu_control/MarginContainer"]
 layout_mode = 2
-
-[node name="VSeparator" type="VSeparator" parent="ui_pause_menu/ui_pause_menu_control/MarginContainer/HBoxContainer"]
-layout_mode = 2
-theme_override_constants/separation = 515
-theme_override_styles/separator = SubResource("StyleBoxEmpty_ie6ya")
+theme_override_constants/separation = 0
 
 [node name="VBoxContainer" type="VBoxContainer" parent="ui_pause_menu/ui_pause_menu_control/MarginContainer/HBoxContainer"]
 layout_mode = 2
 
 [node name="HSeparator" type="HSeparator" parent="ui_pause_menu/ui_pause_menu_control/MarginContainer/HBoxContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_constants/separation = 164
+size_flags_vertical = 3
 theme_override_styles/separator = SubResource("StyleBoxEmpty_6dsdn")
 
 [node name="resume_button" type="Button" parent="ui_pause_menu/ui_pause_menu_control/MarginContainer/HBoxContainer/VBoxContainer"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 30
 text = "resume"
 
 [node name="quit_to_main_menu_button" type="Button" parent="ui_pause_menu/ui_pause_menu_control/MarginContainer/HBoxContainer/VBoxContainer"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 30
 text = "quit to main menu"
 
 [node name="quit_to_desktop_button" type="Button" parent="ui_pause_menu/ui_pause_menu_control/MarginContainer/HBoxContainer/VBoxContainer"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 30
 text = "quit to desktop"
+
+[node name="HSeparator2" type="HSeparator" parent="ui_pause_menu/ui_pause_menu_control/MarginContainer/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/separator = SubResource("StyleBoxEmpty_6dsdn")
+
+[node name="CenterContainer" type="CenterContainer" parent="ui_pause_menu/ui_pause_menu_control/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Control" type="Control" parent="ui_pause_menu/ui_pause_menu_control/MarginContainer/HBoxContainer/CenterContainer"]
+layout_mode = 2
+
+[node name="pause_text" type="Label" parent="ui_pause_menu/ui_pause_menu_control/MarginContainer/HBoxContainer/CenterContainer/Control"]
+layout_mode = 0
+offset_left = -618.00006
+offset_top = 308.00006
+offset_right = 319.99994
+offset_bottom = 717.00006
+rotation = -0.89479727
+scale = Vector2(2, 2)
+theme_override_font_sizes/font_size = 200
+text = "PAUSE"
 
 [node name="Game State Machine" type="Node" parent="." node_paths=PackedStringArray("initial_state")]
 script = ExtResource("1_ehmke")

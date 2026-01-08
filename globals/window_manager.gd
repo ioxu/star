@@ -6,12 +6,12 @@ var BORDERLESS_FULLSCREEN = false
 
 var window_position := Vector2.ZERO
 var window_size : Vector2
-var fullscreen : = false#true#false
+var fullscreen : = true#false#true#false
 
-signal change_fullscreen(value)
+signal change_fullscreen(value:bool)
 var previous_mode 
 
-var subviewport_container : SubViewportContainer
+#var subviewport_container : SubViewportContainer
 
 
 func _ready():
@@ -34,7 +34,8 @@ func _ready():
 	if fullscreen:
 		if not BORDERLESS_FULLSCREEN:
 			#OS.window_fullscreen = true # 3.5
-			DisplayServer.window_set_mode( DisplayServer.WINDOW_MODE_FULLSCREEN )
+			#DisplayServer.window_set_mode( DisplayServer.WINDOW_MODE_FULLSCREEN )
+			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN)
 		else:
 			#OS.set_window_position(Vector2(0.0, 0.0)) # 3.5
 			DisplayServer.window_set_position(Vector2(0.0, 0.0))
@@ -68,16 +69,15 @@ func go_fullscreen():
 		if fullscreen:
 			pprint("-> fullscreen")
 		
-			#var subviewport_container : SubViewportContainer
-			#subviewport_container = get_tree().get_root().find_child("Game")
-			pprint("children:")
-			for c in  get_tree().get_root().get_children():
-				pprint("child: %s"%c.name)
-				if c.name == "Game":
-					subviewport_container = c.find_child("SubViewportContainer")
-					subviewport_container.size = DisplayServer.screen_get_size()
-					pprint("subviewport_container.size %s"%subviewport_container.size)
-			pprint("SubViewportContainer: %s"%subviewport_container)
+
+			#pprint("children:")
+			#for c in  get_tree().get_root().get_children():
+				#pprint("child: %s"%c.name)
+				#if c.name == "Game":
+					#subviewport_container = c.find_child("SubViewportContainer")
+					#subviewport_container.size = DisplayServer.screen_get_size()
+					#pprint("subviewport_container.size %s"%subviewport_container.size)
+			#pprint("SubViewportContainer: %s"%subviewport_container)
 
 			
 			#DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)

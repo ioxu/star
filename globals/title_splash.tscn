@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://dunjujvkkbn64" path="res://assets/textures/splash/title-splash.png" id="1_of1nc"]
 
 [sub_resource type="GDScript" id="GDScript_psgoq"]
-script/source = "extends Node2D
+script/source = "extends Control
 
 var total_time := 2.5
 var fade_time := 0.3
@@ -29,7 +29,15 @@ func _on_timer_timeout() -> void:
 	get_tree().change_scene_to_file( \"res://globals/game.tscn\" )
 "
 
-[node name="TitleSplash" type="Node2D"]
+[node name="TitleSplash" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 script = SubResource("GDScript_psgoq")
 
 [node name="Timer" type="Timer" parent="."]
@@ -37,15 +45,13 @@ wait_time = 2.0
 
 [node name="TextureRect" type="TextureRect" parent="."]
 texture_filter = 4
+layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_right = 1152.0
-offset_bottom = 648.0
 grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("1_of1nc")
-expand_mode = 1
 stretch_mode = 6
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

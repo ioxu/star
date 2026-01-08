@@ -1,6 +1,7 @@
 extends Node
 
 @export var state : GameState
+@export var subviewport_container : SubViewportContainer
 
 var new_game_button : Button
 var settings_button : Button
@@ -18,6 +19,11 @@ signal settings_button_pressed
 
 
 func _ready() -> void:
+	if subviewport_container is not SubViewportContainer:
+		push_error('[main menu] needs "Subviewport Container" to be set')
+	if state is not GameState or state.name != "MainMenu":
+		push_error('[main menu] needs "State" to be set to the GameState object called "MainNenu"')
+
 	new_game_button = find_child("new_game_button")
 	pprint("new_game_button: %s"%new_game_button)
 	new_game_button.grab_focus()
@@ -31,6 +37,13 @@ func _ready() -> void:
 	$logos.modulate = Color.BLACK
 	$blackout_panel.visible = true
 	$blackout_panel.modulate = Color.WHITE
+
+	#-- window
+	if WindowManager.fullscreen:
+		subviewport_container.size = DisplayServer.screen_get_size()
+
+	WindowManager.change_fullscreen.connect(_on_change_fullscreen)
+
 
 
 func _process(delta: float) -> void:
@@ -55,6 +68,11 @@ func _on_fade_up_timer_timeout() -> void:
 func _on_new_game_button_pressed() -> void:
 	pprint("_on_new_game_button_pressed()")
 	new_game_button_pressed.emit()
+
+
+func _on_change_fullscreen( fullscreen : bool ) -> void:
+	if fullscreen:
+		subviewport_container.size = DisplayServer.screen_get_size()
 
 
 func pprint(thing) -> void:
