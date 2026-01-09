@@ -60,12 +60,12 @@ transform = Transform3D(-0.8422046, -0.43301278, -0.32123423, -0.52094567, 0.499
 shadow_enabled = true
 shadow_bias = 0.05
 shadow_blur = 0.945
-directional_shadow_split_1 = 0.061
-directional_shadow_split_2 = 0.216
-directional_shadow_split_3 = 0.405
+directional_shadow_split_1 = 0.232
+directional_shadow_split_2 = 0.587
+directional_shadow_split_3 = 1.0
 directional_shadow_blend_splits = true
 directional_shadow_fade_start = 0.839
-directional_shadow_max_distance = 1000.0
+directional_shadow_max_distance = 300.0
 
 [node name="ground" type="StaticBody3D" parent="lvl_grp"]
 

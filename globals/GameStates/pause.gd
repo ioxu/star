@@ -143,5 +143,9 @@ func _on_quit_to_desktop_button() -> void:
 	get_tree().quit()
 
 
+func _on_settings_button() -> void:
+	pass # Replace with function body.
+
+
 func pprint(thing) -> void:
 	print('[game state] ["Pause"] %s'%thing)

@@ -9,13 +9,18 @@ var object_time := 0.0
 #-- move
 var MAX_SPEED = 120.0
 
-var pos_spring = HarmonicMotion.Spring3.new( 60.0, 20.0 )   #Spring2( 80.0, 10.0 )
+#var pos_spring : HarmonicMotion.Spring3 = HarmonicMotion.Spring3.new( 60.0, 20.0 )   #Spring2( 80.0, 10.0 )
 var action_plane = Plane(Vector3.UP, Vector3.ZERO) # used for returning objects to the main plane of action
 
 var target_velocity := Vector3.ZERO
 var friction := 0.0002
 var acceleration := 200
 var ms_collided := false
+
+var tilt := 0.0 # -1.0 left to 1.0 right
+var tilt_spring : HarmonicMotion.Spring1 = HarmonicMotion.Spring1.new( 70.0, 5.0 )
+var yaw := 0.0
+var yaw_spring : HarmonicMotion.Spring1 = HarmonicMotion.Spring1.new( 50.0, 10.0 )
 
 #-- screen bounds
 var screen_pos : Vector2
@@ -28,10 +33,10 @@ var is_primary_firing := false
 const bullet = preload("res://assets/player/bullet.tscn")
 
 
-var immediate_mesh = ImmediateMesh.new()
-
-
 func _ready() -> void:
+	if Global.is_f6_scene(self.scene_file_path):
+		Global.run_alternative_scene( "res://assets/player/player_testing_scene.tscn" )
+
 	if self.camera == null:
 		push_warning("%s has no camera assigned!"%[self])
 		self.camera = get_viewport().get_camera_3d()
@@ -40,15 +45,6 @@ func _ready() -> void:
 
 	$weapons/primary/machine_gun/muzzle/muzzle_flash.visible = false
 	$weapons/primary/machine_gun/muzzle2/muzzle_flash2.visible = false
-
-	var mesh_instance = MeshInstance3D.new()
-	mesh_instance.mesh = immediate_mesh
-	var mat : StandardMaterial3D = StandardMaterial3D.new()
-	mat.vertex_color_use_as_albedo = true
-	mat.albedo_color = Color(0.0, 0.852, 0.232, 1.0)
-	mesh_instance.material_override = mat
-	mesh_instance.top_level = true
-	add_child(mesh_instance)
 
 
 func _physics_process(delta: float) -> void:
@@ -73,8 +69,19 @@ func _physics_process(delta: float) -> void:
 	set_velocity( velocity )
 	set_up_direction(Vector3.UP)
 	ms_collided = move_and_slide()
-	
 	self.global_position.y = 0
+
+	#-- tilt and yaw
+	tilt_spring.target = direction.x
+	yaw_spring.target = direction.x
+	#tilt_spring.spring_coefficient = 70.0
+	#tilt_spring.damping_coefficient = 5.5
+	#yaw_spring.spring_coefficient = 50.0
+	#yaw_spring.damping_coefficient = 10.0
+	tilt = tilt_spring.tick(delta, tilt)
+	rotation.z = tilt * -1.2
+	yaw = yaw_spring.tick(delta, yaw)
+	rotation.y = yaw * -0.65
 
 	screen_pos = camera.unproject_position( self.global_position )
 	$Label3D.text = "screen_pos <%d, %d>\nworld_pos <%0.1f, %0.1f>\nheight %0.1f"%[screen_pos.x, screen_pos.y, global_position.x, global_position.z, self.global_position.y]

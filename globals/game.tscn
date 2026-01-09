@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://y47rh7dsyw3j"]
+[gd_scene load_steps=23 format=3 uid="uid://y47rh7dsyw3j"]
 
 [ext_resource type="Script" uid="uid://5vfmtq7832s2" path="res://globals/GameStates/state_machine.gd" id="1_ehmke"]
 [ext_resource type="PackedScene" uid="uid://cgrqgutviav26" path="res://assets/levels/test_level.tscn" id="1_j4t3q"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://d161rlqyhcrhm" path="res://globals/GameStates/main_menu.gd" id="2_nqac0"]
 [ext_resource type="Script" uid="uid://bwdps67mvtg02" path="res://globals/camera.gd" id="3_3q0u3"]
 [ext_resource type="Script" uid="uid://cllvy0wse4bie" path="res://globals/GameStates/playing.gd" id="3_y5hx0"]
+[ext_resource type="Script" uid="uid://c3i4aere1hg0" path="res://globals/notes.gd" id="4_6dsdn"]
 [ext_resource type="Script" uid="uid://ee7kaq4b31yb" path="res://globals/ui_main_menu.gd" id="4_06wfu"]
 [ext_resource type="Texture2D" uid="uid://fptmjpn3fva0" path="res://assets/textures/main_menu/star_title_logo.png" id="4_f1pwi"]
 [ext_resource type="Texture2D" uid="uid://pl4i11m672up" path="res://assets/textures/main_menu/metaball_logo.png" id="5_ylvxq"]
@@ -37,6 +38,9 @@ bg_color = Color(0, 0, 0, 1)
 
 [node name="Game" type="Node2D"]
 
+[node name="notes" type="Node" parent="."]
+script = ExtResource("4_6dsdn")
+
 [node name="SubViewportContainer" type="SubViewportContainer" parent="."]
 texture_filter = 2
 offset_right = 1152.0
@@ -45,7 +49,6 @@ stretch = true
 
 [node name="SubViewport" type="SubViewport" parent="SubViewportContainer"]
 handle_input_locally = false
-msaa_2d = 3
 msaa_3d = 3
 screen_space_aa = 2
 canvas_item_default_texture_filter = 2
@@ -58,8 +61,6 @@ render_target_update_mode = 4
 [node name="test_level" parent="SubViewportContainer/SubViewport/level_container" instance=ExtResource("1_j4t3q")]
 
 [node name="Player" parent="SubViewportContainer/SubViewport" groups=["player"] instance=ExtResource("2_j4t3q")]
-limit_to_frustum = true
-frustum_limit_margin = Vector2(0.05, 0.1)
 
 [node name="Camera3D" type="Camera3D" parent="SubViewportContainer/SubViewport" groups=["camera"]]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 180, 0)
@@ -272,6 +273,11 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 30
 text = "resume"
 
+[node name="settings_button" type="Button" parent="ui_pause_menu/ui_pause_menu_control/MarginContainer/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "settings"
+
 [node name="quit_to_main_menu_button" type="Button" parent="ui_pause_menu/ui_pause_menu_control/MarginContainer/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
@@ -338,5 +344,6 @@ one_shot = true
 [connection signal="pressed" from="ui_main_menu/buttons/HBoxContainer/VBoxContainer/quit_button" to="Game State Machine/MainMenu" method="_on_quit_button_pressed"]
 [connection signal="timeout" from="ui_main_menu/fade_up_timer" to="ui_main_menu" method="_on_fade_up_timer_timeout"]
 [connection signal="pressed" from="ui_pause_menu/ui_pause_menu_control/MarginContainer/HBoxContainer/VBoxContainer/resume_button" to="Game State Machine/Pause" method="_on_resume_button"]
+[connection signal="pressed" from="ui_pause_menu/ui_pause_menu_control/MarginContainer/HBoxContainer/VBoxContainer/settings_button" to="Game State Machine/Pause" method="_on_settings_button"]
 [connection signal="pressed" from="ui_pause_menu/ui_pause_menu_control/MarginContainer/HBoxContainer/VBoxContainer/quit_to_main_menu_button" to="Game State Machine/Pause" method="_on_quit_to_main_menu_button"]
 [connection signal="pressed" from="ui_pause_menu/ui_pause_menu_control/MarginContainer/HBoxContainer/VBoxContainer/quit_to_desktop_button" to="Game State Machine/Pause" method="_on_quit_to_desktop_button"]
