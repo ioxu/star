@@ -1,0 +1,98 @@
+[gd_scene load_steps=11 format=3 uid="uid://dmlnoatywyxsg"]
+
+[ext_resource type="Script" uid="uid://bqy33geff358m" path="res://assets/player/player_testing_scene.gd" id="1_dtqic"]
+[ext_resource type="PackedScene" uid="uid://4tslx1g24xy1" path="res://assets/player/player.tscn" id="1_xvsbg"]
+[ext_resource type="Texture2D" uid="uid://c70pl7gyqsx2k" path="res://assets/textures/grids/kenney_texture_08_light.png" id="2_3mlma"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_3mlma"]
+sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+
+[sub_resource type="Sky" id="Sky_dtqic"]
+sky_material = SubResource("ProceduralSkyMaterial_3mlma")
+
+[sub_resource type="Environment" id="Environment_yjkwx"]
+background_mode = 2
+sky = SubResource("Sky_dtqic")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="GDScript" id="GDScript_xvsbg"]
+script/source = "extends Camera3D
+
+# replicate the game camera
+
+func is_out_of_bounds(vec : Vector2) -> Dictionary:
+	return {\"oob\":false, \"closest\":Vector2.ZERO}
+"
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_587h5"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_dtqic"]
+size = Vector2(600, 400)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_yjkwx"]
+albedo_color = Color(0.16252244, 0.16252246, 0.16252244, 1)
+albedo_texture = ExtResource("2_3mlma")
+uv1_scale = Vector3(0.02, 0.02, 0.02)
+uv1_triplanar = true
+
+[node name="PlayerTestingScene" type="Node3D"]
+script = ExtResource("1_dtqic")
+
+[node name="Player" parent="." instance=ExtResource("1_xvsbg")]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_yjkwx")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
+shadow_enabled = true
+shadow_blur = 4.091
+directional_shadow_split_1 = 0.141
+directional_shadow_split_2 = 0.636
+directional_shadow_split_3 = 1.0
+directional_shadow_max_distance = 200.0
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 100, 0)
+fov = 43.3
+script = SubResource("GDScript_xvsbg")
+
+[node name="Label3D" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, 0)
+pixel_size = 0.001
+billboard = 1
+fixed_size = true
+modulate = Color(1, 1, 1, 0.019607844)
+text = "TEST"
+font_size = 600
+outline_size = 0
+
+[node name="Node3D" type="Node3D" parent="."]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0)
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="Node3D"]
+transform = Transform3D(-4.6077713e-07, -10.54135, -10.54135, 14.907722, -6.516372e-07, 0, -4.6077713e-07, -10.54135, 10.54135, -80, 0, 0)
+mesh = SubResource("CylinderMesh_587h5")
+skeleton = NodePath("../..")
+
+[node name="MeshInstance3D4" type="MeshInstance3D" parent="Node3D"]
+transform = Transform3D(-4.6077713e-07, -10.54135, 10.54135, 14.907722, -6.516372e-07, 0, 4.6077713e-07, 10.54135, 10.54135, -80, 0, 0)
+mesh = SubResource("CylinderMesh_587h5")
+skeleton = NodePath("../..")
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="Node3D"]
+transform = Transform3D(-4.6077713e-07, -10.54135, -10.54135, 14.907722, -6.516372e-07, 0, -4.6077713e-07, -10.54135, 10.54135, 80, 0, 0)
+mesh = SubResource("CylinderMesh_587h5")
+skeleton = NodePath("../..")
+
+[node name="MeshInstance3D5" type="MeshInstance3D" parent="Node3D"]
+transform = Transform3D(-4.6077713e-07, -10.54135, 10.54135, 14.907722, -6.516372e-07, 0, 4.6077713e-07, 10.54135, 10.54135, 80, 0, 0)
+mesh = SubResource("CylinderMesh_587h5")
+skeleton = NodePath("../..")
+
+[node name="ground" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, -20, 0)
+mesh = SubResource("QuadMesh_dtqic")
+surface_material_override/0 = SubResource("StandardMaterial3D_yjkwx")
