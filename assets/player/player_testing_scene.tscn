@@ -13,17 +13,123 @@ sky_material = SubResource("ProceduralSkyMaterial_3mlma")
 
 [sub_resource type="Environment" id="Environment_yjkwx"]
 background_mode = 2
+background_energy_multiplier = 1.5
 sky = SubResource("Sky_dtqic")
 tonemap_mode = 2
+ssao_enabled = true
+ssao_radius = 10.05
+ssao_intensity = 12.58
+ssao_detail = 1.19
+ssao_horizon = 0.0
 glow_enabled = true
 
 [sub_resource type="GDScript" id="GDScript_xvsbg"]
 script/source = "extends Camera3D
 
-# replicate the game camera
+#@export var action_plane : Plane = Plane(Vector3.ZERO, 0.0)
 
-func is_out_of_bounds(vec : Vector2) -> Dictionary:
-	return {\"oob\":false, \"closest\":Vector2.ZERO}
+
+var time := 0.0
+
+var initial_position : Vector3
+var initial_rotation : Vector3
+
+#-- action plane
+var action_plane = Plane(Vector3.UP, Vector3.ZERO) 								# used for returning objects to the main plane of action
+
+#-- bounds
+@export var frustum_limit_margin := Vector2(0.05,0.1) * 1.0
+@export var draw_bounds := false
+@export var bounds_colour: Color = Color(0.0, 0.852, 0.232, 1.0)
+var frustum_bounds_mesh = ImmediateMesh.new() 									# intersection of camera frstum with action_plane
+var screen_bounds_points : Array[Vector2]
+var world_bounds_points : Array[Vector3]
+var bounds_poly2d : PackedVector2Array 											# the bounds polygon in 2d space in the action_plane
+
+
+func _ready() -> void:
+	initial_position = self.global_position
+	initial_rotation = self.rotation
+	
+	var frustum_bounds_instance = MeshInstance3D.new()
+	frustum_bounds_instance.mesh = frustum_bounds_mesh
+	var mat : StandardMaterial3D = StandardMaterial3D.new()
+	mat.vertex_color_use_as_albedo = true
+	mat.albedo_color = bounds_colour
+	frustum_bounds_instance.material_override = mat
+	frustum_bounds_instance.top_level = true
+	add_child(frustum_bounds_instance)
+
+
+func _process(delta: float) -> void:
+	time += delta
+	
+	#-- movement
+	#self.position.x = initial_position.x + sin(time*0.3)* 30
+	#self.position.y = initial_position.y + sin(time*0.5)* 30
+	#self.position.z = initial_position.z + cos(time*0.4)* 30
+	#self.rotation.y = initial_rotation.y + sin((time+0.375)*1.5) *0.15
+
+
+	#-- frustum bounds
+	var vp_size = Vector2(get_viewport().size)
+	# screen points
+	screen_bounds_points = [
+		# 4 points, in screen resolution coordinates, minus the frustum_limit_margin
+		Vector2(vp_size.x * frustum_limit_margin.x, vp_size.y * frustum_limit_margin.y),
+		Vector2(vp_size.x * (1.0 - frustum_limit_margin.x), vp_size.y * frustum_limit_margin.y),
+		Vector2(vp_size.x * (1.0 - frustum_limit_margin.x), vp_size.y * (1.0 - frustum_limit_margin.y)),
+		Vector2(vp_size.x * frustum_limit_margin.x, vp_size.y * (1.0 - frustum_limit_margin.y))
+	]
+	
+	# screen points to world points
+	world_bounds_points.clear()
+	for sp in screen_bounds_points:
+		var origin: Vector3 = self.project_ray_origin(sp)
+		var dir: Vector3 = self.project_ray_normal(sp)
+		
+		var intersection = action_plane.intersects_ray(origin, dir )
+		world_bounds_points.append( intersection )
+
+	# 2d polygon
+	bounds_poly2d.clear()
+	for wp in world_bounds_points:
+		bounds_poly2d.append( Vector2(wp.x, wp.z) )
+
+	if draw_bounds:
+		frustum_bounds_mesh.clear_surfaces()
+		frustum_bounds_mesh.surface_begin(Mesh.PRIMITIVE_LINE_STRIP)
+		frustum_bounds_mesh.surface_add_vertex(world_bounds_points[0])
+		frustum_bounds_mesh.surface_add_vertex(world_bounds_points[1])
+		frustum_bounds_mesh.surface_add_vertex(world_bounds_points[2])
+		frustum_bounds_mesh.surface_add_vertex(world_bounds_points[3])
+		frustum_bounds_mesh.surface_add_vertex(world_bounds_points[0])
+		frustum_bounds_mesh.surface_end()
+	else:
+		frustum_bounds_mesh.clear_surfaces()
+
+
+func is_out_of_bounds(pos2d : Vector2) -> Dictionary:
+	if Geometry2D.is_point_in_polygon( pos2d, self.bounds_poly2d):
+		# inside?
+		return {\"oob\":false, \"closest\":Vector2.ZERO}
+	else:
+		# outside?
+		return {\"oob\": true, \"closest\": _closest_point_on_polygon( pos2d, self.bounds_poly2d ) }
+
+
+func _closest_point_on_polygon( point: Vector2, poly: PackedVector2Array ) -> Vector2:
+	# returns closest point on polygon (a PackedVector2Array of 2d vertices describing the polygon)
+	var best = Vector2.ZERO
+	var best_dist2 = INF
+	var n = poly.size()
+	for i in range(n):
+		var cp = Geometry2D.get_closest_point_to_segment( point, poly[i], poly[(i+1)%n] )
+		var d2 = point.distance_squared_to(cp)
+		if d2 < best_dist2:
+			best_dist2 = d2
+			best = cp
+	return best
 "
 
 [sub_resource type="QuadMesh" id="QuadMesh_dtqic"]
@@ -44,6 +150,40 @@ radius = 7.054
 [node name="PlayerTestingScene" type="Node3D"]
 script = ExtResource("1_dtqic")
 
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Control" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 15
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/Control/MarginContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Control/MarginContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="autopilot_CheckButton" type="CheckButton" parent="CanvasLayer/Control/MarginContainer/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+theme_override_colors/button_checked_color = Color(0.26721162, 0.67360216, 0.34719416, 1)
+text = "autopilot mode"
+
 [node name="Player" parent="." instance=ExtResource("1_xvsbg")]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
@@ -62,6 +202,8 @@ directional_shadow_max_distance = 200.0
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 120, 0)
 fov = 43.3
 script = SubResource("GDScript_xvsbg")
+draw_bounds = true
+bounds_colour = Color(0, 0.85, 0.22666666, 0.34117648)
 
 [node name="TEST_text" type="Label3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, 0)
@@ -86,7 +228,7 @@ the gamepad right stick x axis controls an additional  correction to the yaw spr
 Yaw reacts to movement, and right stick x axis  can be used to \"correct it\".
 "
 font_size = 12
-outline_size = 0
+outline_size = 2
 horizontal_alignment = 0
 autowrap_mode = 2
 width = 250.0
@@ -131,3 +273,5 @@ skeleton = NodePath("../..")
 transform = Transform3D(-2.3038857e-07, -5.270675, 5.270675, 7.453861, -3.258186e-07, 0, 2.3038857e-07, 5.270675, 5.270675, 0, 0, 0)
 mesh = SubResource("CylinderMesh_587h5")
 skeleton = NodePath("../..")
+
+[connection signal="toggled" from="CanvasLayer/Control/MarginContainer/HBoxContainer/VBoxContainer/autopilot_CheckButton" to="." method="_on_change_autopilot_mode"]

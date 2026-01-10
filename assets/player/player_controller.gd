@@ -12,6 +12,10 @@ var MAX_SPEED = 120.0
 #var pos_spring : HarmonicMotion.Spring3 = HarmonicMotion.Spring3.new( 60.0, 20.0 )   #Spring2( 80.0, 10.0 )
 var action_plane = Plane(Vector3.UP, Vector3.ZERO) # used for returning objects to the main plane of action
 
+@export var take_user_input := true
+var exo_direction := Vector3.ZERO # a writebale force for being driven externally
+var exo_aim := Vector3.ZERO
+
 var target_velocity := Vector3.ZERO
 var friction := 0.0002
 var acceleration := 200
@@ -53,20 +57,28 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	# left stick input
-	var direction = Vector3(
-		Input.get_action_strength("ui_right") - Input.get_action_strength("ui_left"),
-		0.0,
-		Input.get_action_strength("ui_down") - Input.get_action_strength("ui_up")
-	)
-	
-	# right stick input
-	var aim = Vector3(
-		Input.get_action_strength("ui_aim_right") - Input.get_action_strength("ui_aim_left"),
-		0.0,
-		Input.get_action_strength("ui_aim_down") - Input.get_action_strength("ui_aim_up")
-	)
+	var direction : Vector3
+	var aim : Vector3
+	if take_user_input:
+		direction = Vector3(
+			Input.get_action_strength("ui_right") - Input.get_action_strength("ui_left"),
+			0.0,
+			Input.get_action_strength("ui_down") - Input.get_action_strength("ui_up")
+		)
+		
+		# right stick input
+		aim = Vector3(
+			Input.get_action_strength("ui_aim_right") - Input.get_action_strength("ui_aim_left"),
+			0.0,
+			Input.get_action_strength("ui_aim_down") - Input.get_action_strength("ui_aim_up")
+		)
 
 	#-- input velocities
+	direction = direction + exo_direction
+	aim = aim + exo_aim
+	if direction.length() > 1.0:
+		direction = direction.normalized()
+	
 	target_velocity = direction * MAX_SPEED
 	velocity = velocity.move_toward( target_velocity, acceleration * delta )
 	velocity = velocity.move_toward( Vector3.ZERO, friction *  delta )
@@ -113,18 +125,25 @@ func _process(delta: float) -> void:
 
 func _input(_event: InputEvent) -> void:
 	if Input.is_action_just_pressed("player_fire_primary"):
-		self.is_primary_firing = true
-		_on_right_left_barrel_timer_timeout(0)
-		$weapons/primary/machine_gun/right_barrel_timer.start()
-		await get_tree().create_timer(0.05).timeout
-		$weapons/primary/machine_gun/left_barrel_timer.start()
+		primary_fire_start()
 	elif Input.is_action_just_released("player_fire_primary"):
-		self.is_primary_firing = false
-		$weapons/primary/machine_gun/right_barrel_timer.stop()
-		$weapons/primary/machine_gun/left_barrel_timer.stop()
-		$weapons/primary/machine_gun/muzzle/muzzle_flash.visible = false
-		$weapons/primary/machine_gun/muzzle2/muzzle_flash2.visible = false
+		primary_fire_stop()
 
+
+func primary_fire_start() -> void:
+	self.is_primary_firing = true
+	_on_right_left_barrel_timer_timeout(0)
+	$weapons/primary/machine_gun/right_barrel_timer.start()
+	await get_tree().create_timer(0.05).timeout
+	$weapons/primary/machine_gun/left_barrel_timer.start()
+
+
+func primary_fire_stop() -> void:
+	self.is_primary_firing = false
+	$weapons/primary/machine_gun/right_barrel_timer.stop()
+	$weapons/primary/machine_gun/left_barrel_timer.stop()
+	$weapons/primary/machine_gun/muzzle/muzzle_flash.visible = false
+	$weapons/primary/machine_gun/muzzle2/muzzle_flash2.visible = false
 
 
 func pprint(thing) -> void:
@@ -147,20 +166,3 @@ func _on_right_left_barrel_timer_timeout(side) -> void:
 			b.global_transform.basis = $weapons/primary/machine_gun/muzzle2.global_transform.basis
 			#b.apply_impulse(Vector3(0.0, 0.0, -2000.0))
 			b.apply_impulse( b.global_transform.basis.z * -2000 )
-
-
-func _closest_point_on_polygon( point: Vector2, poly: PackedVector2Array ) -> Vector2:
-	# returns closest point on polygon (a PackedVector2Array of 2d vertices describing the polygon)
-	var best = Vector2.ZERO
-	var best_dist2 = INF
-	var n = poly.size()
-	for i in range(n):
-		var cp = Geometry2D.get_closest_point_to_segment( point, poly[i], poly[(i+1)%n] )
-		var d2 = point.distance_squared_to(cp)
-		if d2 < best_dist2:
-			best_dist2 = d2
-			best = cp
-	return best
-	
-	
-	
