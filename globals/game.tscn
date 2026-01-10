@@ -24,7 +24,7 @@ viewport_path = NodePath("SubViewportContainer/SubViewport")
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_06wfu"]
 bg_color = Color(0, 0, 0, 1)
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_sw6f3"]
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ojkwq"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_nnybr"]
 
@@ -130,6 +130,7 @@ layout_mode = 2
 [node name="VSeparator" type="VSeparator" parent="ui_main_menu/logos/MarginContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_styles/separator = SubResource("StyleBoxEmpty_ojkwq")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="ui_main_menu/logos/MarginContainer/HBoxContainer"]
 layout_mode = 2
@@ -141,13 +142,6 @@ size_flags_vertical = 2
 texture = ExtResource("4_f1pwi")
 expand_mode = 5
 stretch_mode = 4
-
-[node name="HSeparator" type="HSeparator" parent="ui_main_menu/logos/MarginContainer/HBoxContainer/VBoxContainer"]
-visible = false
-layout_mode = 2
-size_flags_vertical = 3
-size_flags_stretch_ratio = 0.2
-theme_override_styles/separator = SubResource("StyleBoxEmpty_sw6f3")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="ui_main_menu/logos/MarginContainer/HBoxContainer/VBoxContainer"]
 layout_mode = 2
@@ -237,6 +231,7 @@ Written to from 'player_relative_pose' in the GameState \"MainMenu\"."
 [node name="ui_pause_menu" type="Node" parent="."]
 
 [node name="ui_pause_menu_control" type="Control" parent="ui_pause_menu"]
+visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0

@@ -42,8 +42,9 @@ func run_alternative_scene(scene_path: String) -> void:
 	get_tree().current_scene.set_process_unhandled_input(false)
 	
 	_do_f6_scene_check = false
-
-	pprint("changing scene (%s)"%get_tree().change_scene_to_file(self.alternative_run_scene_path))
+	get_tree().change_scene_to_file.call_deferred(self.alternative_run_scene_path)
+	#var res = get_tree().change_scene_to_file(self.alternative_run_scene_path)
+	#pprint("changing scene (%s)"%res)
 
 
 # -----------------------------------------------------------------------------

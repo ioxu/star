@@ -18,9 +18,13 @@ var acceleration := 200
 var ms_collided := false
 
 var tilt := 0.0 # -1.0 left to 1.0 right
-var tilt_spring : HarmonicMotion.Spring1 = HarmonicMotion.Spring1.new( 70.0, 5.0 )
+@export var tilt_spring_coeff := 70.0
+@export var tilt_damp_coeff := 5.0
+var tilt_spring : HarmonicMotion.Spring1 = HarmonicMotion.Spring1.new( tilt_spring_coeff, tilt_damp_coeff )
 var yaw := 0.0
-var yaw_spring : HarmonicMotion.Spring1 = HarmonicMotion.Spring1.new( 50.0, 10.0 )
+@export var yaw_spring_coeff := 50.0
+@export var yaw_damp_coeff := 10.0
+var yaw_spring : HarmonicMotion.Spring1 = HarmonicMotion.Spring1.new( yaw_spring_coeff, yaw_damp_coeff )
 
 #-- screen bounds
 var screen_pos : Vector2
@@ -48,10 +52,18 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	# left stick input
 	var direction = Vector3(
 		Input.get_action_strength("ui_right") - Input.get_action_strength("ui_left"),
 		0.0,
 		Input.get_action_strength("ui_down") - Input.get_action_strength("ui_up")
+	)
+	
+	# right stick input
+	var aim = Vector3(
+		Input.get_action_strength("ui_aim_right") - Input.get_action_strength("ui_aim_left"),
+		0.0,
+		Input.get_action_strength("ui_aim_down") - Input.get_action_strength("ui_aim_up")
 	)
 
 	#-- input velocities
@@ -73,11 +85,7 @@ func _physics_process(delta: float) -> void:
 
 	#-- tilt and yaw
 	tilt_spring.target = direction.x
-	yaw_spring.target = direction.x
-	#tilt_spring.spring_coefficient = 70.0
-	#tilt_spring.damping_coefficient = 5.5
-	#yaw_spring.spring_coefficient = 50.0
-	#yaw_spring.damping_coefficient = 10.0
+	yaw_spring.target = direction.x + aim.x
 	tilt = tilt_spring.tick(delta, tilt)
 	rotation.z = tilt * -1.2
 	yaw = yaw_spring.tick(delta, yaw)

@@ -23,28 +23,29 @@ func _ready() -> void:
 
 func _physics_process( delta: float ) -> void:
 	
-	#-- limit against camera frustum
-	var vp_size = Vector2(get_viewport().size)
-	# position on screen
-	screen_pos = camera.unproject_position( self.global_position )
-	var depth = (camera.global_position - self.global_position).length()
-	# limits projected to world
-	var s_min = camera.project_position( vp_size * Vector2(0.1,0.1), depth)
-	var s_max = camera.project_position( vp_size * Vector2(0.9,0.9), depth)
-	# test and bound
-	var correcion = 0.0
-	if self.global_position.x < s_min.x:
-		global_position.x = s_min.x + correcion
-		linear_velocity = Vector3.ZERO
-	if self.global_position.z < s_min.z:
-		global_position.z = s_min.z + correcion
-		linear_velocity = Vector3.ZERO
-	if self.global_position.x > s_max.x:
-		global_position.x = s_max.x - correcion
-		linear_velocity = Vector3.ZERO
-	if self.global_position.z > s_max.z:
-		global_position.z = s_max.z - correcion
-		linear_velocity = Vector3.ZERO
+	if camera:
+		#-- limit against camera frustum
+		var vp_size = Vector2(get_viewport().size)
+		# position on screen
+		screen_pos = camera.unproject_position( self.global_position )
+		var depth = (camera.global_position - self.global_position).length()
+		# limits projected to world
+		var s_min = camera.project_position( vp_size * Vector2(0.1,0.1), depth)
+		var s_max = camera.project_position( vp_size * Vector2(0.9,0.9), depth)
+		# test and bound
+		var correcion = 0.0
+		if self.global_position.x < s_min.x:
+			global_position.x = s_min.x + correcion
+			linear_velocity = Vector3.ZERO
+		if self.global_position.z < s_min.z:
+			global_position.z = s_min.z + correcion
+			linear_velocity = Vector3.ZERO
+		if self.global_position.x > s_max.x:
+			global_position.x = s_max.x - correcion
+			linear_velocity = Vector3.ZERO
+		if self.global_position.z > s_max.z:
+			global_position.z = s_max.z - correcion
+			linear_velocity = Vector3.ZERO
 
 
 func _process(delta: float) -> void:

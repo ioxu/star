@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://dmlnoatywyxsg"]
+[gd_scene load_steps=12 format=3 uid="uid://dmlnoatywyxsg"]
 
 [ext_resource type="Script" uid="uid://bqy33geff358m" path="res://assets/player/player_testing_scene.gd" id="1_dtqic"]
 [ext_resource type="PackedScene" uid="uid://4tslx1g24xy1" path="res://assets/player/player.tscn" id="1_xvsbg"]
@@ -26,8 +26,6 @@ func is_out_of_bounds(vec : Vector2) -> Dictionary:
 	return {\"oob\":false, \"closest\":Vector2.ZERO}
 "
 
-[sub_resource type="CylinderMesh" id="CylinderMesh_587h5"]
-
 [sub_resource type="QuadMesh" id="QuadMesh_dtqic"]
 size = Vector2(600, 400)
 
@@ -36,6 +34,12 @@ albedo_color = Color(0.16252244, 0.16252246, 0.16252244, 1)
 albedo_texture = ExtResource("2_3mlma")
 uv1_scale = Vector3(0.02, 0.02, 0.02)
 uv1_triplanar = true
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_dtqic"]
+height = 8.395
+radius = 7.054
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_587h5"]
 
 [node name="PlayerTestingScene" type="Node3D"]
 script = ExtResource("1_dtqic")
@@ -55,11 +59,11 @@ directional_shadow_split_3 = 1.0
 directional_shadow_max_distance = 200.0
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 100, 0)
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 120, 0)
 fov = 43.3
 script = SubResource("GDScript_xvsbg")
 
-[node name="Label3D" type="Label3D" parent="."]
+[node name="TEST_text" type="Label3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, 0)
 pixel_size = 0.001
 billboard = 1
@@ -69,30 +73,61 @@ text = "TEST"
 font_size = 600
 outline_size = 0
 
-[node name="Node3D" type="Node3D" parent="."]
-transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0)
+[node name="description_text" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 50, -1.57361e-06, -36)
+pixel_size = 0.001
+billboard = 1
+fixed_size = true
+modulate = Color(1, 1, 1, 0.2)
+text = "gamepad left stick controls movement
+plus tilt (roll) and yaw which are on springs.
+the gamepad right stick x axis controls an additional  correction to the yaw spring.
 
-[node name="MeshInstance3D2" type="MeshInstance3D" parent="Node3D"]
-transform = Transform3D(-4.6077713e-07, -10.54135, -10.54135, 14.907722, -6.516372e-07, 0, -4.6077713e-07, -10.54135, 10.54135, -80, 0, 0)
-mesh = SubResource("CylinderMesh_587h5")
-skeleton = NodePath("../..")
-
-[node name="MeshInstance3D4" type="MeshInstance3D" parent="Node3D"]
-transform = Transform3D(-4.6077713e-07, -10.54135, 10.54135, 14.907722, -6.516372e-07, 0, 4.6077713e-07, 10.54135, 10.54135, -80, 0, 0)
-mesh = SubResource("CylinderMesh_587h5")
-skeleton = NodePath("../..")
-
-[node name="MeshInstance3D3" type="MeshInstance3D" parent="Node3D"]
-transform = Transform3D(-4.6077713e-07, -10.54135, -10.54135, 14.907722, -6.516372e-07, 0, -4.6077713e-07, -10.54135, 10.54135, 80, 0, 0)
-mesh = SubResource("CylinderMesh_587h5")
-skeleton = NodePath("../..")
-
-[node name="MeshInstance3D5" type="MeshInstance3D" parent="Node3D"]
-transform = Transform3D(-4.6077713e-07, -10.54135, 10.54135, 14.907722, -6.516372e-07, 0, 4.6077713e-07, 10.54135, 10.54135, 80, 0, 0)
-mesh = SubResource("CylinderMesh_587h5")
-skeleton = NodePath("../..")
+Yaw reacts to movement, and right stick x axis  can be used to \"correct it\".
+"
+font_size = 12
+outline_size = 0
+horizontal_alignment = 0
+autowrap_mode = 2
+width = 250.0
 
 [node name="ground" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, -20, 0)
 mesh = SubResource("QuadMesh_dtqic")
 surface_material_override/0 = SubResource("StandardMaterial3D_yjkwx")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -61, 0, 0)
+collision_layer = 8
+collision_mask = 5
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+shape = SubResource("CylinderShape3D_dtqic")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="StaticBody3D"]
+transform = Transform3D(-2.3038857e-07, -5.270675, -5.270675, 7.453861, -3.258186e-07, 0, -2.3038857e-07, -5.270675, 5.270675, 0, 0, 0)
+mesh = SubResource("CylinderMesh_587h5")
+skeleton = NodePath("../..")
+
+[node name="MeshInstance3D4" type="MeshInstance3D" parent="StaticBody3D"]
+transform = Transform3D(-2.3038857e-07, -5.270675, 5.270675, 7.453861, -3.258186e-07, 0, 2.3038857e-07, 5.270675, 5.270675, 0, 0, 0)
+mesh = SubResource("CylinderMesh_587h5")
+skeleton = NodePath("../..")
+
+[node name="StaticBody3D2" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 61, 0, 0)
+collision_layer = 2
+collision_mask = 5
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D2"]
+shape = SubResource("CylinderShape3D_dtqic")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="StaticBody3D2"]
+transform = Transform3D(-2.3038857e-07, -5.270675, -5.270675, 7.453861, -3.258186e-07, 0, -2.3038857e-07, -5.270675, 5.270675, 0, 0, 0)
+mesh = SubResource("CylinderMesh_587h5")
+skeleton = NodePath("../..")
+
+[node name="MeshInstance3D4" type="MeshInstance3D" parent="StaticBody3D2"]
+transform = Transform3D(-2.3038857e-07, -5.270675, 5.270675, 7.453861, -3.258186e-07, 0, 2.3038857e-07, 5.270675, 5.270675, 0, 0, 0)
+mesh = SubResource("CylinderMesh_587h5")
+skeleton = NodePath("../..")

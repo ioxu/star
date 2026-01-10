@@ -57,14 +57,15 @@ environment = SubResource("Environment_3q0u3")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="lvl_grp"]
 transform = Transform3D(-0.8422046, -0.43301278, -0.32123423, -0.52094567, 0.49999997, 0.69182056, -0.13895002, 0.75, -0.6466784, 0, 0, 0)
+light_bake_mode = 1
 shadow_enabled = true
-shadow_bias = 0.05
-shadow_blur = 0.945
-directional_shadow_split_1 = 0.232
-directional_shadow_split_2 = 0.587
+shadow_bias = 0.0
+shadow_blur = 0.576
+directional_shadow_split_1 = 0.194
+directional_shadow_split_2 = 0.539
 directional_shadow_split_3 = 1.0
 directional_shadow_blend_splits = true
-directional_shadow_fade_start = 0.839
+directional_shadow_fade_start = 1.0
 directional_shadow_max_distance = 300.0
 
 [node name="ground" type="StaticBody3D" parent="lvl_grp"]
