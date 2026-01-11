@@ -1,6 +1,8 @@
 extends CharacterBody3D
 
 @export var camera : Camera3D
+@export var draw_debug := false
+
 
 #-- object
 var object_time := 0.0
@@ -13,8 +15,11 @@ var MAX_SPEED = 120.0
 var action_plane = Plane(Vector3.UP, Vector3.ZERO) # used for returning objects to the main plane of action
 
 @export var take_user_input := true
-var exo_direction := Vector3.ZERO # a writebale force for being driven externally
+var exo_direction := Vector3.ZERO # a writeable force for being driven externally
 var exo_aim := Vector3.ZERO
+ # I think this should be driven by the world y rotation of the action plane
+# i.e. this is where the y rotation of the lavel drives the orientation of the player
+var exo_yaw := 0.0
 
 var target_velocity := Vector3.ZERO
 var friction := 0.0002
@@ -40,6 +45,10 @@ var is_primary_firing := false
 
 const bullet = preload("res://assets/player/bullet.tscn")
 
+var debug = MeshInstance3D.new()
+var debug_mesh = ImmediateMesh.new()
+#var debug_points : Array[Vector3]
+
 
 func _ready() -> void:
 	if Global.is_f6_scene(self.scene_file_path):
@@ -55,12 +64,23 @@ func _ready() -> void:
 	$weapons/primary/machine_gun/muzzle2/muzzle_flash2.visible = false
 
 
+	debug.mesh = debug_mesh
+	var mat : StandardMaterial3D = StandardMaterial3D.new()
+	mat.vertex_color_use_as_albedo = true
+	mat.albedo_color = Color.WHITE#Color(0.0, 0.852, 0.232, 1.0)
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	debug.material_override = mat
+	debug.top_level = true
+	add_child(debug)
+
+
 func _physics_process(delta: float) -> void:
 	# left stick input
+	var input_direction : Vector3
 	var direction : Vector3
 	var aim : Vector3
 	if take_user_input:
-		direction = Vector3(
+		input_direction = Vector3(
 			Input.get_action_strength("ui_right") - Input.get_action_strength("ui_left"),
 			0.0,
 			Input.get_action_strength("ui_down") - Input.get_action_strength("ui_up")
@@ -74,15 +94,34 @@ func _physics_process(delta: float) -> void:
 		)
 
 	#-- input velocities
+	# make direction relative to camera orientation
+	# TODO: generate this basis from the action plane instead ..
+	var camy : Vector3 = (camera.global_basis.y * Vector3(1.0, 0.0, 1.0)).normalized()
+	var camx : Vector3 = (camera.global_basis.x * Vector3(1.0, 0.0, 1.0)).normalized()
+
+	direction = input_direction.x * camx + input_direction.z * -camy
+
+	if draw_debug:
+		debug_mesh.clear_surfaces()
+		debug_mesh.surface_begin(Mesh.PRIMITIVE_LINES)
+		debug_mesh.surface_set_color(Color.GREEN)
+		debug_mesh.surface_add_vertex(Vector3.ZERO)
+		debug_mesh.surface_add_vertex(camy*25.0)
+		debug_mesh.surface_set_color(Color.RED)
+		debug_mesh.surface_add_vertex(Vector3.ZERO)
+		debug_mesh.surface_add_vertex(camx*25.0)
+		debug_mesh.surface_end()
+		debug.global_position = self.global_position + (Vector3.UP * 5.0)
+
 	direction = direction + exo_direction
 	aim = aim + exo_aim
 	if direction.length() > 1.0:
 		direction = direction.normalized()
-	
+
 	target_velocity = direction * MAX_SPEED
 	velocity = velocity.move_toward( target_velocity, acceleration * delta )
 	velocity = velocity.move_toward( Vector3.ZERO, friction *  delta )
-	$target_velocity_indicator.position = (target_velocity / MAX_SPEED) * 4.5
+	$target_velocity_indicator.global_position = self.global_position + (target_velocity / MAX_SPEED) * 4.5
 
 	#-- bounds
 	var bounds = camera.is_out_of_bounds(Vector2( self.global_position.x, self.global_position.z ))
@@ -96,15 +135,13 @@ func _physics_process(delta: float) -> void:
 	self.global_position.y = 0
 
 	#-- tilt and yaw
-	tilt_spring.target = direction.x
-	yaw_spring.target = direction.x + aim.x
+	yaw = yaw_spring.tick(delta, yaw)
+	rotation.y = exo_yaw + yaw * -0.65
+
+	tilt_spring.target = input_direction.x
+	yaw_spring.target = input_direction.x + aim.x
 	tilt = tilt_spring.tick(delta, tilt)
 	rotation.z = tilt * -1.2
-	yaw = yaw_spring.tick(delta, yaw)
-	rotation.y = yaw * -0.65
-
-	screen_pos = camera.unproject_position( self.global_position )
-	$Label3D.text = "screen_pos <%d, %d>\nworld_pos <%0.1f, %0.1f>\nheight %0.1f"%[screen_pos.x, screen_pos.y, global_position.x, global_position.z, self.global_position.y]
 
 
 func _process(delta: float) -> void:

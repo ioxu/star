@@ -47,6 +47,7 @@ emission_energy_multiplier = 2.0
 [node name="Player" type="CharacterBody3D"]
 collision_mask = 10
 script = ExtResource("1_h6syq")
+draw_debug = true
 
 [node name="hitbox" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.196, 0, -1.107)
@@ -129,14 +130,9 @@ wait_time = 0.1
 [node name="left_barrel_timer" type="Timer" parent="weapons/primary/machine_gun"]
 wait_time = 0.1
 
-[node name="Label3D" type="Label3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 12.251472, 2.573666, -9.816734)
-visible = false
-pixel_size = 0.075
-text = "label 3d"
-
 [node name="target_velocity_indicator" type="MeshInstance3D" parent="."]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
+top_level = true
 mesh = SubResource("SphereMesh_v2miy")
 surface_material_override/0 = SubResource("StandardMaterial3D_h6syq")
 

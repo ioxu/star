@@ -41,17 +41,11 @@ func _input(event: InputEvent) -> void:
 func _process(delta: float) -> void:
 	object_time += delta
 	if autopilot_mode:
-		#var dirx = sin(object_time * 2 + 7.23355) * 0.5
-		#var dirz = sin(object_time * 4.5 - 3.221) * 0.5
-		
-		#var noise_dir = ap_noise.get_noise_3dv( Vector3( (object_time+73.5) * 20.0 , 0.0,  (object_time -50.75) * 20.0 ) ) * Vector3(1.0, 0.0, 1.0)
-		#var noise_dir : Vector3 = ap_noise.get_noise_3dv( Vector3( (object_time+73.5) * 20.0 , 0.0,  0.0 ) ) * Vector3(1.0, 1.0, 1.0)
 		var noise_dirx = ap_noisex.get_noise_1d(object_time*85.0+73.5)
 		noise_dirx = remap(ease(remap(noise_dirx, -1.0, 1.0, 0.0, 1.0), -3.0), 0.0, 1.0, -1.0, 1.0)
-		
 		var noise_dir : Vector3 = Vector3( noise_dirx, 0.0, ap_noisez.get_noise_1d(object_time*60.0-73.5) *0.25 ).normalized() * 0.55
-		var noise_aim : float = ap_aim_noisex.get_noise_1d( object_time*80.0 )
-		#var dirz = sin(object_time * 4.5 - 3.221) * 0.5
+		var noise_aim : float = ap_aim_noisex.get_noise_1d( object_time*80.0 ) *2.0
+
 		$Player.exo_direction = noise_dir
 		$Player.exo_aim = Vector3(noise_aim, 0.0, 0.0)
 
