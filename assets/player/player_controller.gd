@@ -15,11 +15,11 @@ var MAX_SPEED = 120.0
 var action_plane = Plane(Vector3.UP, Vector3.ZERO) # used for returning objects to the main plane of action
 
 @export var take_user_input := true
-var exo_direction := Vector3.ZERO # a writeable force for being driven externally
-var exo_aim := Vector3.ZERO
+var _exo_direction := Vector3.ZERO # a writeable force for being driven externally
+var _exo_aim := Vector3.ZERO
  # I think this should be driven by the world y rotation of the action plane
 # i.e. this is where the y rotation of the lavel drives the orientation of the player
-var exo_yaw := 0.0
+var _exo_yaw := 0.0
 
 var target_velocity := Vector3.ZERO
 var friction := 0.0002
@@ -113,8 +113,8 @@ func _physics_process(delta: float) -> void:
 		debug_mesh.surface_end()
 		debug.global_position = self.global_position + (Vector3.UP * 5.0)
 
-	direction = direction + exo_direction
-	aim = aim + exo_aim
+	direction = direction + _exo_direction
+	aim = aim + _exo_aim
 	if direction.length() > 1.0:
 		direction = direction.normalized()
 
@@ -136,12 +136,19 @@ func _physics_process(delta: float) -> void:
 
 	#-- tilt and yaw
 	yaw = yaw_spring.tick(delta, yaw)
-	rotation.y = exo_yaw + yaw * -0.65
+	rotation.y = _exo_yaw + yaw * -0.65
 
-	tilt_spring.target = input_direction.x
-	yaw_spring.target = input_direction.x + aim.x
+	#tilt_spring.target = input_direction.x
+	var local_direction  = direction.rotated( Vector3.UP, -self.global_rotation.y )
+	tilt_spring.target = local_direction.x
+	#yaw_spring.target = input_direction.x + aim.x
+	yaw_spring.target = local_direction.x + aim.x
 	tilt = tilt_spring.tick(delta, tilt)
 	rotation.z = tilt * -1.2
+
+	self._exo_direction = Vector3.ZERO
+	self._exo_aim = Vector3.ZERO
+	self._exo_yaw = 0.0
 
 
 func _process(delta: float) -> void:
@@ -158,6 +165,18 @@ func _process(delta: float) -> void:
 			$weapons/primary/machine_gun/muzzle2/muzzle_flash2.visible = true
 		else:
 			$weapons/primary/machine_gun/muzzle2/muzzle_flash2.visible = false
+
+
+func add_exo_direction(direction : Vector3) -> void:
+	self._exo_direction += direction
+
+
+func add_exo_aim( aim: Vector3) -> void:
+	self._exo_aim += aim
+
+
+func add_exo_yaw(yaw: float) -> void:
+	self._exo_yaw += yaw
 
 
 func _input(_event: InputEvent) -> void:

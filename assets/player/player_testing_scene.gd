@@ -38,7 +38,8 @@ func _input(event: InputEvent) -> void:
 		$Player.global_position = Vector3.ZERO
 
 
-func _process(delta: float) -> void:
+#func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	object_time += delta
 	if autopilot_mode:
 		var noise_dirx = ap_noisex.get_noise_1d(object_time*85.0+73.5)
@@ -46,8 +47,10 @@ func _process(delta: float) -> void:
 		var noise_dir : Vector3 = Vector3( noise_dirx, 0.0, ap_noisez.get_noise_1d(object_time*60.0-73.5) *0.25 ).normalized() * 0.55
 		var noise_aim : float = ap_aim_noisex.get_noise_1d( object_time*80.0 ) *2.0
 
-		$Player.exo_direction = noise_dir
-		$Player.exo_aim = Vector3(noise_aim, 0.0, 0.0)
+		#$Player._exo_direction = noise_dir
+		$Player.add_exo_direction(noise_dir)
+		#$Player._exo_aim = Vector3(noise_aim, 0.0, 0.0)
+		$Player.add_exo_aim(Vector3(noise_aim, 0.0, 0.0))
 
 		var firing_noise = ap_firing_noise.get_noise_1d( object_time*60.0 )
 		if firing_noise > 0.0:
@@ -63,8 +66,8 @@ func _process(delta: float) -> void:
 func _on_change_autopilot_mode(value) -> void:
 	pprint("_on_change_autopilot_mode: %s"%value)
 	if value == false:
-		$Player.exo_direction = Vector3.ZERO
-		$Player.exo_aim = Vector3.ZERO
+		#$Player.exo_direction = Vector3.ZERO
+		#$Player.exo_aim = Vector3.ZERO
 		$Player.primary_fire_stop()
 
 	autopilot_mode = value

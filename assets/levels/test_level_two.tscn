@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://bibvc765xe0fg"]
+[gd_scene load_steps=21 format=3 uid="uid://bibvc765xe0fg"]
 
 [ext_resource type="Material" uid="uid://cnxtog6iv1d0j" path="res://assets/materials/triplanar_grid_grey.material" id="1_3abyr"]
 [ext_resource type="Texture2D" uid="uid://c70pl7gyqsx2k" path="res://assets/textures/grids/kenney_texture_08_light.png" id="2_jjm7x"]
@@ -13,9 +13,11 @@ var scene_time := 0.0
 var _travel_speed := 50.0
 
 @onready var path_follow : PathFollow3D = find_child(\"PathFollow3D\")
-@onready var progress_ratio_label : Label = find_child(\"progress_ratio\")
 
 @onready var camera : Camera3D = find_child(\"Camera3D\")
+
+@onready var progress_ratio_label : Label = find_child(\"progress_ratio\")
+@onready var tilt_label : Label = find_child(\"tilt_label\")
 
 var has_looped := false
 
@@ -29,33 +31,38 @@ func _ready() -> void:
 	last_path_position = path_follow.global_position
 
 
-func _process(delta: float) -> void:
+#func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	scene_time += delta
-	path_follow.progress = scene_time * _travel_speed
+	
+	#path_follow.progress = scene_time * _travel_speed
 	#pprint(\"path_follow.progress: %s\"%path_follow.progress)
+	
 	progress_ratio_label.text = \"progress ratio: %0.3f\"%path_follow.progress_ratio
 	if path_follow.progress_ratio >= 0.95 and not has_looped:
 		#path_follow.progress_ratio  = 0.0
 		has_looped = true
-		
-		
-		
-		
 
-
+	#---------------------------------------------------------------------------
+	# calculate corrective force to keep player in the action_area
 
 	var this_path_position = path_follow.global_position
 	var path_delta = this_path_position - last_path_position
 	last_path_position = this_path_position
 
-	
 	#$Player.global_position = path_follow.global_position * Vector3(1.0, 0.0, 1.0)
-	$Player.exo_direction = path_delta * 0.5
+	#$Player._exo_direction = path_delta * 0.5
+	$Player.add_exo_direction( path_delta * Vector3(.75, 0.0, 0.25) ) #.rotated( Vector3.UP, -path_follow.global_rotation.y ) )
 
 	var level_path_rotation = Vector3(0.0, -1 * path_follow.transform.basis.z.signed_angle_to( Vector3.BACK, Vector3.UP ), 0.0)
 	#$Player.rotation = Vector3(0.0, -1 * path_follow.transform.basis.z.signed_angle_to( Vector3.BACK, Vector3.UP ), 0.0)
-	$Player.exo_yaw = level_path_rotation.y
+	#$Player._exo_yaw = level_path_rotation.y
+	$Player.add_exo_yaw( level_path_rotation.y )
 
+	#---------------------------------------------------------------------------
+
+
+	tilt_label.text = \"tilt: %0.5f\"%$Player.rotation.z
 
 
 func pprint(thing) -> void:
@@ -117,7 +124,8 @@ exposure_sensitivity = 164.0
 exposure_shutter_speed = 125.0
 
 [sub_resource type="GDScript" id="GDScript_8tus5"]
-script/source = "extends Camera3D
+script/source = "@tool
+extends Camera3D
 
 #@export var action_plane : Plane = Plane(Vector3.ZERO, 0.0)
 
@@ -220,6 +228,58 @@ func _closest_point_on_polygon( point: Vector2, poly: PackedVector2Array ) -> Ve
 [sub_resource type="BoxShape3D" id="BoxShape3D_3abyr"]
 size = Vector3(400, 10, 200)
 
+[sub_resource type="Animation" id="Animation_jjm7x"]
+length = 0.001
+tracks/0/type = "bezier"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AnimationPlayer:path_ratio")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+tracks/1/type = "bezier"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Path3D/PathFollow3D:progress_ratio")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+
+[sub_resource type="Animation" id="Animation_3abyr"]
+resource_name = "path_ratio"
+length = 60.0
+tracks/0/type = "bezier"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Path3D/PathFollow3D:progress_ratio")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"handle_modes": PackedInt32Array(2, 2, 2, 2, 2, 2),
+"points": PackedFloat32Array(7.0780516e-08, 0, 0, 4.2405934, 0, 0.29187304, -4.335068, 0.002736078, 5.0448866, -0.0031840801, 0.51079637, -2.7173016, -0.17927924, 1.5, 0.09896541, 0.81968826, -4.40678, -0.047261458, 5.033333, 0.053981066, 0.91565466, -5.058298, -0.056886055, 2.9333305, 0.03298849, 1, -5.6666718, -0.0003747344, 0, 0),
+"times": PackedFloat32Array(0, 11.466666, 18.833334, 25.4, 39.133335, 59.63334)
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_jjm7x"]
+_data = {
+&"RESET": SubResource("Animation_jjm7x"),
+&"path_ratio": SubResource("Animation_3abyr")
+}
+
+[sub_resource type="GDScript" id="GDScript_0vh3s"]
+script/source = "extends AnimationPlayer
+
+@export var path_ratio : float
+"
+
 [node name="test_level_two" type="Node3D"]
 script = SubResource("GDScript_jjm7x")
 
@@ -233,11 +293,23 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="progress_ratio" type="Label" parent="CanvasLayer/Control"]
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/Control"]
 layout_mode = 0
 offset_right = 40.0
-offset_bottom = 23.0
+offset_bottom = 40.0
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Control/MarginContainer"]
+layout_mode = 2
+
+[node name="progress_ratio" type="Label" parent="CanvasLayer/Control/MarginContainer/VBoxContainer"]
+layout_mode = 2
 text = "progress ratio"
+
+[node name="tilt_label" type="Label" parent="CanvasLayer/Control/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "tilt"
 
 [node name="lvl_grp" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -30, 0)
@@ -289,21 +361,37 @@ transform = Transform3D(0.6597612, -0.5022061, -0.55902064, 0.7409803, 0.5586468
 mesh = SubResource("BoxMesh_ehmke")
 surface_material_override/0 = ExtResource("1_3abyr")
 
-[node name="Path3D" type="Path3D" parent="."]
+[node name="Player" parent="." node_paths=PackedStringArray("camera") instance=ExtResource("3_3abyr")]
+camera = NodePath("../action/Path3D/PathFollow3D/Camera3D")
+
+[node name="action" type="Node3D" parent="."]
+
+[node name="Path3D" type="Path3D" parent="action"]
 curve = SubResource("Curve3D_0vh3s")
 
-[node name="PathFollow3D" type="PathFollow3D" parent="Path3D"]
-transform = Transform3D(-0.9182542, 0, -0.39594448, 0, 1, 0, 0.39594448, 0, -0.9182542, 227, 0, -865)
+[node name="PathFollow3D" type="PathFollow3D" parent="action/Path3D"]
+transform = Transform3D(-0.9182026, 0, -0.39592218, 0, 1, 0, 0.39592218, 0, -0.9182026, 227, 0, -865)
+cubic_interp = false
+tilt_enabled = false
 
-[node name="Camera3D" type="Camera3D" parent="Path3D/PathFollow3D" groups=["camera"]]
+[node name="Camera3D" type="Camera3D" parent="action/Path3D/PathFollow3D" groups=["camera"]]
 transform = Transform3D(1.0000018, 0, 0, 0, -4.3711466e-08, 1, 0, -1.0000018, -4.371139e-08, 0, 380, 0)
 attributes = SubResource("CameraAttributesPhysical_5xh8o")
+current = true
 script = SubResource("GDScript_8tus5")
 draw_bounds = true
 
-[node name="Area3D" type="Area3D" parent="Path3D/PathFollow3D"]
+[node name="Area3D" type="Area3D" parent="action/Path3D/PathFollow3D"]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Path3D/PathFollow3D/Area3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="action/Path3D/PathFollow3D/Area3D"]
 shape = SubResource("BoxShape3D_3abyr")
 
-[node name="Player" parent="." instance=ExtResource("3_3abyr")]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="action"]
+libraries = {
+&"": SubResource("AnimationLibrary_jjm7x")
+}
+autoplay = "path_ratio"
+script = SubResource("GDScript_0vh3s")
+
+[node name="witness_camera" type="Camera3D" parent="."]
+transform = Transform3D(0.49999997, -0.628723, 0.5955732, 0, 0.6877086, 0.72598684, -0.8660255, -0.36299336, 0.34385425, 352.52307, 255.5, -51.889557)
