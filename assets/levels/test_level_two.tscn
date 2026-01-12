@@ -16,8 +16,12 @@ var _travel_speed := 50.0
 
 @onready var camera : Camera3D = find_child(\"Camera3D\")
 
+@onready var witness_camera_toggle : CheckButton = find_child(\"witness_camera_toggle\")
 @onready var progress_ratio_label : Label = find_child(\"progress_ratio\")
 @onready var tilt_label : Label = find_child(\"tilt_label\")
+
+@onready var main_camera : Camera3D = find_child(\"Camera3D\")
+@onready var witness_camera : Camera3D = find_child(\"witness_camera\")
 
 var has_looped := false
 
@@ -26,6 +30,9 @@ var last_path_position : Vector3
 
 func _ready() -> void:
 	pprint(\"_ready()\")
+
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+
 	#$Player.global_position = camera.global_position * Vector3(1.0, 0.0, 1.0)
 	$Player.global_position = path_follow.global_position * Vector3(1.0, 0.0, 1.0)
 	last_path_position = path_follow.global_position
@@ -62,11 +69,19 @@ func _physics_process(delta: float) -> void:
 	#---------------------------------------------------------------------------
 
 
-	tilt_label.text = \"tilt: %0.5f\"%$Player.rotation.z
+	tilt_label.text = \"tilt:%7.1f°\"%[ rad_to_deg($Player.rotation.z)]
 
 
 func pprint(thing) -> void:
 	print(\"[test level two] %s\"%thing)
+
+
+func _on_witness_camera_toggle_toggled(toggled_on: bool) -> void:
+	if toggled_on:
+		witness_camera.make_current()
+	else:
+		main_camera.make_current()
+		
 "
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_qdmn5"]
@@ -256,6 +271,7 @@ tracks/1/keys = {
 [sub_resource type="Animation" id="Animation_3abyr"]
 resource_name = "path_ratio"
 length = 60.0
+loop_mode = 1
 tracks/0/type = "bezier"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -302,6 +318,10 @@ theme_override_constants/margin_top = 20
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Control/MarginContainer"]
 layout_mode = 2
+
+[node name="witness_camera_toggle" type="CheckButton" parent="CanvasLayer/Control/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "witness cam"
 
 [node name="progress_ratio" type="Label" parent="CanvasLayer/Control/MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -370,7 +390,7 @@ camera = NodePath("../action/Path3D/PathFollow3D/Camera3D")
 curve = SubResource("Curve3D_0vh3s")
 
 [node name="PathFollow3D" type="PathFollow3D" parent="action/Path3D"]
-transform = Transform3D(-0.9182026, 0, -0.39592218, 0, 1, 0, 0.39592218, 0, -0.9182026, 227, 0, -865)
+transform = Transform3D(-0.91817176, 0, -0.39590892, 0, 1, 0, 0.39590892, 0, -0.91817176, 227, 0, -865)
 cubic_interp = false
 tilt_enabled = false
 
@@ -395,3 +415,5 @@ script = SubResource("GDScript_0vh3s")
 
 [node name="witness_camera" type="Camera3D" parent="."]
 transform = Transform3D(0.49999997, -0.628723, 0.5955732, 0, 0.6877086, 0.72598684, -0.8660255, -0.36299336, 0.34385425, 352.52307, 255.5, -51.889557)
+
+[connection signal="toggled" from="CanvasLayer/Control/MarginContainer/VBoxContainer/witness_camera_toggle" to="." method="_on_witness_camera_toggle_toggled"]
