@@ -121,7 +121,7 @@ func _physics_process(delta: float) -> void:
 	target_velocity = direction * MAX_SPEED
 	velocity = velocity.move_toward( target_velocity, acceleration * delta )
 	velocity = velocity.move_toward( Vector3.ZERO, friction *  delta )
-	$target_velocity_indicator.global_position = self.global_position + (target_velocity / MAX_SPEED) * 4.5
+	$target_velocity_indicator.global_position = self.global_position + (target_velocity / MAX_SPEED) * 15.0#4.5
 
 	#-- bounds
 	var bounds = camera.is_out_of_bounds(Vector2( self.global_position.x, self.global_position.z ))

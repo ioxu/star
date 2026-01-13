@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://bibvc765xe0fg"]
+[gd_scene load_steps=27 format=3 uid="uid://bibvc765xe0fg"]
 
 [ext_resource type="Material" uid="uid://cnxtog6iv1d0j" path="res://assets/materials/triplanar_grid_grey.material" id="1_3abyr"]
 [ext_resource type="Texture2D" uid="uid://c70pl7gyqsx2k" path="res://assets/textures/grids/kenney_texture_08_light.png" id="2_jjm7x"]
@@ -13,6 +13,10 @@ var scene_time := 0.0
 var _travel_speed := 50.0
 
 @onready var path_follow : PathFollow3D = find_child(\"PathFollow3D\")
+@onready var path_follow_ahead : PathFollow3D = find_child(\"PathFollow3D_ahead\")
+@onready var future_global_position_marker : MeshInstance3D = find_child(\"future_global_position_marker\")
+@onready var future_local_position_marker : MeshInstance3D = find_child(\"future_local_position_marker\")
+@onready var anim_player : AnimationPlayer = find_child(\"AnimationPlayer\")
 
 @onready var camera : Camera3D = find_child(\"Camera3D\")
 
@@ -38,8 +42,8 @@ func _ready() -> void:
 	last_path_position = path_follow.global_position
 
 
-#func _process(delta: float) -> void:
-func _physics_process(delta: float) -> void:
+func _process(delta: float) -> void:
+#func _physics_process(delta: float) -> void:
 	scene_time += delta
 	
 	#path_follow.progress = scene_time * _travel_speed
@@ -50,22 +54,57 @@ func _physics_process(delta: float) -> void:
 		#path_follow.progress_ratio  = 0.0
 		has_looped = true
 
+
+	#---------------------------------------------------------------------------
+	# work out and drive \"PathFollow3D_ahead\" one frame ahead of the animation
+	if not anim_player.current_animation.is_empty():
+		var current_anim_name = anim_player.current_animation
+		var animation : Animation = anim_player.get_animation(current_anim_name)
+		var next_time = anim_player.current_animation_position + delta * 1.0 #5.0
+		var track_index = 0
+		if track_index < animation.get_track_count() and animation.track_get_type( track_index ) == Animation.TYPE_BEZIER:
+			var next_frame_value = animation.bezier_track_interpolate( track_index, next_time)
+			# transform path_follow_ahead along the path
+			path_follow_ahead.progress_ratio = next_frame_value
+	
+	
 	#---------------------------------------------------------------------------
 	# calculate corrective force to keep player in the action_area
+	# 0 - future-frame mode: read AnimPlayer 1-frame-ahead fcurve onto a 2nd PathFollow3D
+	# 1 - last-position-delta: current minus last position delta
+	var corrective_method = 0
+	match corrective_method:
+		
+		0:	#-- future-frame mode
+			# current position in path_follow frame
+			var current_local_position : Vector3 = path_follow.to_local($Player.global_position)
+			# current position in future frame, to global space
+			var future_global_position : Vector3 = path_follow_ahead.to_global( current_local_position )
+			# future position in the current frame
+			
+			# orange dot
+			future_global_position_marker.global_position = future_global_position + Vector3(0.0, 2.0, 0.0)
 
-	var this_path_position = path_follow.global_position
-	var path_delta = this_path_position - last_path_position
-	last_path_position = this_path_position
+			$Player.add_exo_direction( (future_global_position - $Player.global_position) *0.5 ) # * 0.5 )
+			
+			# future global position in the local current frame
+			var future_local_position : Vector3 = path_follow.to_local(future_global_position)
+			
+			# orange ring
+			future_local_position_marker.position = future_local_position + Vector3(0.0, 2.0, 0.0)
+			
+			var yaw = -path_follow.global_basis.z
+			yaw = - yaw.signed_angle_to( future_local_position - current_local_position, Vector3.UP )
+			$Player.add_exo_yaw( yaw )
+		
+		1:	#-- method: current-last position delta
+			var this_path_position = path_follow.global_position
+			var path_delta = this_path_position - last_path_position
+			last_path_position = this_path_position
+			$Player.add_exo_direction( path_delta * Vector3(.75, 0.0, 0.4) )
 
-	#$Player.global_position = path_follow.global_position * Vector3(1.0, 0.0, 1.0)
-	#$Player._exo_direction = path_delta * 0.5
-	$Player.add_exo_direction( path_delta * Vector3(.75, 0.0, 0.25) ) #.rotated( Vector3.UP, -path_follow.global_rotation.y ) )
-
-	var level_path_rotation = Vector3(0.0, -1 * path_follow.transform.basis.z.signed_angle_to( Vector3.BACK, Vector3.UP ), 0.0)
-	#$Player.rotation = Vector3(0.0, -1 * path_follow.transform.basis.z.signed_angle_to( Vector3.BACK, Vector3.UP ), 0.0)
-	#$Player._exo_yaw = level_path_rotation.y
-	$Player.add_exo_yaw( level_path_rotation.y )
-
+			var level_path_rotation = Vector3(0.0, -1 * path_follow.transform.basis.z.signed_angle_to( Vector3.BACK, Vector3.UP ), 0.0)
+			$Player.add_exo_yaw( level_path_rotation.y )
 	#---------------------------------------------------------------------------
 
 
@@ -134,12 +173,34 @@ _data = {
 }
 point_count = 9
 
+[sub_resource type="SphereMesh" id="SphereMesh_3abyr"]
+height = 0.5
+radial_segments = 16
+rings = 12
+is_hemisphere = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jjm7x"]
+albedo_color = Color(0, 0, 0, 1)
+emission_enabled = true
+emission = Color(0.90279114, 0.18807054, 0.5954123, 1)
+emission_energy_multiplier = 2.0
+
+[sub_resource type="TorusMesh" id="TorusMesh_3abyr"]
+inner_radius = 0.849
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0vh3s"]
+transparency = 1
+albedo_color = Color(0, 0, 0, 0.52156866)
+emission_enabled = true
+emission = Color(0.855841, 0.3532699, 0.16570774, 1)
+emission_energy_multiplier = 2.0
+
 [sub_resource type="CameraAttributesPhysical" id="CameraAttributesPhysical_5xh8o"]
 exposure_sensitivity = 164.0
 exposure_shutter_speed = 125.0
 
 [sub_resource type="GDScript" id="GDScript_8tus5"]
-script/source = "@tool
+script/source = "#@tool
 extends Camera3D
 
 #@export var action_plane : Plane = Plane(Vector3.ZERO, 0.0)
@@ -176,7 +237,9 @@ func _ready() -> void:
 	add_child(frustum_bounds_instance)
 
 
+
 func _process(delta: float) -> void:
+#func _physics_process(delta: float) -> void:
 	time += delta
 	
 	#-- frustum bounds
@@ -241,6 +304,15 @@ func _closest_point_on_polygon( point: Vector2, poly: PackedVector2Array ) -> Ve
 "
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_3abyr"]
+size = Vector3(400, 10, 200)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3abyr"]
+albedo_color = Color(0, 0, 0, 1)
+emission_enabled = true
+emission = Color(0.69968337, 0.47616714, 0.31559947, 1)
+emission_energy_multiplier = 2.0
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_jjm7x"]
 size = Vector3(400, 10, 200)
 
 [sub_resource type="Animation" id="Animation_jjm7x"]
@@ -390,9 +462,18 @@ camera = NodePath("../action/Path3D/PathFollow3D/Camera3D")
 curve = SubResource("Curve3D_0vh3s")
 
 [node name="PathFollow3D" type="PathFollow3D" parent="action/Path3D"]
-transform = Transform3D(-0.91817176, 0, -0.39590892, 0, 1, 0, 0.39590892, 0, -0.91817176, 227, 0, -865)
-cubic_interp = false
+transform = Transform3D(-0.9181719, 0, -0.39590898, 0, 1, 0, 0.39590898, 0, -0.9181719, 227, 0, -865)
 tilt_enabled = false
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="action/Path3D/PathFollow3D"]
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0)
+mesh = SubResource("SphereMesh_3abyr")
+surface_material_override/0 = SubResource("StandardMaterial3D_jjm7x")
+
+[node name="future_local_position_marker" type="MeshInstance3D" parent="action/Path3D/PathFollow3D"]
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0)
+mesh = SubResource("TorusMesh_3abyr")
+surface_material_override/0 = SubResource("StandardMaterial3D_0vh3s")
 
 [node name="Camera3D" type="Camera3D" parent="action/Path3D/PathFollow3D" groups=["camera"]]
 transform = Transform3D(1.0000018, 0, 0, 0, -4.3711466e-08, 1, 0, -1.0000018, -4.371139e-08, 0, 380, 0)
@@ -405,6 +486,28 @@ draw_bounds = true
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="action/Path3D/PathFollow3D/Area3D"]
 shape = SubResource("BoxShape3D_3abyr")
+debug_color = Color(0.21594596, 0.5891457, 0.69029975, 0.41960785)
+
+[node name="PathFollow3D_ahead" type="PathFollow3D" parent="action/Path3D"]
+transform = Transform3D(-0.9182713, 0, -0.39595184, 0, 1.0000001, 0, 0.39595184, 0, -0.9182713, 227, 0, -865)
+tilt_enabled = false
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="action/Path3D/PathFollow3D_ahead"]
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0)
+mesh = SubResource("SphereMesh_3abyr")
+surface_material_override/0 = SubResource("StandardMaterial3D_3abyr")
+
+[node name="future_global_position_marker" type="MeshInstance3D" parent="action/Path3D/PathFollow3D_ahead"]
+transform = Transform3D(-1.8365426, 0, -0.7919037, 0, 2.0000002, 0, 0.7919037, 0, -1.8365426, 227, 0, -865)
+top_level = true
+mesh = SubResource("SphereMesh_3abyr")
+surface_material_override/0 = SubResource("StandardMaterial3D_0vh3s")
+
+[node name="Area3D" type="Area3D" parent="action/Path3D/PathFollow3D_ahead"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="action/Path3D/PathFollow3D_ahead/Area3D"]
+shape = SubResource("BoxShape3D_jjm7x")
+debug_color = Color(0.76328486, 0.42804155, 0.38644674, 0.41960785)
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="action"]
 libraries = {
