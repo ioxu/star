@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3 uid="uid://bibvc765xe0fg"]
+[gd_scene load_steps=28 format=3 uid="uid://bibvc765xe0fg"]
 
 [ext_resource type="Material" uid="uid://cnxtog6iv1d0j" path="res://assets/materials/triplanar_grid_grey.material" id="1_3abyr"]
 [ext_resource type="Texture2D" uid="uid://c70pl7gyqsx2k" path="res://assets/textures/grids/kenney_texture_08_light.png" id="2_jjm7x"]
@@ -23,6 +23,7 @@ var _travel_speed := 50.0
 @onready var witness_camera_toggle : CheckButton = find_child(\"witness_camera_toggle\")
 @onready var progress_ratio_label : Label = find_child(\"progress_ratio\")
 @onready var tilt_label : Label = find_child(\"tilt_label\")
+@onready var fps_label : Label = find_child(\"fps_label\")
 
 @onready var main_camera : Camera3D = find_child(\"Camera3D\")
 @onready var witness_camera : Camera3D = find_child(\"witness_camera\")
@@ -37,17 +38,23 @@ func _ready() -> void:
 
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
+	#--
+	anim_player.callback_mode_process = AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_PHYSICS
+	#--
+
 	#$Player.global_position = camera.global_position * Vector3(1.0, 0.0, 1.0)
 	$Player.global_position = path_follow.global_position * Vector3(1.0, 0.0, 1.0)
 	last_path_position = path_follow.global_position
 
 
-func _process(delta: float) -> void:
-#func _physics_process(delta: float) -> void:
+#func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	scene_time += delta
 	
 	#path_follow.progress = scene_time * _travel_speed
 	#pprint(\"path_follow.progress: %s\"%path_follow.progress)
+	
+	fps_label.text = \"fps: %3d\"%Engine.get_frames_per_second()
 	
 	progress_ratio_label.text = \"progress ratio: %0.3f\"%path_follow.progress_ratio
 	if path_follow.progress_ratio >= 0.95 and not has_looped:
@@ -61,6 +68,9 @@ func _process(delta: float) -> void:
 		var current_anim_name = anim_player.current_animation
 		var animation : Animation = anim_player.get_animation(current_anim_name)
 		var next_time = anim_player.current_animation_position + delta * 1.0 #5.0
+		#pprint(\"--\")
+		#pprint(anim_player.current_animation_position)
+		#pprint(\"%0.3f (%0.4f)\"%[next_time, delta])
 		var track_index = 0
 		if track_index < animation.get_track_count() and animation.track_get_type( track_index ) == Animation.TYPE_BEZIER:
 			var next_frame_value = animation.bezier_track_interpolate( track_index, next_time)
@@ -80,19 +90,24 @@ func _process(delta: float) -> void:
 			var current_local_position : Vector3 = path_follow.to_local($Player.global_position)
 			# current position in future frame, to global space
 			var future_global_position : Vector3 = path_follow_ahead.to_global( current_local_position )
-			# future position in the current frame
-			
-			# orange dot
-			future_global_position_marker.global_position = future_global_position + Vector3(0.0, 2.0, 0.0)
 
-			$Player.add_exo_direction( (future_global_position - $Player.global_position) *0.5 ) # * 0.5 )
+			# -----------------------------------------------------------------
+			# TODO: need to rotate the future global position
+			# by the difference in u rotation of the current to future frame
+			# -----------------------------------------------------------------
+
+			# orange dot
+			future_global_position_marker.global_position = future_global_position + Vector3(0.0, 1.0, 0.0)
+
+			$Player.add_exo_direction( (future_global_position - $Player.global_position) * 0.5 ) # * 0.5 )
 			
 			# future global position in the local current frame
 			var future_local_position : Vector3 = path_follow.to_local(future_global_position)
 			
 			# orange ring
-			future_local_position_marker.position = future_local_position + Vector3(0.0, 2.0, 0.0)
-			
+			future_local_position_marker.position = future_local_position + Vector3(0.0, 1.0, 0.0)
+			#future_local_position_marker.global_position = path_follow.to_global( future_local_position ) + Vector3(0.0, 1.0, 0.0)
+
 			var yaw = -path_follow.global_basis.z
 			yaw = - yaw.signed_angle_to( future_local_position - current_local_position, Vector3.UP )
 			$Player.add_exo_yaw( yaw )
@@ -122,6 +137,8 @@ func _on_witness_camera_toggle_toggled(toggled_on: bool) -> void:
 		main_camera.make_current()
 		
 "
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_3abyr"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_qdmn5"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -187,6 +204,8 @@ emission_energy_multiplier = 2.0
 
 [sub_resource type="TorusMesh" id="TorusMesh_3abyr"]
 inner_radius = 0.849
+rings = 16
+ring_segments = 8
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0vh3s"]
 transparency = 1
@@ -382,26 +401,46 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/Control"]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 theme_override_constants/margin_left = 20
 theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Control/MarginContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/Control/MarginContainer"]
 layout_mode = 2
 
-[node name="witness_camera_toggle" type="CheckButton" parent="CanvasLayer/Control/MarginContainer/VBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Control/MarginContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="witness_camera_toggle" type="CheckButton" parent="CanvasLayer/Control/MarginContainer/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 text = "witness cam"
 
-[node name="progress_ratio" type="Label" parent="CanvasLayer/Control/MarginContainer/VBoxContainer"]
+[node name="progress_ratio" type="Label" parent="CanvasLayer/Control/MarginContainer/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 text = "progress ratio"
 
-[node name="tilt_label" type="Label" parent="CanvasLayer/Control/MarginContainer/VBoxContainer"]
+[node name="tilt_label" type="Label" parent="CanvasLayer/Control/MarginContainer/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 text = "tilt"
+
+[node name="VSeparator" type="VSeparator" parent="CanvasLayer/Control/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/separator = SubResource("StyleBoxEmpty_3abyr")
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="CanvasLayer/Control/MarginContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="fps_label" type="Label" parent="CanvasLayer/Control/MarginContainer/HBoxContainer/VBoxContainer2"]
+layout_mode = 2
+text = "fps"
 
 [node name="lvl_grp" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -30, 0)
@@ -455,6 +494,7 @@ surface_material_override/0 = ExtResource("1_3abyr")
 
 [node name="Player" parent="." node_paths=PackedStringArray("camera") instance=ExtResource("3_3abyr")]
 camera = NodePath("../action/Path3D/PathFollow3D/Camera3D")
+draw_debug = true
 
 [node name="action" type="Node3D" parent="."]
 
@@ -510,6 +550,7 @@ shape = SubResource("BoxShape3D_jjm7x")
 debug_color = Color(0.76328486, 0.42804155, 0.38644674, 0.41960785)
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="action"]
+callback_mode_process = 0
 libraries = {
 &"": SubResource("AnimationLibrary_jjm7x")
 }
@@ -519,4 +560,4 @@ script = SubResource("GDScript_0vh3s")
 [node name="witness_camera" type="Camera3D" parent="."]
 transform = Transform3D(0.49999997, -0.628723, 0.5955732, 0, 0.6877086, 0.72598684, -0.8660255, -0.36299336, 0.34385425, 352.52307, 255.5, -51.889557)
 
-[connection signal="toggled" from="CanvasLayer/Control/MarginContainer/VBoxContainer/witness_camera_toggle" to="." method="_on_witness_camera_toggle_toggled"]
+[connection signal="toggled" from="CanvasLayer/Control/MarginContainer/HBoxContainer/VBoxContainer/witness_camera_toggle" to="." method="_on_witness_camera_toggle_toggled"]

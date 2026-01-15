@@ -9,7 +9,7 @@ var object_time := 0.0
 
 
 #-- move
-var MAX_SPEED = 120.0
+var MAX_SPEED : float = 120.0
 
 #var pos_spring : HarmonicMotion.Spring3 = HarmonicMotion.Spring3.new( 60.0, 20.0 )   #Spring2( 80.0, 10.0 )
 var action_plane = Plane(Vector3.UP, Vector3.ZERO) # used for returning objects to the main plane of action
@@ -99,6 +99,9 @@ func _physics_process(delta: float) -> void:
 	var camy : Vector3 = (camera.global_basis.y * Vector3(1.0, 0.0, 1.0)).normalized()
 	var camx : Vector3 = (camera.global_basis.x * Vector3(1.0, 0.0, 1.0)).normalized()
 
+	if input_direction.length() > 1.0:
+		input_direction = input_direction.normalized()
+
 	direction = input_direction.x * camx + input_direction.z * -camy
 
 	if draw_debug:
@@ -115,8 +118,7 @@ func _physics_process(delta: float) -> void:
 
 	direction = direction + _exo_direction
 	aim = aim + _exo_aim
-	if direction.length() > 1.0:
-		direction = direction.normalized()
+
 
 	target_velocity = direction * MAX_SPEED
 	velocity = velocity.move_toward( target_velocity, acceleration * delta )
@@ -139,7 +141,7 @@ func _physics_process(delta: float) -> void:
 	rotation.y = _exo_yaw + yaw * -0.65
 
 	#tilt_spring.target = input_direction.x
-	var local_direction  = direction.rotated( Vector3.UP, -self.global_rotation.y )
+	var local_direction : Vector3 = direction.rotated( Vector3.UP, -self.global_rotation.y )
 	tilt_spring.target = local_direction.x
 	#yaw_spring.target = input_direction.x + aim.x
 	yaw_spring.target = local_direction.x + aim.x
