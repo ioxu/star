@@ -6,6 +6,9 @@ extends Node
 var new_game_button : Button
 var settings_button : Button
 
+@onready var player_test_scene_button : Button = find_child("player_test_scene_button")
+@onready var test_level_2_button : Button = find_child("test_level_2_button")
+
 var graphics_fadeup_time := 0.5
 var viewport_fadeup_time := 0.3
 var viewport_fadeup_start := 0.5
@@ -15,7 +18,6 @@ var total_time := 4.0
 
 signal new_game_button_pressed
 signal settings_button_pressed
-
 
 
 func _ready() -> void:
@@ -77,4 +79,11 @@ func _on_change_fullscreen( fullscreen : bool ) -> void:
 
 func pprint(thing) -> void:
 	print("[main menu] %s"%thing)
-	
+
+
+func _on_player_test_scene_button_pressed() -> void:
+	get_tree().change_scene_to_file( "res://assets/player/player_testing_scene.tscn" )
+
+
+func _on_test_level_2_button_pressed() -> void:
+	get_tree().change_scene_to_file( "res://assets/levels/test_level_two.tscn" )

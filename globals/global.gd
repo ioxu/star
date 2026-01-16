@@ -5,9 +5,13 @@ extends Node
 var alternative_run_scene_path := ""
 var _do_f6_scene_check := true
 
+
 func _ready():
-	pass
-	
+	# Check for already connected controllers
+	for device_id in Input.get_connected_joypads():
+		print("Connected Joypad: ", Input.get_joy_name(device_id), " (ID: ", device_id, ")")
+		# You might want to register/map it here if needed
+
 
 func is_f6_scene( path : String ) -> bool:
 	# https://github.com/godotengine/godot-proposals/issues/11835

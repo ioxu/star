@@ -135,7 +135,12 @@ func _on_witness_camera_toggle_toggled(toggled_on: bool) -> void:
 		witness_camera.make_current()
 	else:
 		main_camera.make_current()
-		
+
+
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed(\"ui_cancel\"):
+		get_viewport().set_input_as_handled()
+		get_tree().change_scene_to_file( \"res://globals/game.tscn\" )
 "
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_3abyr"]

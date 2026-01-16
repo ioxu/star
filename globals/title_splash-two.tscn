@@ -41,9 +41,13 @@ func _on_timer_timeout() -> void:
 	$Timer.stop()
 	await get_tree().create_timer(0.5).timeout
 	if not Engine.is_editor_hint():
-		get_tree().change_scene_to_file( \"res://globals/title_splash.tscn\" )
+		_end_splash()
 	else:
 		$Timer.start()
+
+
+func _end_splash() -> void:
+	get_tree().change_scene_to_file( \"res://globals/title_splash.tscn\" )
 
 
 func _input(event: InputEvent) -> void:
@@ -51,6 +55,8 @@ func _input(event: InputEvent) -> void:
 		if not timer_has_started:
 			$Timer.start()
 			timer_has_started = true
+		else:
+			_end_splash()
 "
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_08vje"]

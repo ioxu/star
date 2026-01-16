@@ -49,6 +49,7 @@ func _ready():
 
 func _input(event):
 	if event.is_action_pressed("ui_cancel"):
+		pprint("ui_cancel evented .. quitting")
 		get_tree().quit()
 	elif event.is_action_pressed("ui_fullscreen"):
 		go_fullscreen()

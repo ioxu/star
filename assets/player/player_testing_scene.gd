@@ -10,6 +10,7 @@ var is_ap_firing := false
 
 var object_time = 0.0
 
+
 func _ready() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	ap_noisex.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH
@@ -36,9 +37,11 @@ func _input(event: InputEvent) -> void:
 	if Input.is_action_just_pressed( "ui_reset" ):
 		pprint("reset")
 		$Player.global_position = Vector3.ZERO
+	if event.is_action_pressed("ui_cancel"):
+		get_viewport().set_input_as_handled()
+		get_tree().change_scene_to_file( "res://globals/game.tscn" )
 
 
-#func _process(delta: float) -> void:
 func _physics_process(delta: float) -> void:
 	object_time += delta
 	if autopilot_mode:
@@ -69,7 +72,6 @@ func _on_change_autopilot_mode(value) -> void:
 		#$Player.exo_direction = Vector3.ZERO
 		#$Player.exo_aim = Vector3.ZERO
 		$Player.primary_fire_stop()
-
 	autopilot_mode = value
 
 
