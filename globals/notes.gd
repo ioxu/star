@@ -29,6 +29,8 @@ player:
 		- engine colours
 
 ## LEVELS
+test: assets/levels/test_level_two.tscn
+
 camera:
 	- driven by action_driver
 

@@ -1,6 +1,7 @@
 [gd_scene load_steps=28 format=3 uid="uid://bibvc765xe0fg"]
 
 [ext_resource type="Material" uid="uid://cnxtog6iv1d0j" path="res://assets/materials/triplanar_grid_grey.material" id="1_3abyr"]
+[ext_resource type="Script" uid="uid://cm2hycvn6ckp6" path="res://lib/AnimGraphDisplay.gd" id="1_jjm7x"]
 [ext_resource type="Texture2D" uid="uid://c70pl7gyqsx2k" path="res://assets/textures/grids/kenney_texture_08_light.png" id="2_jjm7x"]
 [ext_resource type="PackedScene" uid="uid://4tslx1g24xy1" path="res://assets/player/player.tscn" id="3_3abyr"]
 
@@ -375,9 +376,9 @@ tracks/0/path = NodePath("Path3D/PathFollow3D:progress_ratio")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"handle_modes": PackedInt32Array(2, 2, 2, 2, 2, 2),
-"points": PackedFloat32Array(7.0780516e-08, 0, 0, 4.2405934, 0, 0.29187304, -4.335068, 0.002736078, 5.0448866, -0.0031840801, 0.51079637, -2.7173016, -0.17927924, 1.5, 0.09896541, 0.81968826, -4.40678, -0.047261458, 5.033333, 0.053981066, 0.91565466, -5.058298, -0.056886055, 2.9333305, 0.03298849, 1, -5.6666718, -0.0003747344, 0, 0),
-"times": PackedFloat32Array(0, 11.466666, 18.833334, 25.4, 39.133335, 59.63334)
+"handle_modes": PackedInt32Array(2, 2, 2, 2, 2, 0),
+"points": PackedFloat32Array(7.0780516e-08, 0, 0, 4.2405934, 0, 0.29187304, -4.335, -0.02, 5.044946, 0.023275414, 0.51079637, -2.7173016, -0.17927924, 1.5, 0.09896541, 0.81968826, -4.40678, -0.047261458, 5.033333, 0.053981066, 0.91565466, -5.058298, -0.056886055, 2.9333305, 0.03298849, 1, -5.6666718, -0.0003747344, 0, 0),
+"times": PackedFloat32Array(0, 11.466666, 18.833334, 25.4, 39.133335, 60)
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_jjm7x"]
@@ -385,12 +386,6 @@ _data = {
 &"RESET": SubResource("Animation_jjm7x"),
 &"path_ratio": SubResource("Animation_3abyr")
 }
-
-[sub_resource type="GDScript" id="GDScript_0vh3s"]
-script/source = "extends AnimationPlayer
-
-@export var path_ratio : float
-"
 
 [node name="test_level_two" type="Node3D"]
 script = SubResource("GDScript_jjm7x")
@@ -434,6 +429,23 @@ text = "progress ratio"
 [node name="tilt_label" type="Label" parent="CanvasLayer/Control/MarginContainer/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 text = "tilt"
+
+[node name="VBoxContainer3" type="VBoxContainer" parent="CanvasLayer/Control/MarginContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="AnimGraphDisplay" type="Control" parent="CanvasLayer/Control/MarginContainer/HBoxContainer/VBoxContainer3" node_paths=PackedStringArray("anim_player")]
+custom_minimum_size = Vector2(250, 100)
+layout_mode = 2
+script = ExtResource("1_jjm7x")
+anim_player = NodePath("../../../../../../action/AnimationPlayer")
+nsamples = 45
+
+[node name="VBoxContainer4" type="VBoxContainer" parent="CanvasLayer/Control/MarginContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="fps_label" type="Label" parent="CanvasLayer/Control/MarginContainer/HBoxContainer/VBoxContainer4"]
+layout_mode = 2
+text = "fps"
 
 [node name="VSeparator" type="VSeparator" parent="CanvasLayer/Control/MarginContainer/HBoxContainer"]
 layout_mode = 2
@@ -507,7 +519,7 @@ draw_debug = true
 curve = SubResource("Curve3D_0vh3s")
 
 [node name="PathFollow3D" type="PathFollow3D" parent="action/Path3D"]
-transform = Transform3D(-0.9181719, 0, -0.39590898, 0, 1, 0, 0.39590898, 0, -0.9181719, 227, 0, -865)
+transform = Transform3D(-0.91816926, 0, -0.39590785, 0, 1, 0, 0.39590785, 0, -0.91816926, 227, 0, -865)
 tilt_enabled = false
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="action/Path3D/PathFollow3D"]
@@ -560,7 +572,6 @@ libraries = {
 &"": SubResource("AnimationLibrary_jjm7x")
 }
 autoplay = "path_ratio"
-script = SubResource("GDScript_0vh3s")
 
 [node name="witness_camera" type="Camera3D" parent="."]
 transform = Transform3D(0.49999997, -0.628723, 0.5955732, 0, 0.6877086, 0.72598684, -0.8660255, -0.36299336, 0.34385425, 352.52307, 255.5, -51.889557)
