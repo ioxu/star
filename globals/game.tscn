@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://y47rh7dsyw3j"]
+[gd_scene load_steps=25 format=3 uid="uid://y47rh7dsyw3j"]
 
 [ext_resource type="Script" uid="uid://5vfmtq7832s2" path="res://globals/GameStates/state_machine.gd" id="1_ehmke"]
 [ext_resource type="PackedScene" uid="uid://cgrqgutviav26" path="res://assets/levels/test_level.tscn" id="1_j4t3q"]
@@ -14,12 +14,56 @@
 [ext_resource type="Script" uid="uid://1oq1i4y2174b" path="res://globals/GameStates/mainmenu_playing_transition.gd" id="10_u0hhh"]
 [ext_resource type="Script" uid="uid://xgb6rgrlri12" path="res://globals/GameStates/pause.gd" id="12_ie6ya"]
 
+[sub_resource type="GDScript" id="GDScript_ojkwq"]
+script/source = "extends SubViewportContainer
+
+func _ready() -> void:
+	pprint(\"binding WindowManager events ..\")
+	WindowManager.connect( \"change_fullscreen\", _on_windowmanager_change_fullscreen )
+	pprint(\"HERE: %s\"%DisplayServer.window_get_size())
+	_update_window_size()
+	pprint(\"size: %s\"%self.size)
+
+
+func _on_windowmanager_change_fullscreen( value ) -> void:
+	_update_window_size()
+
+
+func _update_window_size() -> void:
+	var wsize : Vector2i = DisplayServer.window_get_size()
+	self.size = wsize
+
+
+func pprint(thing) -> void:
+	print(\"[SubViewportContainer] %s\"%thing)
+"
+
 [sub_resource type="CameraAttributesPhysical" id="CameraAttributesPhysical_j4t3q"]
 exposure_sensitivity = 164.0
 exposure_shutter_speed = 125.0
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_qdmn5"]
 viewport_path = NodePath("SubViewportContainer/SubViewport")
+
+[sub_resource type="GDScript" id="GDScript_6dsdn"]
+script/source = "extends TextureRect
+
+@export var target_viewport: SubViewport
+
+func _input(event):
+	# Optional: Filter the event type if needed
+	# For example, only pass mouse button presses
+
+	if event is InputEventMouseButton:
+		if target_viewport != null:
+			# You may need coordinate conversion depending on your setup
+			target_viewport.push_input(event, true)
+			print(\"ViewportDisplayTextureRect: pushing event (%s) (gloabl: %s)\"%[event.position, event.global_position ])
+
+	# If the event should be consumed so others don't receive it, call accept_event()
+	# accept_event()
+	pass
+"
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_06wfu"]
 bg_color = Color(0, 0, 0, 1)
@@ -34,8 +78,6 @@ bg_color = Color(0, 0, 0, 1)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_sw6f3"]
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ylvxq"]
-
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_6dsdn"]
 
 [node name="Game" type="Node2D"]
@@ -47,7 +89,9 @@ script = ExtResource("4_6dsdn")
 texture_filter = 2
 offset_right = 1152.0
 offset_bottom = 648.0
+mouse_filter = 2
 stretch = true
+script = SubResource("GDScript_ojkwq")
 
 [node name="SubViewport" type="SubViewport" parent="SubViewportContainer"]
 handle_input_locally = false
@@ -72,7 +116,7 @@ draw_bounds = true
 
 [node name="ViewportDisplay" type="Node" parent="."]
 
-[node name="ViewportDisplayTextureRect" type="TextureRect" parent="ViewportDisplay"]
+[node name="ViewportDisplayTextureRect" type="TextureRect" parent="ViewportDisplay" node_paths=PackedStringArray("target_viewport")]
 texture_filter = 4
 anchors_preset = 15
 anchor_right = 1.0
@@ -81,6 +125,8 @@ grow_horizontal = 2
 grow_vertical = 2
 texture = SubResource("ViewportTexture_qdmn5")
 expand_mode = 1
+script = SubResource("GDScript_6dsdn")
+target_viewport = NodePath("../../SubViewportContainer/SubViewport")
 
 [node name="ui_main_menu" type="Node" parent="." node_paths=PackedStringArray("state", "subviewport_container")]
 script = ExtResource("4_06wfu")
@@ -94,6 +140,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_06wfu")
 
 [node name="logos" type="Control" parent="ui_main_menu"]
@@ -232,15 +279,6 @@ layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/separator = SubResource("StyleBoxEmpty_06wfu")
 
-[node name="VSeparator" type="VSeparator" parent="ui_main_menu"]
-offset_left = 15.0
-offset_top = 15.0
-offset_right = 966.0
-offset_bottom = 633.0
-size_flags_horizontal = 3
-theme_override_constants/separation = 500
-theme_override_styles/separator = SubResource("StyleBoxEmpty_ylvxq")
-
 [node name="fade_up_timer" type="Timer" parent="ui_main_menu"]
 wait_time = 3.0
 one_shot = true
@@ -338,9 +376,10 @@ script = ExtResource("2_nqac0")
 main_menu = NodePath("../../ui_main_menu")
 metadata/_custom_type_script = "uid://d161rlqyhcrhm"
 
-[node name="MainMenu_Playing_transition" type="Node" parent="Game State Machine" node_paths=PackedStringArray("main_menu")]
+[node name="MainMenu_Playing_transition" type="Node" parent="Game State Machine" node_paths=PackedStringArray("main_menu", "level_container")]
 script = ExtResource("10_u0hhh")
 main_menu = NodePath("../../ui_main_menu")
+level_container = NodePath("../../SubViewportContainer/SubViewport/level_container")
 metadata/_custom_type_script = "uid://1oq1i4y2174b"
 
 [node name="transition_timer" type="Timer" parent="Game State Machine/MainMenu_Playing_transition"]

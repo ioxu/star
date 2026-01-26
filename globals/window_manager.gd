@@ -6,7 +6,7 @@ var BORDERLESS_FULLSCREEN = false
 
 var window_position := Vector2.ZERO
 var window_size : Vector2
-var fullscreen : = true#false#true#false#true#false
+var fullscreen : = false#true#false#true#false#true#false
 
 signal change_fullscreen(value:bool)
 var previous_mode 

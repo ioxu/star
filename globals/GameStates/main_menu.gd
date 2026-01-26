@@ -10,7 +10,6 @@ var object_time := 0.0
 
 @export var main_menu : Node # reference to main menu ui tree
 
-
 func _ready() -> void:
 	main_menu.new_game_button_pressed.connect(_on_new_game)
 
@@ -34,6 +33,8 @@ func enter( from_state_name : String, parameters : Dictionary ) -> void:
 	camera.set_physics_process(true)
 	camera.set_process_input(true)
 	camera.set_process_unhandled_input(true)
+
+	
 
 
 func exit() -> void:

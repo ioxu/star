@@ -139,9 +139,15 @@ func _on_witness_camera_toggle_toggled(toggled_on: bool) -> void:
 
 
 func _input(event: InputEvent) -> void:
+	if event is InputEventMouseButton:
+		pprint(\"_input: %s (%s) (global:%s)\"%[event, event.position, event.global_position ])
 	if event.is_action_pressed(\"ui_cancel\"):
 		get_viewport().set_input_as_handled()
 		get_tree().change_scene_to_file( \"res://globals/game.tscn\" )
+
+
+func _on_witness_camera_toggle_mouse_entered() -> void:
+	pprint(\"_on_witness_camera_toggle_mouse_entered\")
 "
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_3abyr"]
@@ -434,11 +440,13 @@ text = "tilt"
 layout_mode = 2
 
 [node name="AnimGraphDisplay" type="Control" parent="CanvasLayer/Control/MarginContainer/HBoxContainer/VBoxContainer3" node_paths=PackedStringArray("anim_player")]
-custom_minimum_size = Vector2(250, 100)
+custom_minimum_size = Vector2(450, 50)
 layout_mode = 2
 script = ExtResource("1_jjm7x")
 anim_player = NodePath("../../../../../../action/AnimationPlayer")
-nsamples = 45
+graph_width = 450
+graph_height = 50
+nsamples = 50
 
 [node name="VBoxContainer4" type="VBoxContainer" parent="CanvasLayer/Control/MarginContainer/HBoxContainer"]
 layout_mode = 2
@@ -576,4 +584,5 @@ autoplay = "path_ratio"
 [node name="witness_camera" type="Camera3D" parent="."]
 transform = Transform3D(0.49999997, -0.628723, 0.5955732, 0, 0.6877086, 0.72598684, -0.8660255, -0.36299336, 0.34385425, 352.52307, 255.5, -51.889557)
 
+[connection signal="mouse_entered" from="CanvasLayer/Control/MarginContainer/HBoxContainer/VBoxContainer/witness_camera_toggle" to="." method="_on_witness_camera_toggle_mouse_entered"]
 [connection signal="toggled" from="CanvasLayer/Control/MarginContainer/HBoxContainer/VBoxContainer/witness_camera_toggle" to="." method="_on_witness_camera_toggle_toggled"]

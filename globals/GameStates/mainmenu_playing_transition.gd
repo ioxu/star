@@ -25,6 +25,11 @@ var reverse := false
 
 @onready var player_relative_pose = main_menu.find_child("player_relative_pose")
 
+@export var level_container : Node3D
+
+var new_level = preload("res://assets/levels/test_level_two.tscn")
+
+
 
 func enter( from_state_name : String, parameters : Dictionary ) -> void:
 	pprint("enter()")
@@ -47,6 +52,11 @@ func enter( from_state_name : String, parameters : Dictionary ) -> void:
 		$transition_timer.wait_time = transition_time
 
 	$transition_timer.start()
+
+	level_container.get_child(0).queue_free()
+	var new_level_inst = new_level.instantiate()
+	level_container.add_child( new_level_inst )
+
 
 func exit() -> void:
 	pprint("exit()")
@@ -71,6 +81,8 @@ func update( delta ) -> void:
 			menu_logos.modulate = Color(1.0, 1.0, 1.0, norm_transition_time)
 			menu_buttons.modulate = Color(1.0, 1.0, 1.0, norm_transition_time)
 
+			menu_buttons.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
 			if norm_transition_time == 1.0:
 				transitioning = false
 				transitioned.emit(self, "MainMenu", {})
@@ -82,6 +94,8 @@ func update( delta ) -> void:
 		
 			menu_logos.modulate = Color(1.0, 1.0, 1.0, 1.0 - norm_transition_time)
 			menu_buttons.modulate = Color(1.0, 1.0, 1.0, 1.0 - norm_transition_time)
+
+			menu_buttons.mouse_filter = Control.MOUSE_FILTER_PASS
 
 			if norm_transition_time == 1.0:
 				transitioning = false
