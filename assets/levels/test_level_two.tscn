@@ -37,7 +37,7 @@ var last_path_position : Vector3
 func _ready() -> void:
 	pprint(\"_ready()\")
 
-	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	#Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
 	#--
 	anim_player.callback_mode_process = AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_PHYSICS
@@ -132,6 +132,7 @@ func pprint(thing) -> void:
 
 
 func _on_witness_camera_toggle_toggled(toggled_on: bool) -> void:
+	pprint(\"_on_witness_camera_toggle_toggled: %s\"%toggled_on)
 	if toggled_on:
 		witness_camera.make_current()
 	else:
@@ -396,17 +397,16 @@ _data = {
 [node name="test_level_two" type="Node3D"]
 script = SubResource("GDScript_jjm7x")
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
-
-[node name="Control" type="Control" parent="CanvasLayer"]
+[node name="Control" type="Control" parent="."]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 1
 
-[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/Control"]
+[node name="MarginContainer" type="MarginContainer" parent="Control"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -418,52 +418,48 @@ theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 20
 
-[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/Control/MarginContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="Control/MarginContainer"]
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Control/MarginContainer/HBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/MarginContainer/HBoxContainer"]
 layout_mode = 2
 
-[node name="witness_camera_toggle" type="CheckButton" parent="CanvasLayer/Control/MarginContainer/HBoxContainer/VBoxContainer"]
+[node name="witness_camera_toggle" type="CheckButton" parent="Control/MarginContainer/HBoxContainer/VBoxContainer"]
 layout_mode = 2
+mouse_default_cursor_shape = 2
 text = "witness cam"
 
-[node name="progress_ratio" type="Label" parent="CanvasLayer/Control/MarginContainer/HBoxContainer/VBoxContainer"]
+[node name="progress_ratio" type="Label" parent="Control/MarginContainer/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 text = "progress ratio"
 
-[node name="tilt_label" type="Label" parent="CanvasLayer/Control/MarginContainer/HBoxContainer/VBoxContainer"]
+[node name="tilt_label" type="Label" parent="Control/MarginContainer/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 text = "tilt"
 
-[node name="VBoxContainer3" type="VBoxContainer" parent="CanvasLayer/Control/MarginContainer/HBoxContainer"]
+[node name="VBoxContainer3" type="VBoxContainer" parent="Control/MarginContainer/HBoxContainer"]
 layout_mode = 2
 
-[node name="AnimGraphDisplay" type="Control" parent="CanvasLayer/Control/MarginContainer/HBoxContainer/VBoxContainer3" node_paths=PackedStringArray("anim_player")]
+[node name="AnimGraphDisplay" type="Control" parent="Control/MarginContainer/HBoxContainer/VBoxContainer3" node_paths=PackedStringArray("anim_player")]
 custom_minimum_size = Vector2(450, 50)
 layout_mode = 2
+mouse_filter = 1
 script = ExtResource("1_jjm7x")
-anim_player = NodePath("../../../../../../action/AnimationPlayer")
+anim_player = NodePath("../../../../../action/AnimationPlayer")
 graph_width = 450
 graph_height = 50
 nsamples = 50
 
-[node name="VBoxContainer4" type="VBoxContainer" parent="CanvasLayer/Control/MarginContainer/HBoxContainer"]
-layout_mode = 2
-
-[node name="fps_label" type="Label" parent="CanvasLayer/Control/MarginContainer/HBoxContainer/VBoxContainer4"]
-layout_mode = 2
-text = "fps"
-
-[node name="VSeparator" type="VSeparator" parent="CanvasLayer/Control/MarginContainer/HBoxContainer"]
+[node name="VSeparator" type="VSeparator" parent="Control/MarginContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+mouse_filter = 2
 theme_override_styles/separator = SubResource("StyleBoxEmpty_3abyr")
 
-[node name="VBoxContainer2" type="VBoxContainer" parent="CanvasLayer/Control/MarginContainer/HBoxContainer"]
+[node name="VBoxContainer2" type="VBoxContainer" parent="Control/MarginContainer/HBoxContainer"]
 layout_mode = 2
 
-[node name="fps_label" type="Label" parent="CanvasLayer/Control/MarginContainer/HBoxContainer/VBoxContainer2"]
+[node name="fps_label" type="Label" parent="Control/MarginContainer/HBoxContainer/VBoxContainer2"]
 layout_mode = 2
 text = "fps"
 
@@ -584,5 +580,5 @@ autoplay = "path_ratio"
 [node name="witness_camera" type="Camera3D" parent="."]
 transform = Transform3D(0.49999997, -0.628723, 0.5955732, 0, 0.6877086, 0.72598684, -0.8660255, -0.36299336, 0.34385425, 352.52307, 255.5, -51.889557)
 
-[connection signal="mouse_entered" from="CanvasLayer/Control/MarginContainer/HBoxContainer/VBoxContainer/witness_camera_toggle" to="." method="_on_witness_camera_toggle_mouse_entered"]
-[connection signal="toggled" from="CanvasLayer/Control/MarginContainer/HBoxContainer/VBoxContainer/witness_camera_toggle" to="." method="_on_witness_camera_toggle_toggled"]
+[connection signal="mouse_entered" from="Control/MarginContainer/HBoxContainer/VBoxContainer/witness_camera_toggle" to="." method="_on_witness_camera_toggle_mouse_entered"]
+[connection signal="toggled" from="Control/MarginContainer/HBoxContainer/VBoxContainer/witness_camera_toggle" to="." method="_on_witness_camera_toggle_toggled"]

@@ -1,4 +1,4 @@
-extends Node
+extends Control
 
 @export var state : GameState
 @export var subviewport_container : SubViewportContainer
@@ -19,6 +19,8 @@ var total_time := 4.0
 signal new_game_button_pressed
 signal settings_button_pressed
 
+@onready var logos = find_child("logos")
+
 
 func _ready() -> void:
 	if subviewport_container is not SubViewportContainer:
@@ -36,7 +38,7 @@ func _ready() -> void:
 	$fade_up_timer.wait_time = total_time
 	$fade_up_timer.start()
 	
-	$logos.modulate = Color.BLACK
+	logos.modulate = Color.BLACK
 	$blackout_panel.visible = true
 	$blackout_panel.modulate = Color.WHITE
 
@@ -53,7 +55,7 @@ func _process(delta: float) -> void:
 	if not finished_fadeups:
 		var v_logos = remap( total_time-$fade_up_timer.time_left, 0.0, graphics_fadeup_time, 0.0, 1.0 )
 		v_logos = clamp(v_logos, 0.0, 1.0)
-		$logos.modulate = Color(v_logos, v_logos, v_logos, 1.0)
+		logos.modulate = Color(v_logos, v_logos, v_logos, 1.0)
 		
 		var v_viewport = remap( total_time-$fade_up_timer.time_left, viewport_fadeup_start, viewport_fadeup_start+viewport_fadeup_time, 1.0, 0.0 )
 		v_viewport = clamp(v_viewport, 0.0, 1.0)

@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3 uid="uid://y47rh7dsyw3j"]
+[gd_scene load_steps=26 format=3 uid="uid://y47rh7dsyw3j"]
 
 [ext_resource type="Script" uid="uid://5vfmtq7832s2" path="res://globals/GameStates/state_machine.gd" id="1_ehmke"]
 [ext_resource type="PackedScene" uid="uid://cgrqgutviav26" path="res://assets/levels/test_level.tscn" id="1_j4t3q"]
@@ -50,27 +50,33 @@ script/source = "extends TextureRect
 
 @export var target_viewport: SubViewport
 
-func _input(event):
-	# Optional: Filter the event type if needed
-	# For example, only pass mouse button presses
 
-	if event is InputEventMouseButton:
-		if target_viewport != null:
-			# You may need coordinate conversion depending on your setup
-			target_viewport.push_input(event, true)
-			print(\"ViewportDisplayTextureRect: pushing event (%s) (gloabl: %s)\"%[event.position, event.global_position ])
-
-	# If the event should be consumed so others don't receive it, call accept_event()
-	# accept_event()
+func _ready() -> void:
+	#connect(\"gui_input\", _on_gui_input)
 	pass
+
+
+#func _input(event):
+func _on_gui_input(event):
+	if event is InputEventMouseButton or event is InputEventMouseMotion:
+		if target_viewport != null:
+			# it is possible to duplicate and alter the event
+			# only if I need to modify the position of the event due to
+			# resolution/space conversions between the SubViewport and
+			# ViewportTexture
+			#var new_event = event.duplicate() 
+			
+			#if event is InputEventMouseButton:
+				#print(\"[ViewportDisplayTextureRect] : pushing event %s\"%[event])
+			
+			# forward event to the target
+			target_viewport.push_input(event, true)
+
+	# accept_event()
 "
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_06wfu"]
 bg_color = Color(0, 0, 0, 1)
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ojkwq"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_nnybr"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_06wfu"]
 
@@ -78,18 +84,36 @@ bg_color = Color(0, 0, 0, 1)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_sw6f3"]
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_x6wqj"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ojkwq"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_nnybr"]
+
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_6dsdn"]
 
-[node name="Game" type="Node2D"]
+[node name="Game" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 1
 
 [node name="notes" type="Node" parent="."]
 script = ExtResource("4_6dsdn")
 
 [node name="SubViewportContainer" type="SubViewportContainer" parent="."]
 texture_filter = 2
-offset_right = 1152.0
-offset_bottom = 648.0
-mouse_filter = 2
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 stretch = true
 script = SubResource("GDScript_ojkwq")
 
@@ -111,30 +135,48 @@ render_target_update_mode = 4
 [node name="Camera3D" type="Camera3D" parent="SubViewportContainer/SubViewport" groups=["camera"]]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 180, 0)
 attributes = SubResource("CameraAttributesPhysical_j4t3q")
+current = true
 script = ExtResource("3_3q0u3")
 draw_bounds = true
 
-[node name="ViewportDisplay" type="Node" parent="."]
-
-[node name="ViewportDisplayTextureRect" type="TextureRect" parent="ViewportDisplay" node_paths=PackedStringArray("target_viewport")]
-texture_filter = 4
+[node name="ViewportDisplay" type="Control" parent="."]
+layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
+
+[node name="ViewportDisplayTextureRect" type="TextureRect" parent="ViewportDisplay" node_paths=PackedStringArray("target_viewport")]
+texture_filter = 4
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 texture = SubResource("ViewportTexture_qdmn5")
 expand_mode = 1
 script = SubResource("GDScript_6dsdn")
 target_viewport = NodePath("../../SubViewportContainer/SubViewport")
 
-[node name="ui_main_menu" type="Node" parent="." node_paths=PackedStringArray("state", "subviewport_container")]
+[node name="ui_main_menu" type="Control" parent="." node_paths=PackedStringArray("state", "subviewport_container")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
 script = ExtResource("4_06wfu")
 state = NodePath("../Game State Machine/MainMenu")
 subviewport_container = NodePath("../SubViewportContainer")
 
 [node name="blackout_panel" type="Panel" parent="ui_main_menu"]
 modulate = Color(1, 1, 1, 0.39215687)
+layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -143,78 +185,26 @@ grow_vertical = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_06wfu")
 
-[node name="logos" type="Control" parent="ui_main_menu"]
-layout_mode = 3
+[node name="crosses_whole" type="TextureRect" parent="ui_main_menu"]
+layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-
-[node name="crosses_whole" type="TextureRect" parent="ui_main_menu/logos"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
 texture = ExtResource("6_ylvxq")
 
-[node name="MarginContainer" type="MarginContainer" parent="ui_main_menu/logos"]
+[node name="HBoxContainer" type="HBoxContainer" parent="ui_main_menu"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 20
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_bottom = 20
 
-[node name="HBoxContainer" type="HBoxContainer" parent="ui_main_menu/logos/MarginContainer"]
+[node name="buttons" type="MarginContainer" parent="ui_main_menu/HBoxContainer"]
 layout_mode = 2
-
-[node name="VSeparator" type="VSeparator" parent="ui_main_menu/logos/MarginContainer/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_styles/separator = SubResource("StyleBoxEmpty_ojkwq")
-
-[node name="VBoxContainer" type="VBoxContainer" parent="ui_main_menu/logos/MarginContainer/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="star_title_logo" type="TextureRect" parent="ui_main_menu/logos/MarginContainer/HBoxContainer/VBoxContainer"]
-layout_mode = 2
-size_flags_vertical = 2
-texture = ExtResource("4_f1pwi")
-expand_mode = 5
-stretch_mode = 4
-
-[node name="HBoxContainer" type="HBoxContainer" parent="ui_main_menu/logos/MarginContainer/HBoxContainer/VBoxContainer"]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="VSeparator" type="VSeparator" parent="ui_main_menu/logos/MarginContainer/HBoxContainer/VBoxContainer/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_styles/separator = SubResource("StyleBoxEmpty_nnybr")
-
-[node name="metaball_logo" type="TextureRect" parent="ui_main_menu/logos/MarginContainer/HBoxContainer/VBoxContainer/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 10
-size_flags_stretch_ratio = 3.0
-texture = ExtResource("5_ylvxq")
-expand_mode = 3
-stretch_mode = 4
-
-[node name="buttons" type="MarginContainer" parent="ui_main_menu"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/margin_left = 15
@@ -222,62 +212,122 @@ theme_override_constants/margin_top = 15
 theme_override_constants/margin_right = 15
 theme_override_constants/margin_bottom = 15
 
-[node name="HBoxContainer" type="HBoxContainer" parent="ui_main_menu/buttons"]
+[node name="HBoxContainer" type="HBoxContainer" parent="ui_main_menu/HBoxContainer/buttons"]
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="ui_main_menu/buttons/HBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="ui_main_menu/HBoxContainer/buttons/HBoxContainer"]
 layout_mode = 2
 
-[node name="HSeparator" type="HSeparator" parent="ui_main_menu/buttons/HBoxContainer/VBoxContainer"]
+[node name="HSeparator" type="HSeparator" parent="ui_main_menu/HBoxContainer/buttons/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
+mouse_filter = 2
 theme_override_styles/separator = SubResource("StyleBoxEmpty_06wfu")
 
-[node name="new_game_button" type="Button" parent="ui_main_menu/buttons/HBoxContainer/VBoxContainer"]
+[node name="new_game_button" type="Button" parent="ui_main_menu/HBoxContainer/buttons/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 0
+mouse_filter = 1
 theme_override_fonts/font = SubResource("SystemFont_ie6ya")
 theme_override_font_sizes/font_size = 32
 text = "new game"
 
-[node name="HBoxContainer" type="HBoxContainer" parent="ui_main_menu/buttons/HBoxContainer/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="ui_main_menu/HBoxContainer/buttons/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="VSeparator" type="VSeparator" parent="ui_main_menu/buttons/HBoxContainer/VBoxContainer/HBoxContainer"]
+[node name="VSeparator" type="VSeparator" parent="ui_main_menu/HBoxContainer/buttons/HBoxContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+mouse_filter = 2
 theme_override_styles/separator = SubResource("StyleBoxEmpty_sw6f3")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="ui_main_menu/buttons/HBoxContainer/VBoxContainer/HBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="ui_main_menu/HBoxContainer/buttons/HBoxContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 
-[node name="player_test_scene_button" type="Button" parent="ui_main_menu/buttons/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+[node name="player_test_scene_button" type="Button" parent="ui_main_menu/HBoxContainer/buttons/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
 text = "player test scene"
 
-[node name="test_level_2_button" type="Button" parent="ui_main_menu/buttons/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+[node name="test_level_2_button" type="Button" parent="ui_main_menu/HBoxContainer/buttons/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
 text = "test level 2"
 
-[node name="settings_button" type="Button" parent="ui_main_menu/buttons/HBoxContainer/VBoxContainer"]
+[node name="settings_button" type="Button" parent="ui_main_menu/HBoxContainer/buttons/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 0
 theme_override_font_sizes/font_size = 32
 text = "settings"
 
-[node name="quit_button" type="Button" parent="ui_main_menu/buttons/HBoxContainer/VBoxContainer"]
+[node name="quit_button" type="Button" parent="ui_main_menu/HBoxContainer/buttons/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 0
 theme_override_font_sizes/font_size = 32
 text = "quit
 "
 
-[node name="HSeparator2" type="HSeparator" parent="ui_main_menu/buttons/HBoxContainer/VBoxContainer"]
+[node name="HSeparator2" type="HSeparator" parent="ui_main_menu/HBoxContainer/buttons/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
+mouse_filter = 2
 theme_override_styles/separator = SubResource("StyleBoxEmpty_06wfu")
+
+[node name="logos" type="PanelContainer" parent="ui_main_menu/HBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_x6wqj")
+
+[node name="MarginContainer" type="MarginContainer" parent="ui_main_menu/HBoxContainer/logos"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ui_main_menu/HBoxContainer/logos/MarginContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="VSeparator" type="VSeparator" parent="ui_main_menu/HBoxContainer/logos/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_styles/separator = SubResource("StyleBoxEmpty_ojkwq")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ui_main_menu/HBoxContainer/logos/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="star_title_logo" type="TextureRect" parent="ui_main_menu/HBoxContainer/logos/MarginContainer/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 2
+mouse_filter = 2
+texture = ExtResource("4_f1pwi")
+expand_mode = 5
+stretch_mode = 4
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ui_main_menu/HBoxContainer/logos/MarginContainer/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="VSeparator" type="VSeparator" parent="ui_main_menu/HBoxContainer/logos/MarginContainer/HBoxContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_styles/separator = SubResource("StyleBoxEmpty_nnybr")
+
+[node name="metaball_logo" type="TextureRect" parent="ui_main_menu/HBoxContainer/logos/MarginContainer/HBoxContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 10
+size_flags_stretch_ratio = 3.0
+mouse_filter = 2
+texture = ExtResource("5_ylvxq")
+expand_mode = 3
+stretch_mode = 4
 
 [node name="fade_up_timer" type="Timer" parent="ui_main_menu"]
 wait_time = 3.0
@@ -397,10 +447,10 @@ metadata/_custom_type_script = "uid://xgb6rgrlri12"
 [node name="transition_timer" type="Timer" parent="Game State Machine/Pause"]
 one_shot = true
 
-[connection signal="pressed" from="ui_main_menu/buttons/HBoxContainer/VBoxContainer/new_game_button" to="ui_main_menu" method="_on_new_game_button_pressed"]
-[connection signal="pressed" from="ui_main_menu/buttons/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer/player_test_scene_button" to="ui_main_menu" method="_on_player_test_scene_button_pressed"]
-[connection signal="pressed" from="ui_main_menu/buttons/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer/test_level_2_button" to="ui_main_menu" method="_on_test_level_2_button_pressed"]
-[connection signal="pressed" from="ui_main_menu/buttons/HBoxContainer/VBoxContainer/quit_button" to="Game State Machine/MainMenu" method="_on_quit_button_pressed"]
+[connection signal="pressed" from="ui_main_menu/HBoxContainer/buttons/HBoxContainer/VBoxContainer/new_game_button" to="ui_main_menu" method="_on_new_game_button_pressed"]
+[connection signal="pressed" from="ui_main_menu/HBoxContainer/buttons/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer/player_test_scene_button" to="ui_main_menu" method="_on_player_test_scene_button_pressed"]
+[connection signal="pressed" from="ui_main_menu/HBoxContainer/buttons/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer/test_level_2_button" to="ui_main_menu" method="_on_test_level_2_button_pressed"]
+[connection signal="pressed" from="ui_main_menu/HBoxContainer/buttons/HBoxContainer/VBoxContainer/quit_button" to="Game State Machine/MainMenu" method="_on_quit_button_pressed"]
 [connection signal="timeout" from="ui_main_menu/fade_up_timer" to="ui_main_menu" method="_on_fade_up_timer_timeout"]
 [connection signal="pressed" from="ui_pause_menu/ui_pause_menu_control/MarginContainer/HBoxContainer/VBoxContainer/resume_button" to="Game State Machine/Pause" method="_on_resume_button"]
 [connection signal="pressed" from="ui_pause_menu/ui_pause_menu_control/MarginContainer/HBoxContainer/VBoxContainer/settings_button" to="Game State Machine/Pause" method="_on_settings_button"]

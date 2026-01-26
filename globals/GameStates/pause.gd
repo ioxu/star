@@ -47,12 +47,12 @@ func enter( from_state_name : String, parameters : Dictionary ) -> void:
 	player.set_process(false)
 	player.set_physics_process(false)
 	player.set_process_input(false)
-	player.set_process_unhandled_input(false)
+	#player.set_process_unhandled_input(false)
 
 	camera.set_process(false)
 	camera.set_physics_process(false)
 	camera.set_process_input(false)
-	camera.set_process_unhandled_input(false)
+	#camera.set_process_unhandled_input(false)
 
 	last_camera_transform = camera.global_transform
 	pre_pause_camera_transform = camera.global_transform
@@ -68,7 +68,7 @@ func exit() -> void:
 	player.set_process(true)
 	player.set_physics_process(true)
 	player.set_process_input(true)
-	player.set_process_unhandled_input(true)
+	#player.set_process_unhandled_input(true)
 
 	#camera.set_process(true)
 	#camera.set_physics_process(true)

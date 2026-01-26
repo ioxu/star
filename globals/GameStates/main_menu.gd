@@ -8,7 +8,7 @@ var player_relative_pose : Node3D
 
 var object_time := 0.0
 
-@export var main_menu : Node # reference to main menu ui tree
+@export var main_menu : Control #Node # reference to main menu ui tree
 
 func _ready() -> void:
 	main_menu.new_game_button_pressed.connect(_on_new_game)
@@ -23,7 +23,7 @@ func enter( from_state_name : String, parameters : Dictionary ) -> void:
 	player.set_process(false)
 	player.set_physics_process(false)
 	player.set_process_input(false)
-	player.set_process_unhandled_input(false)
+	#player.set_process_unhandled_input(false)
 
 	player_relative_pose = main_menu.find_child("player_relative_pose")
 
@@ -32,7 +32,7 @@ func enter( from_state_name : String, parameters : Dictionary ) -> void:
 	camera.set_process(true)
 	camera.set_physics_process(true)
 	camera.set_process_input(true)
-	camera.set_process_unhandled_input(true)
+	#camera.set_process_unhandled_input(true)
 
 	
 

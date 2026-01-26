@@ -75,8 +75,9 @@ func update( delta ) -> void:
 
 			camera.global_transform = lerp( initial_camera_transform, prepause_camera_transform, norm_transition_time )
 
-			menu_logos.visible = true
-			menu_buttons.visible = true
+			#menu_logos.visible = true
+			#menu_buttons.visible = true
+			main_menu.visible = true
 			
 			menu_logos.modulate = Color(1.0, 1.0, 1.0, norm_transition_time)
 			menu_buttons.modulate = Color(1.0, 1.0, 1.0, norm_transition_time)
@@ -100,13 +101,14 @@ func update( delta ) -> void:
 			if norm_transition_time == 1.0:
 				transitioning = false
 				
-				menu_logos.visible = false
-				menu_buttons.visible = false
+				#menu_logos.visible = false
+				#menu_buttons.visible = false
+				main_menu.visible = false
 				
 				player.set_process(true)
 				player.set_physics_process(true)
 				player.set_process_input(true)
-				player.set_process_unhandled_input(true)
+				#player.set_process_unhandled_input(true)
 				
 				pprint("transition done.")
 				transitioned.emit(self, "Playing", {})

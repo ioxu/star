@@ -10,7 +10,7 @@ func enter( from_state_name : String, parameters : Dictionary ) -> void:
 	camera.set_process(true)
 	camera.set_physics_process(true)
 	camera.set_process_input(true)
-	camera.set_process_unhandled_input(true)
+	#camera.set_process_unhandled_input(true)
 
 
 func exit() -> void:

@@ -43,7 +43,7 @@ func run_alternative_scene(scene_path: String) -> void:
 	get_tree().current_scene.set_process(false)
 	get_tree().current_scene.set_physics_process(false)
 	get_tree().current_scene.set_process_input(false)
-	get_tree().current_scene.set_process_unhandled_input(false)
+	#get_tree().current_scene.set_process_unhandled_input(false)
 	
 	_do_f6_scene_check = false
 	get_tree().change_scene_to_file.call_deferred(self.alternative_run_scene_path)

@@ -17,7 +17,7 @@ var previous_mode
 func _ready():
 	pprint("window_manager.gd autoload ready")
 	
-	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
+	#Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
 	
 	var root = get_node("/root")
 	#root.connect("size_changed",resize, )
@@ -54,7 +54,7 @@ func _input(event):
 	elif event.is_action_pressed("ui_fullscreen"):
 		go_fullscreen()
 		#get_tree().set_input_as_handled() # 3.5
-		get_viewport().set_input_as_handled()
+		#get_viewport().set_input_as_handled()
 
 
 func resize():
