@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=3 uid="uid://bibvc765xe0fg"]
+[gd_scene format=3 uid="uid://bibvc765xe0fg"]
 
 [ext_resource type="Material" uid="uid://cnxtog6iv1d0j" path="res://assets/materials/triplanar_grid_grey.material" id="1_3abyr"]
 [ext_resource type="Script" uid="uid://cm2hycvn6ckp6" path="res://lib/AnimGraphDisplay.gd" id="1_jjm7x"]
@@ -394,10 +394,10 @@ _data = {
 &"path_ratio": SubResource("Animation_3abyr")
 }
 
-[node name="test_level_two" type="Node3D"]
+[node name="test_level_two" type="Node3D" unique_id=198970985]
 script = SubResource("GDScript_jjm7x")
 
-[node name="Control" type="Control" parent="."]
+[node name="Control" type="Control" parent="." unique_id=1470213632]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -406,7 +406,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 1
 
-[node name="MarginContainer" type="MarginContainer" parent="Control"]
+[node name="MarginContainer" type="MarginContainer" parent="Control" unique_id=885485563]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -418,29 +418,29 @@ theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 20
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Control/MarginContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="Control/MarginContainer" unique_id=1496122339]
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Control/MarginContainer/HBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/MarginContainer/HBoxContainer" unique_id=749869894]
 layout_mode = 2
 
-[node name="witness_camera_toggle" type="CheckButton" parent="Control/MarginContainer/HBoxContainer/VBoxContainer"]
+[node name="witness_camera_toggle" type="CheckButton" parent="Control/MarginContainer/HBoxContainer/VBoxContainer" unique_id=936309328]
 layout_mode = 2
 mouse_default_cursor_shape = 2
 text = "witness cam"
 
-[node name="progress_ratio" type="Label" parent="Control/MarginContainer/HBoxContainer/VBoxContainer"]
+[node name="progress_ratio" type="Label" parent="Control/MarginContainer/HBoxContainer/VBoxContainer" unique_id=1853393391]
 layout_mode = 2
 text = "progress ratio"
 
-[node name="tilt_label" type="Label" parent="Control/MarginContainer/HBoxContainer/VBoxContainer"]
+[node name="tilt_label" type="Label" parent="Control/MarginContainer/HBoxContainer/VBoxContainer" unique_id=377602866]
 layout_mode = 2
 text = "tilt"
 
-[node name="VBoxContainer3" type="VBoxContainer" parent="Control/MarginContainer/HBoxContainer"]
+[node name="VBoxContainer3" type="VBoxContainer" parent="Control/MarginContainer/HBoxContainer" unique_id=1698184225]
 layout_mode = 2
 
-[node name="AnimGraphDisplay" type="Control" parent="Control/MarginContainer/HBoxContainer/VBoxContainer3" node_paths=PackedStringArray("anim_player")]
+[node name="AnimGraphDisplay" type="Control" parent="Control/MarginContainer/HBoxContainer/VBoxContainer3" unique_id=1900077595 node_paths=PackedStringArray("anim_player")]
 custom_minimum_size = Vector2(450, 50)
 layout_mode = 2
 mouse_filter = 1
@@ -450,26 +450,26 @@ graph_width = 450
 graph_height = 50
 nsamples = 50
 
-[node name="VSeparator" type="VSeparator" parent="Control/MarginContainer/HBoxContainer"]
+[node name="VSeparator" type="VSeparator" parent="Control/MarginContainer/HBoxContainer" unique_id=1818954881]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 theme_override_styles/separator = SubResource("StyleBoxEmpty_3abyr")
 
-[node name="VBoxContainer2" type="VBoxContainer" parent="Control/MarginContainer/HBoxContainer"]
+[node name="VBoxContainer2" type="VBoxContainer" parent="Control/MarginContainer/HBoxContainer" unique_id=804519772]
 layout_mode = 2
 
-[node name="fps_label" type="Label" parent="Control/MarginContainer/HBoxContainer/VBoxContainer2"]
+[node name="fps_label" type="Label" parent="Control/MarginContainer/HBoxContainer/VBoxContainer2" unique_id=1548877226]
 layout_mode = 2
 text = "fps"
 
-[node name="lvl_grp" type="Node3D" parent="."]
+[node name="lvl_grp" type="Node3D" parent="." unique_id=1101326373]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -30, 0)
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="lvl_grp"]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="lvl_grp" unique_id=479755806]
 environment = SubResource("Environment_3q0u3")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="lvl_grp"]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="lvl_grp" unique_id=1212130658]
 transform = Transform3D(-0.8422046, -0.43301278, -0.32123423, -0.52094567, 0.49999997, 0.69182056, -0.13895002, 0.75, -0.6466784, 0, 0, 0)
 light_bake_mode = 1
 shadow_enabled = true
@@ -482,102 +482,100 @@ directional_shadow_blend_splits = true
 directional_shadow_fade_start = 1.0
 directional_shadow_max_distance = 500.0
 
-[node name="ground" type="StaticBody3D" parent="lvl_grp"]
+[node name="ground" type="StaticBody3D" parent="lvl_grp" unique_id=54527959]
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="lvl_grp/ground"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="lvl_grp/ground" unique_id=265950651]
 transform = Transform3D(5000, 0, 0, 0, -0.0021855694, 50000, 0, -50000, -0.0021855694, 0.5508423, 0, -0.19393921)
 material_override = ExtResource("1_3abyr")
 mesh = SubResource("QuadMesh_kap54")
 skeleton = NodePath("../../../..")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="lvl_grp/ground"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="lvl_grp/ground" unique_id=1379830495]
 shape = SubResource("WorldBoundaryShape3D_j4t3q")
 
-[node name="origin" type="MeshInstance3D" parent="lvl_grp"]
+[node name="origin" type="MeshInstance3D" parent="lvl_grp" unique_id=833305625]
 transform = Transform3D(12, 0, 0, 0, 12, 0, 0, 0, 12, 0, 0, 0)
 mesh = SubResource("SphereMesh_ehmke")
 surface_material_override/0 = SubResource("StandardMaterial3D_nqac0")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="lvl_grp"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="lvl_grp" unique_id=645602315]
 transform = Transform3D(0.63692856, -0.76048726, -0.12641597, 0.7409803, 0.5586468, 0.37264153, -0.21276729, -0.3310178, 0.91932434, -27.95803, -3.8146973e-06, -24.09562)
 mesh = SubResource("BoxMesh_ehmke")
 surface_material_override/0 = ExtResource("1_3abyr")
 
-[node name="MeshInstance3D2" type="MeshInstance3D" parent="lvl_grp"]
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="lvl_grp" unique_id=569899435]
 transform = Transform3D(0.57901096, -0.25042737, -0.77590746, 0.7409803, 0.5586468, 0.37264153, 0.34013852, -0.7906958, 0.50902444, 51.022316, -3.8146973e-06, -26.762749)
 mesh = SubResource("BoxMesh_ehmke")
 surface_material_override/0 = ExtResource("1_3abyr")
 
-[node name="MeshInstance3D3" type="MeshInstance3D" parent="lvl_grp"]
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="lvl_grp" unique_id=1630444061]
 transform = Transform3D(0.6597612, -0.5022061, -0.55902064, 0.7409803, 0.5586468, 0.37264153, 0.12515222, -0.6600778, 0.74069846, 48.92562, -5.141407, -19.250942)
 mesh = SubResource("BoxMesh_ehmke")
 surface_material_override/0 = ExtResource("1_3abyr")
 
-[node name="Player" parent="." node_paths=PackedStringArray("camera") instance=ExtResource("3_3abyr")]
+[node name="Player" parent="." unique_id=883509357 node_paths=PackedStringArray("camera") instance=ExtResource("3_3abyr")]
 camera = NodePath("../action/Path3D/PathFollow3D/Camera3D")
 draw_debug = true
 
-[node name="action" type="Node3D" parent="."]
+[node name="action" type="Node3D" parent="." unique_id=603583366]
 
-[node name="Path3D" type="Path3D" parent="action"]
+[node name="Path3D" type="Path3D" parent="action" unique_id=486559722]
 curve = SubResource("Curve3D_0vh3s")
 
-[node name="PathFollow3D" type="PathFollow3D" parent="action/Path3D"]
+[node name="PathFollow3D" type="PathFollow3D" parent="action/Path3D" unique_id=1472110224]
 transform = Transform3D(-0.91816926, 0, -0.39590785, 0, 1, 0, 0.39590785, 0, -0.91816926, 227, 0, -865)
 tilt_enabled = false
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="action/Path3D/PathFollow3D"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="action/Path3D/PathFollow3D" unique_id=1747969835]
 transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0)
 mesh = SubResource("SphereMesh_3abyr")
 surface_material_override/0 = SubResource("StandardMaterial3D_jjm7x")
 
-[node name="future_local_position_marker" type="MeshInstance3D" parent="action/Path3D/PathFollow3D"]
+[node name="future_local_position_marker" type="MeshInstance3D" parent="action/Path3D/PathFollow3D" unique_id=1709559735]
 transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0)
 mesh = SubResource("TorusMesh_3abyr")
 surface_material_override/0 = SubResource("StandardMaterial3D_0vh3s")
 
-[node name="Camera3D" type="Camera3D" parent="action/Path3D/PathFollow3D" groups=["camera"]]
+[node name="Camera3D" type="Camera3D" parent="action/Path3D/PathFollow3D" unique_id=1763260954 groups=["camera"]]
 transform = Transform3D(1.0000018, 0, 0, 0, -4.3711466e-08, 1, 0, -1.0000018, -4.371139e-08, 0, 380, 0)
 attributes = SubResource("CameraAttributesPhysical_5xh8o")
 current = true
 script = SubResource("GDScript_8tus5")
 draw_bounds = true
 
-[node name="Area3D" type="Area3D" parent="action/Path3D/PathFollow3D"]
+[node name="Area3D" type="Area3D" parent="action/Path3D/PathFollow3D" unique_id=12587354]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="action/Path3D/PathFollow3D/Area3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="action/Path3D/PathFollow3D/Area3D" unique_id=1167638677]
 shape = SubResource("BoxShape3D_3abyr")
 debug_color = Color(0.21594596, 0.5891457, 0.69029975, 0.41960785)
 
-[node name="PathFollow3D_ahead" type="PathFollow3D" parent="action/Path3D"]
+[node name="PathFollow3D_ahead" type="PathFollow3D" parent="action/Path3D" unique_id=1325577350]
 transform = Transform3D(-0.9182713, 0, -0.39595184, 0, 1.0000001, 0, 0.39595184, 0, -0.9182713, 227, 0, -865)
 tilt_enabled = false
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="action/Path3D/PathFollow3D_ahead"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="action/Path3D/PathFollow3D_ahead" unique_id=1997740498]
 transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0)
 mesh = SubResource("SphereMesh_3abyr")
 surface_material_override/0 = SubResource("StandardMaterial3D_3abyr")
 
-[node name="future_global_position_marker" type="MeshInstance3D" parent="action/Path3D/PathFollow3D_ahead"]
+[node name="future_global_position_marker" type="MeshInstance3D" parent="action/Path3D/PathFollow3D_ahead" unique_id=786501844]
 transform = Transform3D(-1.8365426, 0, -0.7919037, 0, 2.0000002, 0, 0.7919037, 0, -1.8365426, 227, 0, -865)
 top_level = true
 mesh = SubResource("SphereMesh_3abyr")
 surface_material_override/0 = SubResource("StandardMaterial3D_0vh3s")
 
-[node name="Area3D" type="Area3D" parent="action/Path3D/PathFollow3D_ahead"]
+[node name="Area3D" type="Area3D" parent="action/Path3D/PathFollow3D_ahead" unique_id=217213040]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="action/Path3D/PathFollow3D_ahead/Area3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="action/Path3D/PathFollow3D_ahead/Area3D" unique_id=1107099929]
 shape = SubResource("BoxShape3D_jjm7x")
 debug_color = Color(0.76328486, 0.42804155, 0.38644674, 0.41960785)
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="action"]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="action" unique_id=227648253]
 callback_mode_process = 0
-libraries = {
-&"": SubResource("AnimationLibrary_jjm7x")
-}
-autoplay = "path_ratio"
+libraries/ = SubResource("AnimationLibrary_jjm7x")
+autoplay = &"path_ratio"
 
-[node name="witness_camera" type="Camera3D" parent="."]
+[node name="witness_camera" type="Camera3D" parent="." unique_id=509203314]
 transform = Transform3D(0.49999997, -0.628723, 0.5955732, 0, 0.6877086, 0.72598684, -0.8660255, -0.36299336, 0.34385425, 352.52307, 255.5, -51.889557)
 
 [connection signal="mouse_entered" from="Control/MarginContainer/HBoxContainer/VBoxContainer/witness_camera_toggle" to="." method="_on_witness_camera_toggle_mouse_entered"]
