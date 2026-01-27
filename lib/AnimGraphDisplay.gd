@@ -1,6 +1,8 @@
 @tool
 extends Control
 
+class_name AnimGraphDisplay
+
 @export var anim_player : AnimationPlayer
 @export var graph_width := 250 : set = _set_width
 @export var graph_height := 100 : set = _set_height
