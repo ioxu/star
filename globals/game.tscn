@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=3 uid="uid://y47rh7dsyw3j"]
+[gd_scene format=3 uid="uid://y47rh7dsyw3j"]
 
 [ext_resource type="Script" uid="uid://5vfmtq7832s2" path="res://globals/GameStates/state_machine.gd" id="1_ehmke"]
 [ext_resource type="PackedScene" uid="uid://cgrqgutviav26" path="res://assets/levels/test_level.tscn" id="1_j4t3q"]
@@ -92,7 +92,7 @@ bg_color = Color(0, 0, 0, 1)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_6dsdn"]
 
-[node name="Game" type="Control"]
+[node name="Game" type="Control" unique_id=129867761]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -103,10 +103,10 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 mouse_filter = 1
 
-[node name="notes" type="Node" parent="."]
+[node name="notes" type="Node" parent="." unique_id=288921155]
 script = ExtResource("4_6dsdn")
 
-[node name="SubViewportContainer" type="SubViewportContainer" parent="."]
+[node name="SubViewportContainer" type="SubViewportContainer" parent="." unique_id=604939563]
 texture_filter = 2
 layout_mode = 1
 anchors_preset = 15
@@ -117,7 +117,7 @@ grow_vertical = 2
 stretch = true
 script = SubResource("GDScript_ojkwq")
 
-[node name="SubViewport" type="SubViewport" parent="SubViewportContainer"]
+[node name="SubViewport" type="SubViewport" parent="SubViewportContainer" unique_id=563037702]
 handle_input_locally = false
 msaa_3d = 3
 screen_space_aa = 2
@@ -126,20 +126,20 @@ physics_object_picking = true
 size = Vector2i(1152, 648)
 render_target_update_mode = 4
 
-[node name="level_container" type="Node3D" parent="SubViewportContainer/SubViewport"]
+[node name="level_container" type="Node3D" parent="SubViewportContainer/SubViewport" unique_id=782989964]
 
-[node name="test_level" parent="SubViewportContainer/SubViewport/level_container" instance=ExtResource("1_j4t3q")]
+[node name="test_level" parent="SubViewportContainer/SubViewport/level_container" unique_id=337970105 instance=ExtResource("1_j4t3q")]
 
-[node name="Player" parent="SubViewportContainer/SubViewport" groups=["player"] instance=ExtResource("2_j4t3q")]
+[node name="Player" parent="SubViewportContainer/SubViewport" unique_id=36990465 groups=["player"] instance=ExtResource("2_j4t3q")]
 
-[node name="Camera3D" type="Camera3D" parent="SubViewportContainer/SubViewport" groups=["camera"]]
+[node name="Camera3D" type="Camera3D" parent="SubViewportContainer/SubViewport" unique_id=1521119483 groups=["camera"]]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 180, 0)
 attributes = SubResource("CameraAttributesPhysical_j4t3q")
 current = true
 script = ExtResource("3_3q0u3")
 draw_bounds = true
 
-[node name="ViewportDisplay" type="Control" parent="."]
+[node name="ViewportDisplay" type="Control" parent="." unique_id=658507514]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -148,7 +148,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="ViewportDisplayTextureRect" type="TextureRect" parent="ViewportDisplay" node_paths=PackedStringArray("target_viewport")]
+[node name="ViewportDisplayTextureRect" type="TextureRect" parent="ViewportDisplay" unique_id=1551661397 node_paths=PackedStringArray("target_viewport")]
 texture_filter = 4
 layout_mode = 1
 anchors_preset = 15
@@ -162,7 +162,7 @@ expand_mode = 1
 script = SubResource("GDScript_6dsdn")
 target_viewport = NodePath("../../SubViewportContainer/SubViewport")
 
-[node name="ui_main_menu" type="Control" parent="." node_paths=PackedStringArray("state", "subviewport_container")]
+[node name="ui_main_menu" type="Control" parent="." unique_id=1941954879 node_paths=PackedStringArray("state", "subviewport_container")]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -174,7 +174,7 @@ script = ExtResource("4_06wfu")
 state = NodePath("../Game State Machine/MainMenu")
 subviewport_container = NodePath("../SubViewportContainer")
 
-[node name="blackout_panel" type="Panel" parent="ui_main_menu"]
+[node name="blackout_panel" type="Panel" parent="ui_main_menu" unique_id=949207832]
 modulate = Color(1, 1, 1, 0.39215687)
 layout_mode = 1
 anchors_preset = 15
@@ -185,7 +185,7 @@ grow_vertical = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_06wfu")
 
-[node name="crosses_whole" type="TextureRect" parent="ui_main_menu"]
+[node name="crosses_whole" type="TextureRect" parent="ui_main_menu" unique_id=844764671]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -195,7 +195,7 @@ grow_vertical = 2
 mouse_filter = 2
 texture = ExtResource("6_ylvxq")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="ui_main_menu"]
+[node name="HBoxContainer" type="HBoxContainer" parent="ui_main_menu" unique_id=1872974874]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -203,7 +203,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="buttons" type="MarginContainer" parent="ui_main_menu/HBoxContainer"]
+[node name="buttons" type="MarginContainer" parent="ui_main_menu/HBoxContainer" unique_id=1840733860]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -212,19 +212,19 @@ theme_override_constants/margin_top = 15
 theme_override_constants/margin_right = 15
 theme_override_constants/margin_bottom = 15
 
-[node name="HBoxContainer" type="HBoxContainer" parent="ui_main_menu/HBoxContainer/buttons"]
+[node name="HBoxContainer" type="HBoxContainer" parent="ui_main_menu/HBoxContainer/buttons" unique_id=2054893942]
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="ui_main_menu/HBoxContainer/buttons/HBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="ui_main_menu/HBoxContainer/buttons/HBoxContainer" unique_id=893625201]
 layout_mode = 2
 
-[node name="HSeparator" type="HSeparator" parent="ui_main_menu/HBoxContainer/buttons/HBoxContainer/VBoxContainer"]
+[node name="HSeparator" type="HSeparator" parent="ui_main_menu/HBoxContainer/buttons/HBoxContainer/VBoxContainer" unique_id=223421964]
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
 theme_override_styles/separator = SubResource("StyleBoxEmpty_06wfu")
 
-[node name="new_game_button" type="Button" parent="ui_main_menu/HBoxContainer/buttons/HBoxContainer/VBoxContainer"]
+[node name="new_game_button" type="Button" parent="ui_main_menu/HBoxContainer/buttons/HBoxContainer/VBoxContainer" unique_id=786675096]
 layout_mode = 2
 size_flags_vertical = 0
 mouse_filter = 1
@@ -232,53 +232,53 @@ theme_override_fonts/font = SubResource("SystemFont_ie6ya")
 theme_override_font_sizes/font_size = 32
 text = "new game"
 
-[node name="HBoxContainer" type="HBoxContainer" parent="ui_main_menu/HBoxContainer/buttons/HBoxContainer/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="ui_main_menu/HBoxContainer/buttons/HBoxContainer/VBoxContainer" unique_id=1347944031]
 layout_mode = 2
 
-[node name="VSeparator" type="VSeparator" parent="ui_main_menu/HBoxContainer/buttons/HBoxContainer/VBoxContainer/HBoxContainer"]
+[node name="VSeparator" type="VSeparator" parent="ui_main_menu/HBoxContainer/buttons/HBoxContainer/VBoxContainer/HBoxContainer" unique_id=1393091571]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 theme_override_styles/separator = SubResource("StyleBoxEmpty_sw6f3")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="ui_main_menu/HBoxContainer/buttons/HBoxContainer/VBoxContainer/HBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="ui_main_menu/HBoxContainer/buttons/HBoxContainer/VBoxContainer/HBoxContainer" unique_id=1675461907]
 layout_mode = 2
 
-[node name="player_test_scene_button" type="Button" parent="ui_main_menu/HBoxContainer/buttons/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+[node name="player_test_scene_button" type="Button" parent="ui_main_menu/HBoxContainer/buttons/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer" unique_id=720854280]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
 text = "player test scene"
 
-[node name="test_level_2_button" type="Button" parent="ui_main_menu/HBoxContainer/buttons/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+[node name="test_level_2_button" type="Button" parent="ui_main_menu/HBoxContainer/buttons/HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer" unique_id=600012937]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
 text = "test level 2"
 
-[node name="settings_button" type="Button" parent="ui_main_menu/HBoxContainer/buttons/HBoxContainer/VBoxContainer"]
+[node name="settings_button" type="Button" parent="ui_main_menu/HBoxContainer/buttons/HBoxContainer/VBoxContainer" unique_id=273688457]
 layout_mode = 2
 size_flags_vertical = 0
 theme_override_font_sizes/font_size = 32
 text = "settings"
 
-[node name="quit_button" type="Button" parent="ui_main_menu/HBoxContainer/buttons/HBoxContainer/VBoxContainer"]
+[node name="quit_button" type="Button" parent="ui_main_menu/HBoxContainer/buttons/HBoxContainer/VBoxContainer" unique_id=2064969285]
 layout_mode = 2
 size_flags_vertical = 0
 theme_override_font_sizes/font_size = 32
 text = "quit
 "
 
-[node name="HSeparator2" type="HSeparator" parent="ui_main_menu/HBoxContainer/buttons/HBoxContainer/VBoxContainer"]
+[node name="HSeparator2" type="HSeparator" parent="ui_main_menu/HBoxContainer/buttons/HBoxContainer/VBoxContainer" unique_id=536326589]
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
 theme_override_styles/separator = SubResource("StyleBoxEmpty_06wfu")
 
-[node name="logos" type="PanelContainer" parent="ui_main_menu/HBoxContainer"]
+[node name="logos" type="PanelContainer" parent="ui_main_menu/HBoxContainer" unique_id=978318239]
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxEmpty_x6wqj")
 
-[node name="MarginContainer" type="MarginContainer" parent="ui_main_menu/HBoxContainer/logos"]
+[node name="MarginContainer" type="MarginContainer" parent="ui_main_menu/HBoxContainer/logos" unique_id=303257986]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/margin_left = 20
@@ -286,22 +286,22 @@ theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 20
 
-[node name="HBoxContainer" type="HBoxContainer" parent="ui_main_menu/HBoxContainer/logos/MarginContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="ui_main_menu/HBoxContainer/logos/MarginContainer" unique_id=539644990]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="VSeparator" type="VSeparator" parent="ui_main_menu/HBoxContainer/logos/MarginContainer/HBoxContainer"]
+[node name="VSeparator" type="VSeparator" parent="ui_main_menu/HBoxContainer/logos/MarginContainer/HBoxContainer" unique_id=1758674609]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 theme_override_styles/separator = SubResource("StyleBoxEmpty_ojkwq")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="ui_main_menu/HBoxContainer/logos/MarginContainer/HBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="ui_main_menu/HBoxContainer/logos/MarginContainer/HBoxContainer" unique_id=1121123892]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="star_title_logo" type="TextureRect" parent="ui_main_menu/HBoxContainer/logos/MarginContainer/HBoxContainer/VBoxContainer"]
+[node name="star_title_logo" type="TextureRect" parent="ui_main_menu/HBoxContainer/logos/MarginContainer/HBoxContainer/VBoxContainer" unique_id=2094401070]
 layout_mode = 2
 size_flags_vertical = 2
 mouse_filter = 2
@@ -309,18 +309,18 @@ texture = ExtResource("4_f1pwi")
 expand_mode = 5
 stretch_mode = 4
 
-[node name="HBoxContainer" type="HBoxContainer" parent="ui_main_menu/HBoxContainer/logos/MarginContainer/HBoxContainer/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="ui_main_menu/HBoxContainer/logos/MarginContainer/HBoxContainer/VBoxContainer" unique_id=1681371564]
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
 
-[node name="VSeparator" type="VSeparator" parent="ui_main_menu/HBoxContainer/logos/MarginContainer/HBoxContainer/VBoxContainer/HBoxContainer"]
+[node name="VSeparator" type="VSeparator" parent="ui_main_menu/HBoxContainer/logos/MarginContainer/HBoxContainer/VBoxContainer/HBoxContainer" unique_id=652171569]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 theme_override_styles/separator = SubResource("StyleBoxEmpty_nnybr")
 
-[node name="metaball_logo" type="TextureRect" parent="ui_main_menu/HBoxContainer/logos/MarginContainer/HBoxContainer/VBoxContainer/HBoxContainer"]
+[node name="metaball_logo" type="TextureRect" parent="ui_main_menu/HBoxContainer/logos/MarginContainer/HBoxContainer/VBoxContainer/HBoxContainer" unique_id=912055397]
 layout_mode = 2
 size_flags_horizontal = 10
 size_flags_stretch_ratio = 3.0
@@ -329,19 +329,19 @@ texture = ExtResource("5_ylvxq")
 expand_mode = 3
 stretch_mode = 4
 
-[node name="fade_up_timer" type="Timer" parent="ui_main_menu"]
+[node name="fade_up_timer" type="Timer" parent="ui_main_menu" unique_id=1224150434]
 wait_time = 3.0
 one_shot = true
 autostart = true
 
-[node name="player_relative_pose" type="Node3D" parent="ui_main_menu"]
+[node name="player_relative_pose" type="Node3D" parent="ui_main_menu" unique_id=285666987]
 editor_description = "This stashes the player's transform (relative to the camera) on exit from the main_menu.
 Referenced when transitioning back to the main menu.
 Written to from 'player_relative_pose' in the GameState \"MainMenu\"."
 
-[node name="ui_pause_menu" type="Node" parent="."]
+[node name="ui_pause_menu" type="Node" parent="." unique_id=643435154]
 
-[node name="ui_pause_menu_control" type="Control" parent="ui_pause_menu"]
+[node name="ui_pause_menu_control" type="Control" parent="ui_pause_menu" unique_id=1523757355]
 visible = false
 layout_mode = 3
 anchors_preset = 15
@@ -350,7 +350,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="ui_pause_menu/ui_pause_menu_control"]
+[node name="MarginContainer" type="MarginContainer" parent="ui_pause_menu/ui_pause_menu_control" unique_id=893276119]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -362,51 +362,51 @@ theme_override_constants/margin_top = 15
 theme_override_constants/margin_right = 15
 theme_override_constants/margin_bottom = 15
 
-[node name="HBoxContainer" type="HBoxContainer" parent="ui_pause_menu/ui_pause_menu_control/MarginContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="ui_pause_menu/ui_pause_menu_control/MarginContainer" unique_id=199405281]
 layout_mode = 2
 theme_override_constants/separation = 0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="ui_pause_menu/ui_pause_menu_control/MarginContainer/HBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="ui_pause_menu/ui_pause_menu_control/MarginContainer/HBoxContainer" unique_id=1634068628]
 layout_mode = 2
 
-[node name="HSeparator" type="HSeparator" parent="ui_pause_menu/ui_pause_menu_control/MarginContainer/HBoxContainer/VBoxContainer"]
+[node name="HSeparator" type="HSeparator" parent="ui_pause_menu/ui_pause_menu_control/MarginContainer/HBoxContainer/VBoxContainer" unique_id=1489523622]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/separator = SubResource("StyleBoxEmpty_6dsdn")
 
-[node name="resume_button" type="Button" parent="ui_pause_menu/ui_pause_menu_control/MarginContainer/HBoxContainer/VBoxContainer"]
+[node name="resume_button" type="Button" parent="ui_pause_menu/ui_pause_menu_control/MarginContainer/HBoxContainer/VBoxContainer" unique_id=1514349948]
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
 text = "resume"
 
-[node name="settings_button" type="Button" parent="ui_pause_menu/ui_pause_menu_control/MarginContainer/HBoxContainer/VBoxContainer"]
+[node name="settings_button" type="Button" parent="ui_pause_menu/ui_pause_menu_control/MarginContainer/HBoxContainer/VBoxContainer" unique_id=1217426138]
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
 text = "settings"
 
-[node name="quit_to_main_menu_button" type="Button" parent="ui_pause_menu/ui_pause_menu_control/MarginContainer/HBoxContainer/VBoxContainer"]
+[node name="quit_to_main_menu_button" type="Button" parent="ui_pause_menu/ui_pause_menu_control/MarginContainer/HBoxContainer/VBoxContainer" unique_id=1605950083]
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
 text = "quit to main menu"
 
-[node name="quit_to_desktop_button" type="Button" parent="ui_pause_menu/ui_pause_menu_control/MarginContainer/HBoxContainer/VBoxContainer"]
+[node name="quit_to_desktop_button" type="Button" parent="ui_pause_menu/ui_pause_menu_control/MarginContainer/HBoxContainer/VBoxContainer" unique_id=2046323979]
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
 text = "quit to desktop"
 
-[node name="HSeparator2" type="HSeparator" parent="ui_pause_menu/ui_pause_menu_control/MarginContainer/HBoxContainer/VBoxContainer"]
+[node name="HSeparator2" type="HSeparator" parent="ui_pause_menu/ui_pause_menu_control/MarginContainer/HBoxContainer/VBoxContainer" unique_id=373911706]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/separator = SubResource("StyleBoxEmpty_6dsdn")
 
-[node name="CenterContainer" type="CenterContainer" parent="ui_pause_menu/ui_pause_menu_control/MarginContainer/HBoxContainer"]
+[node name="CenterContainer" type="CenterContainer" parent="ui_pause_menu/ui_pause_menu_control/MarginContainer/HBoxContainer" unique_id=1518932238]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Control" type="Control" parent="ui_pause_menu/ui_pause_menu_control/MarginContainer/HBoxContainer/CenterContainer"]
+[node name="Control" type="Control" parent="ui_pause_menu/ui_pause_menu_control/MarginContainer/HBoxContainer/CenterContainer" unique_id=1998581777]
 layout_mode = 2
 
-[node name="pause_text" type="Label" parent="ui_pause_menu/ui_pause_menu_control/MarginContainer/HBoxContainer/CenterContainer/Control"]
+[node name="pause_text" type="Label" parent="ui_pause_menu/ui_pause_menu_control/MarginContainer/HBoxContainer/CenterContainer/Control" unique_id=1917768803]
 layout_mode = 0
 offset_left = -618.00006
 offset_top = 308.00006
@@ -417,34 +417,34 @@ scale = Vector2(2, 2)
 theme_override_font_sizes/font_size = 200
 text = "PAUSE"
 
-[node name="Game State Machine" type="Node" parent="." node_paths=PackedStringArray("initial_state")]
+[node name="Game State Machine" type="Node" parent="." unique_id=835160219 node_paths=PackedStringArray("initial_state")]
 script = ExtResource("1_ehmke")
 initial_state = NodePath("MainMenu")
 
-[node name="MainMenu" type="Node" parent="Game State Machine" node_paths=PackedStringArray("main_menu")]
+[node name="MainMenu" type="Node" parent="Game State Machine" unique_id=906551988 node_paths=PackedStringArray("main_menu")]
 script = ExtResource("2_nqac0")
 main_menu = NodePath("../../ui_main_menu")
 metadata/_custom_type_script = "uid://d161rlqyhcrhm"
 
-[node name="MainMenu_Playing_transition" type="Node" parent="Game State Machine" node_paths=PackedStringArray("main_menu", "level_container")]
+[node name="MainMenu_Playing_transition" type="Node" parent="Game State Machine" unique_id=933297104 node_paths=PackedStringArray("main_menu", "level_container")]
 script = ExtResource("10_u0hhh")
 main_menu = NodePath("../../ui_main_menu")
 level_container = NodePath("../../SubViewportContainer/SubViewport/level_container")
 metadata/_custom_type_script = "uid://1oq1i4y2174b"
 
-[node name="transition_timer" type="Timer" parent="Game State Machine/MainMenu_Playing_transition"]
+[node name="transition_timer" type="Timer" parent="Game State Machine/MainMenu_Playing_transition" unique_id=983825967]
 one_shot = true
 
-[node name="Playing" type="Node" parent="Game State Machine"]
+[node name="Playing" type="Node" parent="Game State Machine" unique_id=30911631]
 script = ExtResource("3_y5hx0")
 metadata/_custom_type_script = "uid://cllvy0wse4bie"
 
-[node name="Pause" type="Node" parent="Game State Machine" node_paths=PackedStringArray("ui_pause")]
+[node name="Pause" type="Node" parent="Game State Machine" unique_id=2132277896 node_paths=PackedStringArray("ui_pause")]
 script = ExtResource("12_ie6ya")
 ui_pause = NodePath("../../ui_pause_menu/ui_pause_menu_control")
 metadata/_custom_type_script = "uid://xgb6rgrlri12"
 
-[node name="transition_timer" type="Timer" parent="Game State Machine/Pause"]
+[node name="transition_timer" type="Timer" parent="Game State Machine/Pause" unique_id=1828259714]
 one_shot = true
 
 [connection signal="pressed" from="ui_main_menu/HBoxContainer/buttons/HBoxContainer/VBoxContainer/new_game_button" to="ui_main_menu" method="_on_new_game_button_pressed"]

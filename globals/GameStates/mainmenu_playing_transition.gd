@@ -3,6 +3,7 @@ class_name MainMenu_Playing_transition
 
 @export var main_menu : Node
 @onready var menu_logos : Control = main_menu.find_child( "logos" )
+@onready var menu_bg : Control = main_menu.find_child( "crosses_whole" )
 @onready var menu_buttons : MarginContainer = main_menu.find_child( "buttons" )
 
 var transitioning : bool
@@ -79,8 +80,10 @@ func update( delta ) -> void:
 			#menu_buttons.visible = true
 			main_menu.visible = true
 			
-			menu_logos.modulate = Color(1.0, 1.0, 1.0, norm_transition_time)
-			menu_buttons.modulate = Color(1.0, 1.0, 1.0, norm_transition_time)
+			var tc = Color(1.0, 1.0, 1.0, norm_transition_time)
+			menu_logos.modulate = tc
+			menu_buttons.modulate = tc
+			menu_bg.modulate = tc
 
 			menu_buttons.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
@@ -93,8 +96,10 @@ func update( delta ) -> void:
 			intermediate_transform = intermediate_transform.rotated_local( Vector3.FORWARD, norm_transition_time * PI * 2 )
 			player.global_transform = intermediate_transform
 		
-			menu_logos.modulate = Color(1.0, 1.0, 1.0, 1.0 - norm_transition_time)
-			menu_buttons.modulate = Color(1.0, 1.0, 1.0, 1.0 - norm_transition_time)
+			var tc = Color(1.0, 1.0, 1.0, 1.0 - norm_transition_time)
+			menu_logos.modulate = tc
+			menu_buttons.modulate = tc
+			menu_bg.modulate = tc
 
 			menu_buttons.mouse_filter = Control.MOUSE_FILTER_PASS
 

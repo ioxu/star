@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://qdrung6dxe3f"]
+[gd_scene format=3 uid="uid://qdrung6dxe3f"]
 
 [ext_resource type="VideoStream" uid="uid://dqlhmj1ync80c" path="res://assets/textures/splash/splash-two.ogv" id="1_gmaan"]
 [ext_resource type="Texture2D" uid="uid://ds2g8jemgxl3y" path="res://assets/textures/splash/holy_arms.png" id="2_08vje"]
@@ -51,7 +51,7 @@ func _end_splash() -> void:
 
 
 func _input(event: InputEvent) -> void:
-	if Input.is_action_just_pressed(\"ui_accept\"):
+	if Input.is_action_just_pressed(\"ui_accept\") and not Input.is_key_pressed(KEY_ALT):
 		if not timer_has_started:
 			$Timer.start()
 			timer_has_started = true
@@ -66,7 +66,7 @@ bg_color = Color(0, 0, 0, 1)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_boh8s"]
 
-[node name="TitleSplash-Two" type="Control"]
+[node name="TitleSplash-Two" type="Control" unique_id=1681466184]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -77,10 +77,10 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 script = SubResource("GDScript_gmaan")
 
-[node name="Timer" type="Timer" parent="."]
+[node name="Timer" type="Timer" parent="." unique_id=727844073]
 wait_time = 3.0
 
-[node name="Panel" type="Panel" parent="."]
+[node name="Panel" type="Panel" parent="." unique_id=645327389]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -91,7 +91,7 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_08vje")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
+[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=31699951]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -99,30 +99,30 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VSeparator" type="VSeparator" parent="HBoxContainer"]
+[node name="VSeparator" type="VSeparator" parent="HBoxContainer" unique_id=1356902011]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 2.0
 theme_override_styles/separator = SubResource("StyleBoxEmpty_08vje")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer" unique_id=1274221719]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="HSeparator" type="HSeparator" parent="HBoxContainer/VBoxContainer"]
+[node name="HSeparator" type="HSeparator" parent="HBoxContainer/VBoxContainer" unique_id=56762404]
 layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.73
 theme_override_styles/separator = SubResource("StyleBoxEmpty_boh8s")
 
-[node name="AspectRatioContainer" type="AspectRatioContainer" parent="HBoxContainer/VBoxContainer"]
+[node name="AspectRatioContainer" type="AspectRatioContainer" parent="HBoxContainer/VBoxContainer" unique_id=1721369937]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 size_flags_stretch_ratio = 2.18
 ratio = 0.6667
 
-[node name="VideoStreamPlayer" type="VideoStreamPlayer" parent="HBoxContainer/VBoxContainer/AspectRatioContainer"]
+[node name="VideoStreamPlayer" type="VideoStreamPlayer" parent="HBoxContainer/VBoxContainer/AspectRatioContainer" unique_id=1551933545]
 texture_filter = 2
 layout_mode = 2
 stream = ExtResource("1_gmaan")
@@ -131,18 +131,18 @@ autoplay = true
 expand = true
 loop = true
 
-[node name="AspectRatioContainer2" type="AspectRatioContainer" parent="HBoxContainer/VBoxContainer"]
+[node name="AspectRatioContainer2" type="AspectRatioContainer" parent="HBoxContainer/VBoxContainer" unique_id=679135170]
 layout_mode = 2
 size_flags_vertical = 3
 ratio = 11.0
 stretch_mode = 0
 
-[node name="text_texture" type="TextureRect" parent="HBoxContainer/VBoxContainer/AspectRatioContainer2"]
+[node name="text_texture" type="TextureRect" parent="HBoxContainer/VBoxContainer/AspectRatioContainer2" unique_id=1576207942]
 layout_mode = 2
 size_flags_vertical = 3
 texture = ExtResource("2_08vje")
 
-[node name="VSeparator2" type="VSeparator" parent="HBoxContainer"]
+[node name="VSeparator2" type="VSeparator" parent="HBoxContainer" unique_id=1527916832]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 2.0
