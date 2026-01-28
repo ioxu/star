@@ -23,6 +23,10 @@ boot_splash/stretch_mode=0
 boot_splash/use_filter=false
 config/icon="res://icon.svg"
 
+[audio]
+
+buses/default_bus_layout="uid://dea5t6mguue45"
+
 [autoload]
 
 Global="*res://globals/global.gd"
