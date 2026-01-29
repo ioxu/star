@@ -11,6 +11,8 @@ func enter( from_state_name : String, parameters : Dictionary ) -> void:
 	camera.set_physics_process(true)
 	camera.set_process_input(true)
 	#camera.set_process_unhandled_input(true)
+	if parameters.has("new_level_instance"):
+		parameters["new_level_instance"].start_action()
 
 
 func exit() -> void:

@@ -10,8 +10,12 @@ var object_time := 0.0
 
 @export var main_menu : Control #Node # reference to main menu ui tree
 
+@onready var loading_progressbar_container : Control = main_menu.find_child("progressbar_container")
+@onready var loading_progressbar : ProgressBar = main_menu.find_child("loading_progressbar")
+
 func _ready() -> void:
 	main_menu.new_game_button_pressed.connect(_on_new_game)
+	loading_progressbar_container.visible = false
 
 
 func enter( from_state_name : String, parameters : Dictionary ) -> void:

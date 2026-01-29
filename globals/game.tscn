@@ -273,6 +273,16 @@ size_flags_vertical = 3
 mouse_filter = 2
 theme_override_styles/separator = SubResource("StyleBoxEmpty_06wfu")
 
+[node name="progressbar_container" type="CenterContainer" parent="ui_main_menu/HBoxContainer" unique_id=669517990]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="loading_progressbar" type="ProgressBar" parent="ui_main_menu/HBoxContainer/progressbar_container" unique_id=948891630]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+mouse_filter = 2
+value = 45.0
+
 [node name="logos" type="PanelContainer" parent="ui_main_menu/HBoxContainer" unique_id=978318239]
 layout_mode = 2
 mouse_filter = 2
@@ -435,6 +445,9 @@ metadata/_custom_type_script = "uid://1oq1i4y2174b"
 [node name="transition_timer" type="Timer" parent="Game State Machine/MainMenu_Playing_transition" unique_id=983825967]
 one_shot = true
 
+[node name="prep_timer" type="Timer" parent="Game State Machine/MainMenu_Playing_transition" unique_id=1785061459]
+one_shot = true
+
 [node name="Playing" type="Node" parent="Game State Machine" unique_id=30911631]
 script = ExtResource("3_y5hx0")
 metadata/_custom_type_script = "uid://cllvy0wse4bie"
@@ -456,3 +469,4 @@ one_shot = true
 [connection signal="pressed" from="ui_pause_menu/ui_pause_menu_control/MarginContainer/HBoxContainer/VBoxContainer/settings_button" to="Game State Machine/Pause" method="_on_settings_button"]
 [connection signal="pressed" from="ui_pause_menu/ui_pause_menu_control/MarginContainer/HBoxContainer/VBoxContainer/quit_to_main_menu_button" to="Game State Machine/Pause" method="_on_quit_to_main_menu_button"]
 [connection signal="pressed" from="ui_pause_menu/ui_pause_menu_control/MarginContainer/HBoxContainer/VBoxContainer/quit_to_desktop_button" to="Game State Machine/Pause" method="_on_quit_to_desktop_button"]
+[connection signal="timeout" from="Game State Machine/MainMenu_Playing_transition/prep_timer" to="Game State Machine/MainMenu_Playing_transition" method="_on_prep_timer_timeout"]

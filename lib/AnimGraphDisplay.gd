@@ -47,7 +47,8 @@ func _draw() -> void:
 
 
 func _process(delta: float) -> void:
-	time_bar.position = Vector2( graph_width * (anim_player.current_animation_position / float(animation.length)) , 0.0)
+	if anim_player.is_playing():
+		time_bar.position = Vector2( graph_width * (anim_player.current_animation_position / float(animation.length)) , 0.0)
 
 
 func _get_minimum_size() -> Vector2:

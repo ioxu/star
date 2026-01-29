@@ -7,11 +7,12 @@ class_name MainMenu_Playing_transition
 @onready var menu_buttons : MarginContainer = main_menu.find_child( "buttons" )
 
 var transitioning : bool
+var prepping : bool
+@export var prepping_time := 1.0
 @export var transition_time := 1.0
 @export var reverse_transition_time := 0.5
 
-
-
+var norm_prepping_time : float
 var norm_transition_time : float
 
 var player : CharacterBody3D
@@ -28,9 +29,17 @@ var reverse := false
 
 @export var level_container : Node3D
 
+
+# ------------------------------------------------------------------------------
+# switch level and get into position
+# TODO: load from a menu selection from main menu
 var new_level = preload("res://assets/levels/test_level_two.tscn")
 
+@onready var loading_progressbar_container : Control = main_menu.find_child("progressbar_container")
+@onready var loading_progressbar : ProgressBar = main_menu.find_child("loading_progressbar")
 
+var exit_state_dictionary := {}
+# ------------------------------------------------------------------------------
 
 func enter( from_state_name : String, parameters : Dictionary ) -> void:
 	pprint("enter()")
@@ -38,7 +47,8 @@ func enter( from_state_name : String, parameters : Dictionary ) -> void:
 	initial_transform = player.global_transform
 	camera = get_tree().get_first_node_in_group("camera")
 
-	transitioning = true
+	transitioning = false
+	prepping = true
 
 	if from_state_name == "Pause":
 		pprint('entering from "Pause"')
@@ -52,11 +62,17 @@ func enter( from_state_name : String, parameters : Dictionary ) -> void:
 		final_transform = Transform3D()
 		$transition_timer.wait_time = transition_time
 
-	$transition_timer.start()
+	#$transition_timer.start()
 
+	# ------------------------------------------------------------------------------
+	# switch level and get into position
+	loading_progressbar_container.visible = true
+	$prep_timer.start()
 	level_container.get_child(0).queue_free()
 	var new_level_inst = new_level.instantiate()
+	exit_state_dictionary["new_level_instance"] = new_level_inst
 	level_container.add_child( new_level_inst )
+	# ------------------------------------------------------------------------------
 
 
 func exit() -> void:
@@ -64,6 +80,11 @@ func exit() -> void:
 
 
 func update( delta ) -> void:
+	if prepping:
+		norm_prepping_time = clampf((prepping_time - $prep_timer.time_left) / prepping_time, 0.0, 1.0)
+		loading_progressbar.value = norm_prepping_time * 100.0
+
+
 	if transitioning:
 		norm_transition_time = clamp((transition_time - $transition_timer.time_left) / transition_time , 0.0, 1.0)
 		norm_transition_time = ease(norm_transition_time, -2.0)
@@ -115,8 +136,9 @@ func update( delta ) -> void:
 				player.set_process_input(true)
 				#player.set_process_unhandled_input(true)
 				
+				pprint("transition timer finished")
 				pprint("transition done.")
-				transitioned.emit(self, "Playing", {})
+				transitioned.emit(self, "Playing", exit_state_dictionary)
 
 
 func physics_update( delta ) -> void:
@@ -129,3 +151,12 @@ func handle_input(event: InputEvent) -> void:
 
 func pprint(thing) -> void:
 	print('[game state] ["MainMenu_Playing_transition"] %s'%thing)
+
+
+func _on_prep_timer_timeout() -> void:
+	pprint("prepping timer finished")
+	loading_progressbar_container.visible = false
+	prepping = false
+	transitioning = true
+	$transition_timer.start()
+	
