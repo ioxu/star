@@ -31,6 +31,7 @@ buses/default_bus_layout="uid://dea5t6mguue45"
 
 Global="*res://globals/global.gd"
 WindowManager="*res://globals/window_manager.gd"
+Clocks="*uid://co7bek02yomyy"
 
 [global_group]
 

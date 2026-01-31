@@ -19,19 +19,19 @@ script/source = "extends SubViewportContainer
 
 func _ready() -> void:
 	pprint(\"binding WindowManager events ..\")
-	WindowManager.connect( \"change_fullscreen\", _on_windowmanager_change_fullscreen )
+	#WindowManager.connect( \"change_fullscreen\", _on_windowmanager_change_fullscreen )
 	pprint(\"HERE: %s\"%DisplayServer.window_get_size())
-	_update_window_size()
+	#_update_window_size()
 	pprint(\"size: %s\"%self.size)
 
 
-func _on_windowmanager_change_fullscreen( value ) -> void:
-	_update_window_size()
+#func _on_windowmanager_change_fullscreen( value ) -> void:
+	#_update_window_size()
 
 
-func _update_window_size() -> void:
-	var wsize : Vector2i = DisplayServer.window_get_size()
-	self.size = wsize
+#func _update_window_size() -> void:
+	#var wsize : Vector2i = DisplayServer.window_get_size()
+	#self.size = wsize
 
 
 func pprint(thing) -> void:
@@ -427,19 +427,20 @@ scale = Vector2(2, 2)
 theme_override_font_sizes/font_size = 200
 text = "PAUSE"
 
-[node name="Game State Machine" type="Node" parent="." unique_id=835160219 node_paths=PackedStringArray("initial_state")]
+[node name="Game State Machine" type="Node" parent="." unique_id=835160219 node_paths=PackedStringArray("initial_state", "level_container")]
 script = ExtResource("1_ehmke")
 initial_state = NodePath("MainMenu")
+level_container = NodePath("../SubViewportContainer/SubViewport/level_container")
 
 [node name="MainMenu" type="Node" parent="Game State Machine" unique_id=906551988 node_paths=PackedStringArray("main_menu")]
 script = ExtResource("2_nqac0")
 main_menu = NodePath("../../ui_main_menu")
 metadata/_custom_type_script = "uid://d161rlqyhcrhm"
 
-[node name="MainMenu_Playing_transition" type="Node" parent="Game State Machine" unique_id=933297104 node_paths=PackedStringArray("main_menu", "level_container")]
+[node name="MainMenu_Playing_transition" type="Node" parent="Game State Machine" unique_id=933297104 node_paths=PackedStringArray("main_menu")]
 script = ExtResource("10_u0hhh")
 main_menu = NodePath("../../ui_main_menu")
-level_container = NodePath("../../SubViewportContainer/SubViewport/level_container")
+prepping_time = 5.0
 metadata/_custom_type_script = "uid://1oq1i4y2174b"
 
 [node name="transition_timer" type="Timer" parent="Game State Machine/MainMenu_Playing_transition" unique_id=983825967]

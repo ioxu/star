@@ -3,7 +3,7 @@ extends Control
 
 var total_time := 3.0
 var fade_time := 0.15
-var timer_has_started := false
+#var timer_has_started := false
 
 @onready var text : TextureRect = find_child("text_texture")
 @onready var video : VideoStreamPlayer = find_child("VideoStreamPlayer")
@@ -20,7 +20,7 @@ func _ready() -> void:
 	await get_tree().create_timer(0.5).timeout
 	
 	$Timer.start()
-	timer_has_started = true
+	#timer_has_started = true
 
 
 func _process(_delta: float) -> void:
@@ -45,10 +45,15 @@ func _end_splash() -> void:
 
 
 func _input(event: InputEvent) -> void:
+	var skip = false
 	# eneter to skip, unless +Alt to change ot fullscreen
-	if Input.is_action_just_pressed("ui_accept") and not event.alt_pressed:
-		if not timer_has_started:
-			$Timer.start()
-			timer_has_started = true
-		else:
-			_end_splash()
+	if event is InputEventKey:
+		if Input.is_action_just_pressed("ui_accept") and not event.alt_pressed:
+			skip = true
+	else:
+		if Input.is_action_just_pressed("ui_accept"):
+			skip = true
+			
+	if skip:
+		_end_splash()
+		

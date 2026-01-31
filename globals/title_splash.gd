@@ -30,5 +30,12 @@ func _end_splash() -> void:
 
 func _input(event: InputEvent) -> void:
 	# eneter to skip, unless +Alt to change ot fullscreen
-	if Input.is_action_just_pressed("ui_accept") and not event.alt_pressed:
+	var skip = false
+	if event is InputEventKey:
+		if Input.is_action_just_pressed("ui_accept") and not event.alt_pressed:
+			skip = true
+	else:
+		if Input.is_action_just_pressed("ui_accept"):
+			skip = true
+	if skip:
 		_end_splash()

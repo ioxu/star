@@ -13,6 +13,10 @@ var object_time := 0.0
 @onready var loading_progressbar_container : Control = main_menu.find_child("progressbar_container")
 @onready var loading_progressbar : ProgressBar = main_menu.find_child("loading_progressbar")
 
+var camera_initial_position : Vector3
+var camera_initial_rotation : Vector3
+
+
 func _ready() -> void:
 	main_menu.new_game_button_pressed.connect(_on_new_game)
 	loading_progressbar_container.visible = false
@@ -22,6 +26,10 @@ func enter( from_state_name : String, parameters : Dictionary ) -> void:
 	pprint("enter()")
 	player = get_tree().get_first_node_in_group("player")
 	camera = get_tree().get_first_node_in_group("camera")
+	
+	camera_initial_position = camera.global_position
+	camera_initial_rotation - camera.rotation
+	
 	pprint("player %s"%player)
 	pprint("%s"%player.get_path())
 	player.set_process(false)
@@ -47,6 +55,13 @@ func exit() -> void:
 
 func update( delta ) -> void:
 	object_time += delta
+	
+	#-- movement
+	camera.position.x = camera_initial_position.x + sin(Clocks.global_time*0.3)* 30
+	camera.position.y = camera_initial_position.y + sin(Clocks.global_time*0.5)* 30
+	camera.position.z = camera_initial_position.z + cos(Clocks.global_time*0.4)* 30
+	camera.rotation.y = camera_initial_rotation.y + sin((Clocks.global_time+0.375)*1.5) *0.15
+
 	var camera_basis = camera.global_transform.basis
 	
 	var player_basis = camera_basis.rotated( camera_basis.x, PI/2.0 )

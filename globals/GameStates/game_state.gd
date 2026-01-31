@@ -5,9 +5,10 @@ class_name GameState extends Node
 # Bitlytic
 #-------------------------------------------------------------------------------
 
+var fsm : StateMachine
+
 @warning_ignore("unused_signal")
 signal transitioned
-
 
 @warning_ignore("unused_parameter")
 func enter( from_state_name : String, parameters : Dictionary ) -> void:

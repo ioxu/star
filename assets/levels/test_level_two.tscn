@@ -4,14 +4,16 @@
 [ext_resource type="Script" uid="uid://cm2hycvn6ckp6" path="res://lib/AnimGraphDisplay.gd" id="1_jjm7x"]
 [ext_resource type="Texture2D" uid="uid://c70pl7gyqsx2k" path="res://assets/textures/grids/kenney_texture_08_light.png" id="2_jjm7x"]
 [ext_resource type="PackedScene" uid="uid://4tslx1g24xy1" path="res://assets/player/player.tscn" id="3_3abyr"]
+[ext_resource type="Script" uid="uid://cap7g8a1s105" path="res://lib/LevelActionArea.gd" id="5_0vh3s"]
 
 [sub_resource type="GDScript" id="GDScript_jjm7x"]
 script/source = "extends Node3D
 
 
 var scene_time := 0.0
-
 var _travel_speed := 50.0
+
+@onready var action : LevelActionArea = find_child(\"action\")
 
 @onready var path_follow : PathFollow3D = find_child(\"PathFollow3D\")
 @onready var path_follow_ahead : PathFollow3D = find_child(\"PathFollow3D_ahead\")
@@ -200,9 +202,16 @@ uv1_scale = Vector3(2, 2, 2)
 [sub_resource type="BoxMesh" id="BoxMesh_ehmke"]
 size = Vector3(5, 50, 5)
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_y7rbs"]
+albedo_color = Color(0.90455055, 0.5366216, 5.7756904e-07, 1)
+albedo_texture = ExtResource("2_jjm7x")
+uv1_scale = Vector3(0.01, 0.01, 0.01)
+uv1_triplanar = true
+uv1_world_triplanar = true
+
 [sub_resource type="Curve3D" id="Curve3D_0vh3s"]
 _data = {
-"points": PackedVector3Array(-47, 0, -109, 47, 0, 109, 227, 0, -865, 65, 0, -113, -65, 0, 113, 227, 0, -613, -108.5, 0, -27.300001, 108.5, 0, 27.300001, 227, 0, -349, 18.4, 0, -138.5, -18.4, 0, 138.5, 253.7819, 1.6276043e-05, -17.431835, 213.40001, 0, -1.3000001, -213.40001, 0, 1.3000001, -21.418083, 1.6276043e-05, 250.56815, -31.2, 0, 208.40001, 31.2, 0, -208.40001, -348.81805, 1.6276043e-05, -168.03183, -43.8, 0, 84.200005, 43.8, 0, -84.200005, -54, 0, -500, 12.5, 0, 87.3, -12.5, 0, -87.3, -107.21808, 1.6276043e-05, -776.2318, 0, 0, 0, 0, 0, 0, -96.44296, 1.6276043e-05, -953.9116),
+"points": PackedVector3Array(-22.042969, 0, 110.831726, 22.042969, 0, -110.831726, -151.10751, 0, -18.681519, 30.44181, 0, 34.274734, -30.44181, 0, -34.274734, -155.69019, 0, -270.63986, -88.66868, 0, 57.941833, 88.66868, 0, -57.941833, -160.49109, 0, -534.5962, -52.989853, 1.6276043e-05, 194.99463, 52.989853, -1.6276043e-05, -194.99463, -193.29822, 1.6276043e-05, -865.62256, -162.59305, -1.6276043e-05, -0.9012451, 162.59305, 1.6276043e-05, 0.9012451, 76.98263, 1.6276043e-05, -1138.5828, -1.453125, -1.6276043e-05, -235.3916, 1.453125, 1.6276043e-05, 235.3916, 411.94077, 1.6276043e-05, -726.00586, 28.325157, 0, -203.99184, -28.325157, 0, 203.99184, 123.20842, 0, -388.73123, -29.315582, -1.6276043e-05, -90.307236, 29.315582, 1.6276043e-05, 90.307236, 181.44104, 1.6276043e-05, -113.51288, 0, 0, 0, 0, 0, 0, 173.89883, 1.6276043e-05, 64.333496),
 "tilts": PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0)
 }
 point_count = 9
@@ -489,7 +498,7 @@ directional_shadow_max_distance = 500.0
 [node name="ground" type="StaticBody3D" parent="lvl_grp" unique_id=54527959]
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="lvl_grp/ground" unique_id=265950651]
-transform = Transform3D(5000, 0, 0, 0, -0.0021855694, 50000, 0, -50000, -0.0021855694, 0.5508423, 0, -0.19393921)
+transform = Transform3D(5000, 0, 0, 0, -0.0021855694, 50000, 0, -50000, -0.0021855694, 0, 0, 0)
 material_override = ExtResource("1_3abyr")
 mesh = SubResource("QuadMesh_kap54")
 skeleton = NodePath("../../../..")
@@ -505,29 +514,76 @@ surface_material_override/0 = SubResource("StandardMaterial3D_nqac0")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="lvl_grp" unique_id=645602315]
 transform = Transform3D(0.63692856, -0.76048726, -0.12641597, 0.7409803, 0.5586468, 0.37264153, -0.21276729, -0.3310178, 0.91932434, -27.95803, -3.8146973e-06, -24.09562)
 mesh = SubResource("BoxMesh_ehmke")
-surface_material_override/0 = ExtResource("1_3abyr")
+surface_material_override/0 = SubResource("StandardMaterial3D_y7rbs")
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="lvl_grp" unique_id=569899435]
 transform = Transform3D(0.57901096, -0.25042737, -0.77590746, 0.7409803, 0.5586468, 0.37264153, 0.34013852, -0.7906958, 0.50902444, 51.022316, -3.8146973e-06, -26.762749)
 mesh = SubResource("BoxMesh_ehmke")
-surface_material_override/0 = ExtResource("1_3abyr")
+surface_material_override/0 = SubResource("StandardMaterial3D_y7rbs")
 
 [node name="MeshInstance3D3" type="MeshInstance3D" parent="lvl_grp" unique_id=1630444061]
 transform = Transform3D(0.6597612, -0.5022061, -0.55902064, 0.7409803, 0.5586468, 0.37264153, 0.12515222, -0.6600778, 0.74069846, 48.92562, -5.141407, -19.250942)
 mesh = SubResource("BoxMesh_ehmke")
-surface_material_override/0 = ExtResource("1_3abyr")
+surface_material_override/0 = SubResource("StandardMaterial3D_y7rbs")
+
+[node name="MeshInstance3D4" type="MeshInstance3D" parent="lvl_grp" unique_id=2059675586]
+transform = Transform3D(-0.667099, 0.6759787, 0.31309992, 0.7409804, 0.5586469, 0.3726416, 0.07698554, 0.48058975, -0.8735598, 21.2756, -3.8146973e-06, -4.6416445)
+mesh = SubResource("BoxMesh_ehmke")
+surface_material_override/0 = SubResource("StandardMaterial3D_y7rbs")
+
+[node name="MeshInstance3D5" type="MeshInstance3D" parent="lvl_grp" unique_id=305120561]
+transform = Transform3D(-0.4965163, 0.0821591, 0.8641305, 0.7409803, 0.5586468, 0.3726415, -0.4521277, 0.8253263, -0.33825555, -56.559975, -3.8146973e-06, -18.302963)
+mesh = SubResource("BoxMesh_ehmke")
+surface_material_override/0 = SubResource("StandardMaterial3D_y7rbs")
+
+[node name="MeshInstance3D6" type="MeshInstance3D" parent="lvl_grp" unique_id=1927317654]
+transform = Transform3D(-0.6198249, 0.35544652, 0.6996249, 0.74098045, 0.5586468, 0.3726415, -0.25838897, 0.7493808, -0.609642, -52.9607, -5.141407, -25.22168)
+mesh = SubResource("BoxMesh_ehmke")
+surface_material_override/0 = SubResource("StandardMaterial3D_y7rbs")
+
+[node name="MeshInstance3D7" type="MeshInstance3D" parent="lvl_grp" unique_id=20961525]
+transform = Transform3D(-1.1303554, 0.21613812, 1.9236354, 1.6609852, 1.2522656, 0.83531517, -0.9940904, 1.8465937, -0.79162395, -103.36611, 2.127861, 84.77562)
+mesh = SubResource("BoxMesh_ehmke")
+surface_material_override/0 = SubResource("StandardMaterial3D_y7rbs")
+
+[node name="MeshInstance3D8" type="MeshInstance3D" parent="lvl_grp" unique_id=1157782135]
+transform = Transform3D(0.006147566, -1.2495376, 1.8610239, 1.6609851, 1.2522653, 0.835315, -1.5052845, 1.3766916, 0.92931753, -197.5841, 2.127861, -65.23383)
+mesh = SubResource("BoxMesh_ehmke")
+surface_material_override/0 = SubResource("StandardMaterial3D_y7rbs")
+
+[node name="MeshInstance3D9" type="MeshInstance3D" parent="lvl_grp" unique_id=770079242]
+transform = Transform3D(-0.5014136, -0.7125962, 2.0653288, 1.6609856, 1.2522653, 0.8353149, -1.4193319, 1.7172161, 0.24790728, -180.66669, -9.397133, -69.6413)
+mesh = SubResource("BoxMesh_ehmke")
+surface_material_override/0 = SubResource("StandardMaterial3D_y7rbs")
+
+[node name="MeshInstance3D10" type="MeshInstance3D" parent="lvl_grp" unique_id=1289697013]
+transform = Transform3D(0.06689417, 1.181271, -1.9039217, 1.6609855, 1.2522656, 0.8353154, 1.5038097, -1.4356962, -0.8379284, -165.88382, 2.127861, -53.059937)
+mesh = SubResource("BoxMesh_ehmke")
+surface_material_override/0 = SubResource("StandardMaterial3D_y7rbs")
+
+[node name="MeshInstance3D11" type="MeshInstance3D" parent="lvl_grp" unique_id=749031956]
+transform = Transform3D(-1.0893141, 1.8584299, -0.62001985, 1.6609851, 1.2522651, 0.83531487, 1.0389003, -0.053498864, -1.9856023, -208.71136, 2.127861, 118.82861)
+mesh = SubResource("BoxMesh_ehmke")
+surface_material_override/0 = SubResource("StandardMaterial3D_y7rbs")
+
+[node name="MeshInstance3D12" type="MeshInstance3D" parent="lvl_grp" unique_id=1456588483]
+transform = Transform3D(-0.6755599, 1.7317289, -1.2528065, 1.6609855, 1.2522652, 0.83531487, 1.3451905, -0.6765638, -1.6605773, -223.61407, -9.397133, 109.6889)
+mesh = SubResource("BoxMesh_ehmke")
+surface_material_override/0 = SubResource("StandardMaterial3D_y7rbs")
 
 [node name="Player" parent="." unique_id=883509357 node_paths=PackedStringArray("camera") instance=ExtResource("3_3abyr")]
 camera = NodePath("../action/Path3D/PathFollow3D/Camera3D")
 draw_debug = true
 
-[node name="action" type="Node3D" parent="." unique_id=603583366]
+[node name="action" type="Node3D" parent="." unique_id=603583366 node_paths=PackedStringArray("camera_target")]
+script = ExtResource("5_0vh3s")
+camera_target = NodePath("Path3D/PathFollow3D/Camera3D")
 
 [node name="Path3D" type="Path3D" parent="action" unique_id=486559722]
 curve = SubResource("Curve3D_0vh3s")
 
 [node name="PathFollow3D" type="PathFollow3D" parent="action/Path3D" unique_id=1472110224]
-transform = Transform3D(-0.91816926, 0, -0.39590785, 0, 1, 0, 0.39590785, 0, -0.91816926, 227, 0, -865)
+transform = Transform3D(0.9806808, 0, -0.19504444, 0, 1, 0, 0.19504444, 0, 0.9806808, -151.10751, 0, -18.681519)
 tilt_enabled = false
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="action/Path3D/PathFollow3D" unique_id=1747969835]
@@ -543,7 +599,6 @@ surface_material_override/0 = SubResource("StandardMaterial3D_0vh3s")
 [node name="Camera3D" type="Camera3D" parent="action/Path3D/PathFollow3D" unique_id=1763260954 groups=["camera"]]
 transform = Transform3D(1.0000018, 0, 0, 0, -4.3711466e-08, 1, 0, -1.0000018, -4.371139e-08, 0, 380, 0)
 attributes = SubResource("CameraAttributesPhysical_5xh8o")
-current = true
 script = SubResource("GDScript_8tus5")
 draw_bounds = true
 
@@ -554,7 +609,7 @@ shape = SubResource("BoxShape3D_3abyr")
 debug_color = Color(0.21594596, 0.5891457, 0.69029975, 0.41960785)
 
 [node name="PathFollow3D_ahead" type="PathFollow3D" parent="action/Path3D" unique_id=1325577350]
-transform = Transform3D(-0.9182713, 0, -0.39595184, 0, 1.0000001, 0, 0.39595184, 0, -0.9182713, 227, 0, -865)
+transform = Transform3D(0.9807885, 0, -0.19506586, 0, 1.0000001, 0, 0.19506586, 0, 0.9807885, -151.10751, 0, -18.681519)
 tilt_enabled = false
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="action/Path3D/PathFollow3D_ahead" unique_id=1997740498]

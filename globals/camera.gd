@@ -37,11 +37,11 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	time += delta
 	
-	#-- movement
-	self.position.x = initial_position.x + sin(time*0.3)* 30
-	self.position.y = initial_position.y + sin(time*0.5)* 30
-	self.position.z = initial_position.z + cos(time*0.4)* 30
-	self.rotation.y = initial_rotation.y + sin((time+0.375)*1.5) *0.15
+	##-- movement
+	#self.position.x = initial_position.x + sin(time*0.3)* 30
+	#self.position.y = initial_position.y + sin(time*0.5)* 30
+	#self.position.z = initial_position.z + cos(time*0.4)* 30
+	#self.rotation.y = initial_rotation.y + sin((time+0.375)*1.5) *0.15
 
 
 	#-- frustum bounds
