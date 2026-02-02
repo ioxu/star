@@ -57,7 +57,7 @@ func enter( from_state_name : String, parameters : Dictionary ) -> void:
 		prepping = true
 		reverse = false
 		final_transform = Transform3D()
-		initial_camera_transform = camera.global_transform
+		initial_camera_transform = Transform3D( camera.global_transform )
 		$transition_timer.wait_time = transition_time
 
 	#$transition_timer.start()
@@ -81,6 +81,7 @@ func update( delta ) -> void:
 		norm_prepping_time = clampf((prepping_time - $prep_timer.time_left) / prepping_time, 0.0, 1.0)
 		loading_progressbar.value = norm_prepping_time * 100.0
 		camera.position = lerp( initial_camera_transform.origin, fsm.current_level.action.get_camera_target().global_position, norm_prepping_time )
+		camera.transform.basis = initial_camera_transform.basis.slerp( fsm.current_level.action.get_camera_target().global_transform.basis, norm_prepping_time )
 
 	if transitioning:
 		norm_transition_time = clamp((transition_time - $transition_timer.time_left) / transition_time , 0.0, 1.0)

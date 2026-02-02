@@ -24,7 +24,8 @@ func update( delta ) -> void:
 
 
 func physics_update( delta ) -> void:
-	pass
+		camera.position = fsm.current_level.action.get_camera_target().global_position
+		camera.transform.basis = fsm.current_level.action.get_camera_target().global_transform.basis
 
 
 func handle_input(event: InputEvent) -> void:

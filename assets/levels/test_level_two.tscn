@@ -597,7 +597,7 @@ mesh = SubResource("TorusMesh_3abyr")
 surface_material_override/0 = SubResource("StandardMaterial3D_0vh3s")
 
 [node name="Camera3D" type="Camera3D" parent="action/Path3D/PathFollow3D" unique_id=1763260954 groups=["camera"]]
-transform = Transform3D(1.0000018, 0, 0, 0, -4.3711466e-08, 1, 0, -1.0000018, -4.371139e-08, 0, 380, 0)
+transform = Transform3D(1.0001115, 0, 0, 0, -4.371626e-08, 0.99999994, 0, -1.0001115, -4.3711385e-08, 0, 379.99997, 0)
 attributes = SubResource("CameraAttributesPhysical_5xh8o")
 script = SubResource("GDScript_8tus5")
 draw_bounds = true
