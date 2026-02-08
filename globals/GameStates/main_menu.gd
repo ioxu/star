@@ -66,12 +66,13 @@ func update( delta ) -> void:
 	
 	var player_basis = camera_basis.rotated( camera_basis.x, PI/2.0 )
 	player_basis = player_basis.rotated( camera_basis.z, PI/4.0 )
-	player_basis = player_basis.rotated( player_basis.z, sin(object_time*2.0) * (PI*0.1) )
+	#player_basis = player_basis.rotated( player_basis.z, sin(object_time*2.0) * (PI*0.1) )
+	player_basis = player_basis.rotated( player_basis.z, sin(Clocks.global_time*2.0) * (PI*0.1) )
 	
 	var player_relative_origin := Vector3( 0.0, -2.5, -20.0 )
 	var player_relative_basis = Basis().rotated( Vector3.UP, PI/4.0 )
 	player_relative_basis = player_relative_basis.rotated( Vector3.RIGHT, PI/2.0)
-	player_relative_basis = player_relative_basis.rotated( player_relative_basis.z, sin(object_time*2.0) * (PI*0.1) )
+	player_relative_basis = player_relative_basis.rotated( player_relative_basis.z, sin(Clocks.global_time*2.0) * (PI*0.1) )
 
 
 	player_relative_pose.transform = Transform3D(Basis( player_relative_basis ), player_relative_origin )

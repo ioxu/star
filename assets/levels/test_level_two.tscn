@@ -3,7 +3,6 @@
 [ext_resource type="Material" uid="uid://cnxtog6iv1d0j" path="res://assets/materials/triplanar_grid_grey.material" id="1_3abyr"]
 [ext_resource type="Script" uid="uid://cm2hycvn6ckp6" path="res://lib/AnimGraphDisplay.gd" id="1_jjm7x"]
 [ext_resource type="Texture2D" uid="uid://c70pl7gyqsx2k" path="res://assets/textures/grids/kenney_texture_08_light.png" id="2_jjm7x"]
-[ext_resource type="PackedScene" uid="uid://4tslx1g24xy1" path="res://assets/player/player.tscn" id="3_3abyr"]
 [ext_resource type="Script" uid="uid://cap7g8a1s105" path="res://lib/LevelActionArea.gd" id="5_0vh3s"]
 
 [sub_resource type="GDScript" id="GDScript_jjm7x"]
@@ -20,6 +19,9 @@ var _travel_speed := 50.0
 @onready var future_global_position_marker : MeshInstance3D = find_child(\"future_global_position_marker\")
 @onready var future_local_position_marker : MeshInstance3D = find_child(\"future_local_position_marker\")
 @onready var anim_player : AnimationPlayer = find_child(\"AnimationPlayer\")
+
+
+var player : CharacterBody3D
 
 @onready var camera : Camera3D = find_child(\"Camera3D\")
 
@@ -46,7 +48,9 @@ func _ready() -> void:
 	#--
 
 	#$Player.global_position = camera.global_position * Vector3(1.0, 0.0, 1.0)
-	$Player.global_position = path_follow.global_position * Vector3(1.0, 0.0, 1.0)
+	player = get_tree().get_first_node_in_group(\"player\")
+	pprint(\"player: %s\"%player)
+	player.global_position = path_follow.global_position * Vector3(1.0, 0.0, 1.0)
 	last_path_position = path_follow.global_position
 
 
@@ -90,7 +94,7 @@ func _physics_process(delta: float) -> void:
 		
 		0:	#-- future-frame mode
 			# current position in path_follow frame
-			var current_local_position : Vector3 = path_follow.to_local($Player.global_position)
+			var current_local_position : Vector3 = path_follow.to_local(player.global_position)
 			# current position in future frame, to global space
 			var future_global_position : Vector3 = path_follow_ahead.to_global( current_local_position )
 
@@ -102,7 +106,7 @@ func _physics_process(delta: float) -> void:
 			# orange dot
 			future_global_position_marker.global_position = future_global_position + Vector3(0.0, 1.0, 0.0)
 
-			$Player.add_exo_direction( (future_global_position - $Player.global_position) * 0.5 ) # * 0.5 )
+			player.add_exo_direction( (future_global_position - player.global_position) * 0.5 ) # * 0.5 )
 			
 			# future global position in the local current frame
 			var future_local_position : Vector3 = path_follow.to_local(future_global_position)
@@ -113,20 +117,20 @@ func _physics_process(delta: float) -> void:
 
 			var yaw = -path_follow.global_basis.z
 			yaw = - yaw.signed_angle_to( future_local_position - current_local_position, Vector3.UP )
-			$Player.add_exo_yaw( yaw )
+			player.add_exo_yaw( yaw )
 		
 		1:	#-- method: current-last position delta
 			var this_path_position = path_follow.global_position
 			var path_delta = this_path_position - last_path_position
 			last_path_position = this_path_position
-			$Player.add_exo_direction( path_delta * Vector3(.75, 0.0, 0.4) )
+			player.add_exo_direction( path_delta * Vector3(.75, 0.0, 0.4) )
 
 			var level_path_rotation = Vector3(0.0, -1 * path_follow.transform.basis.z.signed_angle_to( Vector3.BACK, Vector3.UP ), 0.0)
-			$Player.add_exo_yaw( level_path_rotation.y )
+			player.add_exo_yaw( level_path_rotation.y )
 	#---------------------------------------------------------------------------
 
 
-	tilt_label.text = \"tilt:%7.1f°\"%[ rad_to_deg($Player.rotation.z)]
+	tilt_label.text = \"tilt:%7.1f°\"%[ rad_to_deg(player.rotation.z)]
 
 
 func start_action() -> void:
@@ -242,6 +246,7 @@ emission_energy_multiplier = 2.0
 
 [sub_resource type="CameraAttributesPhysical" id="CameraAttributesPhysical_5xh8o"]
 exposure_sensitivity = 164.0
+frustum_focal_length = 70.89
 exposure_shutter_speed = 125.0
 
 [sub_resource type="GDScript" id="GDScript_8tus5"]
@@ -571,10 +576,6 @@ transform = Transform3D(-0.6755599, 1.7317289, -1.2528065, 1.6609855, 1.2522652,
 mesh = SubResource("BoxMesh_ehmke")
 surface_material_override/0 = SubResource("StandardMaterial3D_y7rbs")
 
-[node name="Player" parent="." unique_id=883509357 node_paths=PackedStringArray("camera") instance=ExtResource("3_3abyr")]
-camera = NodePath("../action/Path3D/PathFollow3D/Camera3D")
-draw_debug = true
-
 [node name="action" type="Node3D" parent="." unique_id=603583366 node_paths=PackedStringArray("camera_target")]
 script = ExtResource("5_0vh3s")
 camera_target = NodePath("Path3D/PathFollow3D/Camera3D")
@@ -588,11 +589,13 @@ tilt_enabled = false
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="action/Path3D/PathFollow3D" unique_id=1747969835]
 transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0)
+visible = false
 mesh = SubResource("SphereMesh_3abyr")
 surface_material_override/0 = SubResource("StandardMaterial3D_jjm7x")
 
 [node name="future_local_position_marker" type="MeshInstance3D" parent="action/Path3D/PathFollow3D" unique_id=1709559735]
 transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0)
+visible = false
 mesh = SubResource("TorusMesh_3abyr")
 surface_material_override/0 = SubResource("StandardMaterial3D_0vh3s")
 
@@ -614,12 +617,14 @@ tilt_enabled = false
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="action/Path3D/PathFollow3D_ahead" unique_id=1997740498]
 transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0)
+visible = false
 mesh = SubResource("SphereMesh_3abyr")
 surface_material_override/0 = SubResource("StandardMaterial3D_3abyr")
 
 [node name="future_global_position_marker" type="MeshInstance3D" parent="action/Path3D/PathFollow3D_ahead" unique_id=786501844]
 transform = Transform3D(-1.8365426, 0, -0.7919037, 0, 2.0000002, 0, 0.7919037, 0, -1.8365426, 227, 0, -865)
 top_level = true
+visible = false
 mesh = SubResource("SphereMesh_3abyr")
 surface_material_override/0 = SubResource("StandardMaterial3D_0vh3s")
 

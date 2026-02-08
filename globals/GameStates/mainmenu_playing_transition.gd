@@ -22,6 +22,7 @@ var final_transform : Transform3D
 var camera : Camera3D
 var prepause_camera_transform : Transform3D
 var initial_camera_transform : Transform3D
+var initial_camera_fov : float
 
 var reverse := false
 
@@ -45,23 +46,6 @@ func enter( from_state_name : String, parameters : Dictionary ) -> void:
 
 	transitioning = false
 
-
-	if from_state_name == "Pause":
-		pprint('entering from "Pause"')
-		pprint("running transition in REVERSE")
-		reverse = true
-		prepause_camera_transform = parameters["pre_pause_camera_transform"]
-		initial_camera_transform = camera.global_transform
-		$transition_timer.wait_time = reverse_transition_time
-	else:
-		prepping = true
-		reverse = false
-		final_transform = Transform3D()
-		initial_camera_transform = Transform3D( camera.global_transform )
-		$transition_timer.wait_time = transition_time
-
-	#$transition_timer.start()
-
 	# ------------------------------------------------------------------------------
 	# switch level and get into position
 	loading_progressbar_container.visible = true
@@ -71,6 +55,26 @@ func enter( from_state_name : String, parameters : Dictionary ) -> void:
 	fsm.request_change_level( "res://assets/levels/test_level_two.tscn" )
 	# ------------------------------------------------------------------------------
 
+	if from_state_name == "Pause":
+		pprint('entering from "Pause"')
+		pprint("running transition in REVERSE")
+		reverse = true
+		prepause_camera_transform = parameters["pre_pause_camera_transform"]
+		initial_camera_transform = camera.global_transform
+		$transition_timer.wait_time = reverse_transition_time
+		initial_camera_fov = camera.fov
+	else:
+		prepping = true
+		reverse = false
+		#final_transform = Transform3D()
+		final_transform = fsm.current_level.action.get_player_start_position()
+		initial_camera_transform = Transform3D( camera.global_transform )
+		$transition_timer.wait_time = transition_time
+		initial_camera_fov = camera.fov
+
+	#$transition_timer.start()
+
+
 
 func exit() -> void:
 	pprint("exit()")
@@ -78,14 +82,35 @@ func exit() -> void:
 
 func update( delta ) -> void:
 	if prepping:
+		
 		norm_prepping_time = clampf((prepping_time - $prep_timer.time_left) / prepping_time, 0.0, 1.0)
 		loading_progressbar.value = norm_prepping_time * 100.0
 		camera.position = lerp( initial_camera_transform.origin, fsm.current_level.action.get_camera_target().global_position, norm_prepping_time )
 		camera.transform.basis = initial_camera_transform.basis.slerp( fsm.current_level.action.get_camera_target().global_transform.basis, norm_prepping_time )
+		#camera.fov = lerp(initial_camera_fov, fsm.current_level.action.get_camera_target().fov, norm_prepping_time)
+
+
+		# stick player to camera
+		var camera_basis = camera.global_transform.basis
+		var player_basis = camera_basis.rotated( camera_basis.x, PI/2.0 )
+		player_basis = player_basis.rotated( camera_basis.z, PI/4.0 )
+		#player_basis = player_basis.rotated( player_basis.z, sin(object_time*2.0) * (PI*0.1) )
+		player_basis = player_basis.rotated( player_basis.z, sin(Clocks.global_time*2.0) * (PI*0.1) )
+		var player_relative_origin := Vector3( 0.0, -2.5, -20.0 )
+		var player_relative_basis = Basis().rotated( Vector3.UP, PI/4.0 )
+		player_relative_basis = player_relative_basis.rotated( Vector3.RIGHT, PI/2.0)
+		player_relative_basis = player_relative_basis.rotated( player_relative_basis.z, sin(Clocks.global_time*2.0) * (PI*0.1) )
+		player_relative_pose.transform = Transform3D(Basis( player_relative_basis ), player_relative_origin )
+		player.global_transform = camera.transform * player_relative_pose.transform
+
+		initial_transform = player.global_transform
+
 
 	if transitioning:
 		norm_transition_time = clamp((transition_time - $transition_timer.time_left) / transition_time , 0.0, 1.0)
 		norm_transition_time = ease(norm_transition_time, -2.0)
+		
+		camera.fov = lerp(initial_camera_fov, fsm.current_level.action.get_camera_target().fov, norm_transition_time)
 
 		if reverse:
 			final_transform = camera.global_transform * player_relative_pose.transform
